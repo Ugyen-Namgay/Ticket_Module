@@ -1,3 +1,3 @@
--  Hello, this repository will be used for collaboratively working environment for the enhancement of 'Bhutan App'. 
+-  Hello, this repository will be used for collaborative working environment for the enhancement of 'Bhutan App'. 
 <!---
 --->
