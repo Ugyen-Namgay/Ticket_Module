@@ -1,0 +1,225 @@
+// The complete sample is provided in the global folder that can be used as a reference
+
+  //multiple (option button)
+'  {
+    "form": [
+      {
+        "key": "informations",
+        "properties": [
+          "key": "identifier",
+          "fields": ["1", "2", "3", "4", "5"],
+          "title": "This is my title",
+          "description": "This is my description",
+          "type": "multiple",
+        ]
+      }
+    ]
+  }
+
+  //checkbox
+{
+  "form": [
+    {
+      "key": "informations",
+      "properties": [
+        "key": "identifier",
+        "fields": ["1", "2", "3", "4", "5"],
+        "title": "This is my title",
+        "description": "This is my description",
+        "type": "checkbox"
+      ]
+    }
+  ]
+}
+
+//text - number
+{
+  "form": [
+    {
+      "key": "informations",
+      "properties": [
+        "key": "identifier",
+        "title": "This is my title",
+        "description": "This is my description",
+        "type": "text",
+        "is_mandatory": false,
+        "readOnly": true,
+        "validations": {
+              "message": "This is my message",
+          "length": {"min": 10, "max": 20},
+        }
+      ]
+    }
+  ]
+}
+
+//date
+{
+  "form": [
+    {
+      "key": "informations",
+      "properties": [
+        "key": "identifier",
+        "title": "This is my title",
+        "description": "This is my description",
+        "type": "date",
+        "is_mandatory": false,
+      ]
+    }
+  ]
+}
+
+//time
+{
+  "form": [
+    {
+      "key": "informations",
+      "properties": [
+        "key": "identifier_boat",
+        "title": "This is my title",
+        "description": "This is my description",
+        "type": "time",
+        "is_mandatory": false,
+      ]
+    }
+  ]
+}
+
+//format1
+{
+  "form": [
+    {
+      "key": "informations",
+      "properties": [
+        "key": "identifier_boat",
+        "fields": ["1", "2", "3", "4", "5"],
+        "title": "This is my title",
+        "description": "This is my description",
+        "type": "format1",
+        "raw": [
+          {
+            "title": "Menu 1",
+            "description": "description 1",
+            "properties": [
+              {
+                "key": "key_date",
+                "title": "date",
+                "type": "date",
+              },
+            ]
+          },
+          {
+            "title": "Menu 2",
+            "properties": [
+              {
+                "key": "key_trips",
+                "title": "Trips",
+                "type": "text",
+              },
+            ]
+          },
+        ]
+      ]
+    }
+  ]
+}';
+
+
+'
+/// multiple:
+/// A "true" or "false" value, from the JSON "true" or "false" value
+multiple,
+
+/// checkbox:
+/// An ordered list of instances, from the JSON "array" value
+checkbox,
+
+/// dropdown:
+/// An unordered set of properties mapping a string to an instance, from the JSON "object" value
+dropdown,
+
+/// number:
+/// An arbitrary-precision, base-10 decimal number value, from the JSON "number" value
+number,
+
+/// dateTime:
+/// A string of datetime
+datetime,
+
+/// time:
+/// A string of time
+time,
+
+/// date:
+/// A string of date
+date,
+
+/// file:
+/// A string of file
+file,
+
+/// string:
+/// A string of Unicode code points, from the JSON "string" value
+text,
+
+/// Format 1
+/// Only Array of String dynamic value  use field raw.
+format1,
+
+/// SPECIAL_CASE_NONE:
+/// A special case for when the type is not defined.
+none,
+';
+
+
+
+
+{
+    "data": [
+      {
+        "questions": [
+          {
+            "question_id": "String",
+            "fields": ["above 40km/h", "below 40km/h", "0km/h"],
+            "_id": "001",
+            "title": "Please provide the speed of vehicle",
+            "description": "please select one option given below",
+            "remark": false,
+            "type": "multiple",
+            "is_mandatory": true
+          },
+          {
+            "question_id": "String",
+            "fields": ["above 40km/h", "below 40km/h", "0km/h"],
+            "_id": "001",
+            "title": "Please provide the speed of vehicle?",
+            "description": "please select one option given below",
+            "remark": false,
+            "type": "multiple",
+            "is_mandatory": true
+          }
+        ]
+      }
+    ]
+}
+
+
+
+{
+    "data": [
+      {
+        "questions": [
+          {
+            "question_id": "String",
+            "fields": ["above 40km/h", "below 40km/h", "0km/h"],
+            "_id": "001",
+            "title": "Please provide the speed of vehicle",
+            "description": "please select one option given below",
+            "remark": false,
+            "type": "multiple",
+            "is_mandatory": true
+          },
+        ]
+      }
+    ]
+}

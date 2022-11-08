@@ -1,0 +1,121 @@
+<?php
+require_once "utils/dbconnect.php";
+
+function raise_error($message) {
+    http_response_code(500);
+    return '{"error":"'.$message.'"}';
+}
+function success() {
+    return '{"error":false}';
+}
+function get($table,$col="*",$condition="1") {
+    $conn = new mysqli(DB_HOST,DB_USER,DB_PSWD,DB_NAME);
+    if ($col=="")
+        $col="*";
+    
+    //echo "SELECT $col FROM $table WHERE $condition;";
+    $r=$conn->query("SELECT $col FROM $table WHERE $condition;");
+    //echo "SELECT $col FROM $table WHERE $condition;";
+    if (!empty($r) && $r->num_rows>0) {
+        return json_encode($conn->query("SELECT $col FROM $table WHERE $condition;")->fetch_all());
+    }
+    return "[]";
+    //$conn->close();
+}
+
+function update($table,$col,$val,$condition) {
+    $conn = new mysqli(DB_HOST,DB_USER,DB_PSWD,DB_NAME);
+    //global $conn;
+    $col=explode(",",$col);
+    $val=explode(",",$val);
+    if (count($col)!==count($val)) {
+        return raise_error("Invalid Size");
+    }
+
+    $tempq="";
+    for ($i=0;$i<count($col);$i++) {
+        $tempq.=$col[$i]."='".$val[$i]."',";
+    }
+
+    $tempq=rtrim($tempq,",");
+
+    if (!$conn->query("UPDATE $table SET $tempq WHERE $condition;")) {
+        return raise_error("Could not update. Check data");
+    }
+    else {
+        return success();
+    }
+
+}
+
+function insert($table,$col,$val) {
+    $conn = new mysqli(DB_HOST,DB_USER,DB_PSWD,DB_NAME);
+    //global $conn;
+    $col=explode(",",str_replace("`","-",str_replace("'","",str_replace('"','',$col))));
+    $val=explode(",",str_replace("`","-",str_replace("'","",str_replace('"','',$val))));
+
+    if (count($col)!=count($val)) {
+        return raise_error("Invalid Data size");
+    }
+
+    for ($i=0; $i<count($val);$i++) {
+        $val[$i]="'".$val[$i]."'";
+    }
+
+    $tempv=implode(",",$val);
+    $col=implode(",",$col);
+    //echo "INSERT INTO $table ($col) VALUES($tempv);";
+    if (!$conn->query("INSERT INTO $table ($col) VALUES($tempv);")) {
+        return raise_error("Could not Insert. Check params");
+    }
+    else {
+        return success();
+    }
+
+}
+
+function delete($table,$condition) {
+    $conn = new mysqli(DB_HOST,DB_USER,DB_PSWD,DB_NAME);
+
+    if (!$conn->query("DELETE FROM $table WHERE $condition;")) {
+        return raise_error("Could not Delete");
+    }
+    else {
+        return success();
+    }
+
+}
+
+
+function isonline() {
+    if (!session_id()) {
+        return False;
+    }
+    $user = json_decode(get("users","username,name","session='".session_id()."'"));
+    //exit();
+    if (empty($user) || count($user[0])==0) {
+        return False;
+    }
+
+    return $user[0][1];
+}
+
+
+function deduce($json_data) {
+    $data = json_decode($json_data);
+    $cols="";
+    $vals="";
+    foreach ($data as $k=>$v) {
+        $cols.=$k.",";
+        $vals.=$v.","; 
+    }
+    $cols=trim($cols,",");
+    $vals=trim($vals,",");
+
+    return [$cols,$vals];
+}
+
+function isJson($string) {
+    json_decode($string);
+    return json_last_error() === JSON_ERROR_NONE;
+ }
