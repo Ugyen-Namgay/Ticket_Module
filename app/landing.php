@@ -16,7 +16,7 @@
 // 	echo $venue[0].": ".$venue[1]."<br/>";
 // }
 require_once "utils/sqldb.php";
-require_once "utils/visitorlog.php"; //client_detail(identity,is_it_temp?)
+#require_once "utils/visitorlog.php"; //client_detail(identity,is_it_temp?)
 
 
 $alert="This is a closed page permitted to only authorized user. Any suspected attempts to login will be captured and reported by the system.";
@@ -29,7 +29,7 @@ if (isset($_POST["email"]) && isset($_POST["password"])) {
 		update("admin_user","session_id",session_id(),"admin_id=".$valid[0][0]."");
 		//Redirect("post",true);
 		//echo "LOGIN SUCCESS";
-		client_detail($_POST["email"],False);
+		//client_detail($_POST["email"],False);
 		Redirect("home",True);
 	}
 	else {

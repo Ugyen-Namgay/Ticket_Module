@@ -7,7 +7,6 @@ $router->get('/', 'app/landing');
 $router->get('home', 'app/home');
 $router->get('users', 'app/users');
 $router->get('events', 'app/events');
-
 $router->get('submit', 'utils/submission');
 
 
