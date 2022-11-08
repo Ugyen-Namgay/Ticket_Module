@@ -4,9 +4,9 @@
 
 $prerequisite='
 
-CREATE DATABASE IF NOT EXISTS `au`;
+CREATE DATABASE IF NOT EXISTS `ticket_module`;
 
-USE `au`;
+USE `ticket_module`;
 
 CREATE TABLE `admin_user` (
     `admin_id` int(8) NOT NULL,
