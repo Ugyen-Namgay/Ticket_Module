@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS `admin_user` (
     PRIMARY KEY (`admin_id`)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   
-  INSERT IGNORE INTO `admin_user` (id,email,name,password,cid,level) VALUES(0,"admin@admin.bt","Administrator",MD5("admin@admin.bt"),"00000000000","0");
+  INSERT INTO `admin_user` (admin_id,email,name,password,cid,level) VALUES(1,"admin@admin.bt","Administrator",MD5("admin@admin.bt"),"00000000000","0");
   -- --------------------------------------------------------
   
   --

@@ -91,7 +91,7 @@ function isonline() {
     if (!session_id()) {
         return False;
     }
-    $user = json_decode(get("users","username,name","session='".session_id()."'"));
+    $user = json_decode(get("admin_user","email,name","session_id='".session_id()."'"));
     //exit();
     if (empty($user) || count($user[0])==0) {
         return False;

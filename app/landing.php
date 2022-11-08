@@ -1,10 +1,43 @@
 <?php
 	
-// 	require_once "utils/sqldb.php";
-// 	if (!empty(isonline())) {
-// 		Redirect("home",true);
-// 	}
-// 	else {
+	require_once "utils/sqldb.php";
+  if (isset($_POST["logout"])) {
+    $_SESSION = array();
+    session_regenerate_id();
+  }
+	if (!empty(isonline())) {
+		Redirect("home",true);
+	}
+	else {
+
+//$conn is universal for sql query please
+// $venues=json_decode(query($conn,"venues","country,location"));
+// foreach ($venues as $venue) {
+// 	echo $venue[0].": ".$venue[1]."<br/>";
+// }
+require_once "utils/sqldb.php";
+require_once "utils/visitorlog.php"; //client_detail(identity,is_it_temp?)
+
+
+$alert="This is a closed page permitted to only authorized user. Any suspected attempts to login will be captured and reported by the system.";
+
+if (isset($_POST["email"]) && isset($_POST["password"])) {
+	$valid = json_decode(get("admin_user","admin_id","password=MD5('".$_POST["password"]."') AND  email='".$_POST["email"]."'"));
+	//echo $valid;
+	if (!empty($valid) && count($valid[0])>0) {
+		$alert="Thank you. Please while we redirect you to your page.";
+		update("admin_user","session_id",session_id(),"admin_id=".$valid[0][0]."");
+		//Redirect("post",true);
+		//echo "LOGIN SUCCESS";
+		client_detail($_POST["email"],False);
+		Redirect("home",True);
+	}
+	else {
+		client_detail($_POST["email"]);
+		$alert="OH NOOO!!!<br>Looks like you credentials are incorrect. Please try again.";
+	}
+}
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -12,138 +45,252 @@
 	<title>Login</title>
 	<link rel="stylesheet" type="text/css" href="slide navbar style.css">
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap" rel="stylesheet">
-<link rel="shortcut icon" href="images/rgob-logo.png" />
+<link rel="shortcut icon" href="images/bbs3-logo-mini.png" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 </head>
 <style>
-body{
-	margin: 0;
-	padding: 0;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	min-height: 100vh;
-	font-family: 'Jost', sans-serif;
-	
+*, *:before, *:after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.main{
-	width: 80%;
-    height: 600px;
-
-	background: red;
-	overflow: hidden;
-	background: url("https://doc-08-2c-docs.googleusercontent.com/docs/securesc/68c90smiglihng9534mvqmq1946dmis5/fo0picsp1nhiucmc0l25s29respgpr4j/1631524275000/03522360960922298374/03522360960922298374/1Sx0jhdpEpnNIydS4rnN4kHSJtU1EyWka?e=view&authuser=0&nonce=gcrocepgbb17m&user=03522360960922298374&hash=tfhgbs86ka6divo3llbvp93mg4csvb38") no-repeat center/ cover;
-	border-radius: 10px;
-	box-shadow: 5px 20px 50px #000;
-	background: linear-gradient(to bottom, #ffbe0b, #fca311, #fb5607);
-	/*background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);*/
-}
-@media only screen and (min-width: 768px) {
-  .main {
-  		width: 350px;
-		height: 500px;
-
-  }
+body {
+  color: #999;
+  padding: 20px;
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  font-family: "Raleway";
+  justify-content: center;
+  background-color: #fbfbfb;
+  flex-direction: column;
 }
 
+#mainButton {
+  color: white;
+  border: none;
+  outline: none;
+  font-size: 24px;
+  font-weight: 200;
+  overflow: hidden;
+  position: relative;
+  border-radius: 2px;
+  letter-spacing: 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  text-transform: uppercase;
+  background-color: #e1b633;
+  -webkit-transition: all 0.2s ease-in;
+  -moz-transition: all 0.2s ease-in;
+  -ms-transition: all 0.2s ease-in;
+  -o-transition: all 0.2s ease-in;
+  transition: all 0.2s ease-in;
+}
+#mainButton .btn-text {
+  z-index: 2;
+  display: block;
+  padding: 10px 20px;
+  position: relative;
+}
+#mainButton .btn-text:hover {
+  cursor: pointer;
+}
+#mainButton:after {
+  top: -50%;
+  z-index: 1;
+  content: "";
+  width: 150%;
+  height: 200%;
+  position: absolute;
+  left: calc(-150% - 40px);
+  background-color: rgba(255, 255, 255, 0.2);
+  -webkit-transform: skewX(-40deg);
+  -moz-transform: skewX(-40deg);
+  -ms-transform: skewX(-40deg);
+  -o-transform: skewX(-40deg);
+  transform: skewX(-40deg);
+  -webkit-transition: all 0.2s ease-out;
+  -moz-transition: all 0.2s ease-out;
+  -ms-transition: all 0.2s ease-out;
+  -o-transition: all 0.2s ease-out;
+  transition: all 0.2s ease-out;
+}
+#mainButton:hover {
+  cursor: default;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+}
+#mainButton:hover:after {
+  -webkit-transform: translateX(100%) skewX(-30deg);
+  -moz-transform: translateX(100%) skewX(-30deg);
+  -ms-transform: translateX(100%) skewX(-30deg);
+  -o-transform: translateX(100%) skewX(-30deg);
+  transform: translateX(100%) skewX(-30deg);
+}
+#mainButton.active {
+  box-shadow: 0 19px 38px rgba(0, 0, 0, 0.3), 0 15px 12px rgba(0, 0, 0, 0.22);
+}
+#mainButton.active .modal {
+  -webkit-transform: scale(1, 1);
+  -moz-transform: scale(1, 1);
+  -ms-transform: scale(1, 1);
+  -o-transform: scale(1, 1);
+  transform: scale(1, 1);
+}
+#mainButton .modal {
+  top: 0;
+  left: 0;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  display: flex;
+  position: fixed;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background-color: inherit;
+  transform-origin: center center;
+  background-image: linear-gradient(to top left, #e1b633 10%, #ca800c 65%, white 200%);
+  -webkit-transform: scale(0.000001, 0.00001);
+  -moz-transform: scale(0.000001, 0.00001);
+  -ms-transform: scale(0.000001, 0.00001);
+  -o-transform: scale(0.000001, 0.00001);
+  transform: scale(0.000001, 0.00001);
+  -webkit-transition: all 0.2s ease-in;
+  -moz-transition: all 0.2s ease-in;
+  -ms-transition: all 0.2s ease-in;
+  -o-transition: all 0.2s ease-in;
+  transition: all 0.2s ease-in;
+}
 
-#chk{
-	display: none;
+.close-button {
+  top: 20px;
+  right: 20px;
+  position: absolute;
+  -webkit-transition: opacity 0.2s ease-in;
+  -moz-transition: opacity 0.2s ease-in;
+  -ms-transition: opacity 0.2s ease-in;
+  -o-transition: opacity 0.2s ease-in;
+  transition: opacity 0.2s ease-in;
 }
-.signup{
-	position: relative;
-	width:100%;
-	height: 100%;
-
-}
-label{
-	color: #fff;
-	font-size: 2.3em;
-	justify-content: center;
-	display: flex;
-	margin: 60px;
-	font-weight: bold;
-	cursor: pointer;
-	transition: .5s ease-in-out;
-}
-input{
-	width: 80%;
-	height: 20px;
-	background: #e0dede;
-	justify-content: center;
-	display: flex;
-	margin: 20px auto;
-	padding: 10px;
-	border: none;
-	outline: none;
-	border-radius: 5px;
-	font-weight: bolder;
-	color: #ff6607;
-}
-button{
-	width: 80%;
-	height: 40px;
-	margin: 10px auto;
-	justify-content: center;
-	display: block;
-	color: #fff;
-	/*background: #573b8a;*/
-	background:  #fca311;
-	font-size: 1em;
-	font-weight: bold;
-	margin-top: 50px;
-	outline: none;
-	border: none;
-	border-radius: 5px;
-	transition: .2s ease-in;
-	cursor: pointer;
-}
-button:hover{
-	/*background: #6d44b8;*/
-	background:  #fb5607;
-
-}
-.login{
-	height: 460px;
-	background: #eee;
-	/*border-radius: 10px;*/
-	transform: translateY(-180px);
-	transition: .8s ease-in-out;
-}
-.login label{
-	/*color: #573b8a;*/
-	color:  #fb5607;
-	transform: scale(.6);
+.close-button:hover {
+  opacity: 0.5;
+  cursor: pointer;
 }
 
-#chk:checked ~ .login{
-	transform: translateY(calc(-100% - 100px));
-}
-#chk:checked ~ .login label{
-	transform: scale(1.2);
-	padding-top: 10px;	
-}
-#chk:checked ~ .signup label{
-	transform: scale(.6);
+.form-title {
+  margin-bottom: 15px;
 }
 
-.signup p{
-	margin-left: 10%;
-	margin-right: 10%;
-	text-align: center;
-	color: #fff;
-	font-size: 1.2em;
+.form-button {
+  width: 50vw;
+  padding: 10px;
+  color: #00a7ee;
+  margin-top: 10px;
+  max-width: 400px;
+  text-align: center;
+  border: solid 1px white;
+  background-color: white;
+  -webkit-transition: color 0.2s ease-in, background-color 0.2s ease-in;
+  -moz-transition: color 0.2s ease-in, background-color 0.2s ease-in;
+  -ms-transition: color 0.2s ease-in, background-color 0.2s ease-in;
+  -o-transition: color 0.2s ease-in, background-color 0.2s ease-in;
+  transition: color 0.2s ease-in, background-color 0.2s ease-in;
+}
+.form-button:hover {
+  color: white;
+  cursor: pointer;
+  background-color: transparent;
 }
 
+.input-group {
+  width: 100%;
+  font-size: 16px;
+  max-width: 400px;
+  padding-top: 20px;
+  position: relative;
+  margin-bottom: 15px;
+}
+.input-group input {
+  width: 100%;
+  color: white;
+  border: none;
+  outline: none;
+  padding: 5px 0;
+  line-height: 1;
+  font-size: 16px;
+  font-family: "Raleway";
+  border-bottom: solid 1px white;
+  background-color: transparent;
+  -webkit-transition: box-shadow 0.2s ease-in;
+  -moz-transition: box-shadow 0.2s ease-in;
+  -ms-transition: box-shadow 0.2s ease-in;
+  -o-transition: box-shadow 0.2s ease-in;
+  transition: box-shadow 0.2s ease-in;
+}
+.input-group input + label {
+  left: 0;
+  top: 20px;
+  position: absolute;
+  pointer-events: none;
+  -webkit-transition: all 0.2s ease-in;
+  -moz-transition: all 0.2s ease-in;
+  -ms-transition: all 0.2s ease-in;
+  -o-transition: all 0.2s ease-in;
+  transition: all 0.2s ease-in;
+}
+.input-group input:focus {
+  box-shadow: 0 1px 0 0 white;
+}
+.input-group input:focus + label, .input-group input.active + label {
+  font-size: 12px;
+  -webkit-transform: translateY(-20px);
+  -moz-transform: translateY(-20px);
+  -ms-transform: translateY(-20px);
+  -o-transform: translateY(-20px);
+  transform: translateY(-20px);
+}
+
+.channel {
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  position: absolute;
+  text-align: center;
+  text-transform: none;
+  letter-spacing: initial;
+}
 </style>
 <body>
-	<div class="main">  	
-		<input type="checkbox" id="chk" aria-hidden="true">
+	<link href='https://fonts.googleapis.com/css?family=Raleway:400,500,300' rel='stylesheet' type='text/css'>
+		<div id="mainButton">
+			<div class="btn-text" onclick="openForm()">Bhutan App Ticket Module</div>
+			<div class="modal">
+			<form method="POST" action="/">
+				<div class="close-button" onclick="closeForm()">x</div>
+				<div class="form-title">Sign In</div>
+				<div class="input-group">
+					<input type="email" id="email" name="email" onblur="checkInput(this)" value="<?php echo isset($_POST["email"])?"".$_POST["email"]."":""; ?>"/>
+					<label for="name">Username</label>
+				</div>
+				<div class="input-group">
+					<input type="password" id="password" name="password" onblur="checkInput(this)" />
+					<label for="password">Password</label>
+				</div>
+				<button class="form-button" type="submit" onclick="closeForm(); wait();">Go</button>
+				<div class="channel">Ticketing System</div>
+			</form>
+			</div>
+		</div>
 
-			<div class="signup">
-				<label for="chk" area-hidden="true">Welcome</label>
-					<p><?php 
+		
+		<br/>
+		<br/>
+		<div>
+
+		<h5 id="alert"><?php 
 					if (isset($alert)) {
 						echo $alert;
 					}
@@ -151,27 +298,41 @@ button:hover{
 						echo "This is a closed page permitted to only authorized user. Any suspected attempts to login will be captured and reported by the system.";
 					}
 				?>
-			</p>
-<!-- 				<form>
-					<label for="chk" aria-hidden="true">Sign up</label>
-					<input type="text" name="txt" placeholder="User name" required="">
-					<input type="email" name="email" placeholder="Email" required="">
-					<input type="password" name="pswd" placeholder="Password" required="">
-					<button>Sign up</button>
-				</form> -->
-			</div>
-
-			<div class="login">
-				<form method="POST" action="login">
-					<label for="chk" aria-hidden="true">Login</label>
-					<input type="text" id="email" name="email" placeholder="Username/Email" required="" value=<?php echo isset($_POST["email"])?"'".$_POST["email"]."'":""; ?> >
-					<input type="password" id="password" name="password" placeholder="Password" required="">
-					<button type="submit">Login</button>
-				</form>
-			</div>
-	</div>
+			</h5>
+		</div>
 </body>
+<script>
+	var button = document.getElementById('mainButton');
+
+var openForm = function() {
+	button.className = 'active';
+};
+
+var checkInput = function(input) {
+	if (input.value.length > 0) {
+		input.className = 'active';
+	} else {
+		input.className = '';
+	}
+};
+
+var closeForm = function() {
+	button.className = '';
+};
+
+var wait = function() {
+	document.getElementById('alert').innerHTML="Please wait while the system validates your credentials";
+}
+
+document.addEventListener("keyup", function(e) {
+	if (e.keyCode == 27 || e.keyCode == 13) {
+		closeForm();
+	}
+});
+
+checkInput(document.getElementById("email"));
+</script>
 </html>
 <?php
-	//}
+	}
 ?>

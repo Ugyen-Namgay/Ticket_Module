@@ -4,6 +4,12 @@ session_start();
 $request = $_SERVER['REQUEST_URI'];
 $router = new Router($request);
 $router->get('/', 'app/landing');
+$router->get('home', 'app/home');
+$router->get('users', 'app/users');
+$router->get('events', 'app/events');
+
+$router->get('submit', 'utils/submission');
+
 
 $router->get('error-401','errorpage/error-401');
 $router->get('error-404','errorpage/error-404');
