@@ -1,10 +1,10 @@
 <?php
 	
-	require_once "utils/sqldb.php";
-	if (!empty(isonline())) {
-		Redirect("home",true);
-	}
-	else {
+// 	require_once "utils/sqldb.php";
+// 	if (!empty(isonline())) {
+// 		Redirect("home",true);
+// 	}
+// 	else {
 ?>
 <!DOCTYPE html>
 <html>
@@ -173,5 +173,5 @@ button:hover{
 </body>
 </html>
 <?php
-	}
+	//}
 ?>
