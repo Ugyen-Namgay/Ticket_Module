@@ -57,7 +57,7 @@
                                 <div class="card-body">
                                 <?php
 
-                                    $venues = get("venues","id,name,image_id,address,country,start_datetime,end_datetime,capacity");
+                                    $venues = get("events","id,name,image_id,address,country,start_datetime,end_datetime,capacity,ticket_offset");
                                     if ($venues=="[]") {
                                         echo '<h4 class="card-title">There are no events added so far.</h4>';
                                     }
@@ -67,6 +67,7 @@
                                         echo '<ul class="list-arrow">';
                                         foreach($venues as $v) {
                                             echo '<li><a href="#" onclick="editevent('.$v[0].')">'.$v[1].'</a>: '.$v[3].', '.$v[4].' FROM '.$v[5].' TILL '.$v[6].' (ID: '.$v[0].')<br> Capacity: '.$v[7];
+                                            echo '<br/><a href="/register/'.$v[0].'/?cid={CID}">Registration Link: </a>/register/'.$v[0].'/?cid={CID}';
                                             echo '<br/>';
                                         }
                                         echo '</ul>';
@@ -88,7 +89,7 @@
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label">Event Name</label>
                           <div class="col-sm-9">
-                            <input type="hidden" name="id" value="">
+                            <input type="hidden" name="eventid" value="">
                             <input type="text" class="form-control" name="name" required>
                           </div>
                         </div>
@@ -360,6 +361,16 @@
                         </div>
                       </div>
                       
+                      <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Ticket Offset</label>
+                          <div class="col-sm-9">
+                            <input type="number" min="100000" value="100000" class="form-control" name="ticket_offset" required/>
+                          </div>
+                        </div>
+                      </div>
+                      </div>
                       
                     </div>
                     <div class="row">
@@ -387,15 +398,14 @@
                           </div>
                         </div>
                       </div>
+
                       
                       <div class="col-md-12">
                         <div class="form-group row">
                         <div class="form-group">
-                          <label for="address" class="control-label">Image</label>	
+                          <label for="address" class="control-label">Image/Logo</label>	
                                         <input type="hidden" name="uploadedfiles" id="uploadedfiles" value="">
-                                        <div class="col-sm-12">
-                                            <div id="fileuploader">Upload</div>
-                                        </div>									
+                                        <input type="file" class="form-control" name="" id="fileId" onchange="imageUploaded()">								
                         </div>	
                         </div>
                       </div>
@@ -457,41 +467,19 @@
 	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/alertify.js/0.3.11/alertify.min.js"></script>
   <script>
 
-// $(document).ready(function()
-// {
-//       uploadObj = $("#fileuploader").uploadFile({
-//       url:"upload",
-//       fileName:"myfile",
-//       allowedTypes:"jpg,png,jpeg",
-//       dragDrop:true,
-//       maxFileCount:1,
-//       maxFileSize:1024*1024,
-//       autoSubmit: true,
-//       showProgress: true,
-//       method: "POST",
-//       dragDropStr: "<br><span><b>You can upload maximum only 1 image files less than 1MB</b></span>",
-//       extErrorStr:"Please upload only image file",
-//       uploadStr:"Upload Logo",
-//       onSubmit:function(files)
-//           {
-//               $("#uploadedfiles").val($("#uploadedfiles").val()+files.toString()+",");
-//           },
-//     onSelect:function(files)
-//       {
-//           console.log(files);
-//           return true; //to allow file submission.
-//       },
-//       afterUploadAll:function(obj)
-//       {
-//           console.log(obj);
-//       },
-//       onError: function(files,status,errMsg,pd)
-//       {
-//           console.log(status,errMsg);
-//       }
-//   });
-// });
 
+function imageUploaded() {
+    var file = document.querySelector(
+        'input[type=file]')['files'][0];
+  
+    var reader = new FileReader();
+    
+    reader.onload = function () {
+        base64String = reader.result.replace("data:", "").replace(/^.+,/, "");
+        $("#uploadedfiles").val(base64String);
+    }
+    reader.readAsDataURL(file);
+}
 
     function alertify(message) {
         var alert = new tingle.modal({
@@ -548,13 +536,14 @@ $('#eventform').on('submit', function(e){
 function editevent(id) {
     event=[];
     <?php
-    if ($venues) {
+    if (!$venues) {
       $venues=$venues;
     }
     else {
+      //id,name,image_id,address,country,start_datetime,end_datetime,capacity,ticket_offset
       foreach($venues as $v) {
-        echo 'event['.$v[0].']= {"id":"'.$v[0].'","name":"'.$v[1].'","address":"'.$v[3].'","country":"'.$v[4].'","startdate":"'.explode(" ",$v[5])[0].'","enddate":"'.explode(" ",$v[6])[0].'","starttime":"'.explode(" ",$v[5])[1].'","endtime":"'.explode(" ",$v[6])[1].'","capacity":"'.$v[7].'"};';
-    }
+        echo 'event['.$v[0].']= {"eventid":"'.$v[0].'","name":"'.$v[1].'","address":"'.$v[3].'","country":"'.$v[4].'","startdate":"'.explode(" ",$v[5])[0].'","enddate":"'.explode(" ",$v[6])[0].'","starttime":"'.explode(" ",$v[5])[1].'","endtime":"'.explode(" ",$v[6])[1].'","capacity":"'.$v[7].'","ticket_offset":"'.$v[8].'"};';
+      }
     }
     
     ?>

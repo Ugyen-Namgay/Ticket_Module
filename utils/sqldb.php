@@ -59,14 +59,20 @@ function insert($table,$col,$val) {
     }
 
     for ($i=0; $i<count($val);$i++) {
-        $val[$i]="'".$val[$i]."'";
+        if (strpos($val[$i],"()")===false) {
+            $val[$i]="'".$val[$i]."'";
+        }
+        else {
+            $val[$i]=$val[$i];
+        }
+       
     }
 
     $tempv=implode(",",$val);
     $col=implode(",",$col);
     //echo "INSERT INTO $table ($col) VALUES($tempv);";
     if (!$conn->query("INSERT INTO $table ($col) VALUES($tempv);")) {
-        return raise_error("Could not Insert. Check params");
+        return raise_error("Could not Insert. Check params => INSERT INTO $table ($col) VALUES($tempv);");
     }
     else {
         return success();

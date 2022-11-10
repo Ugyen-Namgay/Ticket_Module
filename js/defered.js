@@ -89,7 +89,7 @@
     
         
     
-        var btn5 = document.querySelector('.childdetail');
+        var btn5 = document.querySelector('.dependentdetail');
         if (btn5) {
           var modalButtonOnly = new tingle.modal({
             closeMethods: [],
@@ -101,40 +101,46 @@
         });
         //modalButtonOnly.setContent(document.querySelector('.tingle-demo-force-close').innerHTML);
         modalButtonOnly.setContent(`  <fieldset class="modal-field" style="padding: 0px; box-shadow: none">
-          <h2>Please put your children information here</h2>
-          <br><div id="child_error" style="position: fixed; top: 15px; color: crimson;"></div><br><hr>
-          <input type="text" id="child_firstname" placeholder="First Name" />
-          <input type="text" id="child_middlename" placeholder="Middle Name" />
-          <input type="text" id="child_lastname" placeholder="Last Name" />
-          <input type="date" id="child_dob" placeholder="Date of Birth" max="2022-08-01"/>
+          <h2>Please put your dependent information here</h2>
+          <br>
+          <div class="form-check form-switch" style="display:flex;justify-content: flex-start;width: 100%;">
+              <input class="form-check-input" type="checkbox" style="float:left;width:60px; height:20px; " id="minortoggle" onchange="toggleminor()">
+              <label class="form-check-label" style="padding-left:20px;" for="autoformat"><strong style="font-size:14px"><span id="autoformattext">Minor &nbsp&nbsp</span></strong></label>
+          </div>
+          <br><div id="dependent_error" style="position: fixed; top: 15px; color: crimson;"></div><br><hr>
+          <input type="text" id="dependent_cid" placeholder="CID" />
+          <input type="text" id="dependent_firstname" placeholder="First Name" />
+          <input type="text" id="dependent_middlename" placeholder="Middle Name" />
+          <input type="text" id="dependent_lastname" placeholder="Last Name" />
+          <input type="date" id="dependent_dob" placeholder="Date of Birth" max="2022-08-01"/>
         </fieldset>`);
         modalButtonOnly.addFooterBtn('Add', 'tingle-btn tingle-btn--primary tingle-btn--pull-right', function () {
-          f=$('#child_firstname').val();
-          m=$('#child_middlename').val();
-          l=$('#child_lastname').val();
-          d=$('#child_dob').val();
+          f=$('#dependent_firstname').val();
+          m=$('#dependent_middlename').val();
+          l=$('#dependent_lastname').val();
+          d=$('#dependent_dob').val();
           if (f=='' || d=='') {
             
-            $("#child_error").html("First name and Date of Birth is mandatory");
-            $("#child_error").show(100);
-            (f=='')?$('#child_firstname').focus():$('#child_dob').focus();
-            setTimeout(()=>{$("#child_error").slideUp(500)},2000);
+            $("#dependent_error").html("First name and Date of Birth is mandatory");
+            $("#dependent_error").show(100);
+            (f=='')?$('#dependent_firstname').focus():$('#dependent_dob').focus();
+            setTimeout(()=>{$("#dependent_error").slideUp(500)},2000);
             return false;
           }
-          child_list.push([f,m,l,d]);
-          parse_child();
-          $('#child_firstname').val('');
-          $('#child_middlename').val('');
-          $('#child_lastname').val('');
-          $('#child_dob').val('');
+          dependent_list.push([f,m,l,d]);
+          parse_dependent();
+          $('#dependent_firstname').val('');
+          $('#dependent_middlename').val('');
+          $('#dependent_lastname').val('');
+          $('#dependent_dob').val('');
             modalButtonOnly.close();
         });
 
         modalButtonOnly.addFooterBtn('Cancel', 'tingle-btn tingle-btn--default tingle-btn--pull-right', function () {
-          $('#child_firstname').val('');
-          $('#child_middlename').val('');
-          $('#child_lastname').val('');
-          $('#child_dob').val('');
+          $('#dependent_firstname').val('');
+          $('#dependent_middlename').val('');
+          $('#dependent_lastname').val('');
+          $('#dependent_dob').val('');
             modalButtonOnly.close();
         });
         }

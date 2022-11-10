@@ -190,10 +190,10 @@ function getphoto($cid) {
         imagedestroy($im);
         $size=strlen($temp);
         //return $theme_image_enc_little;
-        $previd = json_decode(get("photos","id","binphoto='$theme_image_enc_little'"));
+        $previd = json_decode(get("images","id","bin='$theme_image_enc_little'"));
         if (sizeof($previd)==0) {
-            insert("photos","binphoto,height,width,size,format","$theme_image_enc_little,$newheight,$newwidth,$size,png");
-            return json_decode(get("photos","id","binphoto='$theme_image_enc_little'"))[0][0];
+            insert("images","bin,format","$theme_image_enc_little,png");
+            return json_decode(get("images","id","bin='$theme_image_enc_little'"))[0][0];
         }
         else {
             return $previd[0][0];
