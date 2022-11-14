@@ -83,6 +83,7 @@
                       <div class="col-md-12">
                         <div class="form-group row">
                           <label class="col-sm-2 col-form-label">Email/Username</label>
+                          <input type="hidden" name="admin_id"/>
                           <div class="col-sm-10">
                           <input type="email" name="email" class="form-control" required/>
                           </div>
