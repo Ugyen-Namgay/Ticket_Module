@@ -26,6 +26,7 @@
     <!-- endinject -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css" integrity="sha512-fjy4e481VEA/OTVR4+WHMlZ4wcX/+ohNWKpVfb7q+YNnOCS++4ZDn3Vi6EaA2HJ89VXARJt7VvuAKaQ/gs1CbQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="shortcut icon" href="<?php echo $settings["app"]["logo"]?>" />
+  <link href="<?php echo $settings["app"]["homebase"].'/css/tingle.min.css'?>" rel="stylesheet">
 	<link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="//cdn.datatables.net/plug-ins/a5734b29083/integration/bootstrap/3/dataTables.bootstrap.css">
 	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/alertify.js/0.3.11/alertify.core.min.css">
@@ -472,20 +473,6 @@
 	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/alertify.js/0.3.11/alertify.min.js"></script>
   <script>
 
-
-function imageUploaded() {
-    var file = document.querySelector(
-        'input[type=file]')['files'][0];
-  
-    var reader = new FileReader();
-    
-    reader.onload = function () {
-        base64String = reader.result.replace("data:", "").replace(/^.+,/, "");
-        $("#uploadedfiles").val(base64String);
-    }
-    reader.readAsDataURL(file);
-}
-
     function alertify(message) {
         var alert = new tingle.modal({
             closeMethods: [],
@@ -497,6 +484,26 @@ function imageUploaded() {
         });
         alert.open();
     }
+
+    function imageUploaded() {
+    var file = document.querySelector(
+        'input[type=file]')['files'][0];
+  
+    var reader = new FileReader();
+    
+    reader.onload = function () {
+        base64String = reader.result.replace("data:", "").replace(/^.+,/, "");
+        if ((base64String.length/1.3/1024/1024) >=0.5) {
+          alertify("The image is too large. Try selecting image less than 512 KB");
+          $("#uploadedfiles").val("");
+        }
+        else {
+          $("#uploadedfiles").val(base64String);
+        }
+        
+    }
+    reader.readAsDataURL(file);
+}
 
     function getFormData($form){
         //var $form = $("#"+formid);
