@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS `admin_user` (
   --
   
   CREATE TABLE IF NOT EXISTS `logs` (
-    `admin_id` int(8) NOT NULL,
+    `admin_id` varchar(255) NOT NULL,
     `action` varchar(1024) NOT NULL,
     `datetime` datetime DEFAULT current_timestamp(),
     `event_id` int(8) NOT NULL
@@ -106,7 +106,7 @@ CREATE TABLE IF NOT EXISTS `admin_user` (
   --
   
   CREATE TABLE IF NOT EXISTS `minor` (
-    `cid` varchar(19) NOT NULL,
+    `cid` varchar(255) NOT NULL,
     `dob` date NOT NULL,
     `first_name` varchar(255) NOT NULL,
     `middle_name` varchar(255) NOT NULL,
@@ -122,7 +122,7 @@ CREATE TABLE IF NOT EXISTS `admin_user` (
   --
   
   CREATE TABLE IF NOT EXISTS `otp` (
-    `cid` int(8) NOT NULL,
+    `cid` varchar(255) NOT NULL,
     `otp` varchar(10) NOT NULL,
     `valid_till` datetime NOT NULL,
     `attempts` int(3) NOT NULL
@@ -137,7 +137,7 @@ CREATE TABLE IF NOT EXISTS `admin_user` (
   CREATE TABLE IF NOT EXISTS `registration_requests` (
     `id` int(8) NOT NULL AUTO_INCREMENT,
     `event_id` int(8) NOT NULL,
-    `cid` varchar(19) NOT NULL,
+    `cid` varchar(255) NOT NULL,
     `register_datetime` datetime DEFAULT current_timestamp(),
     `other_cids` varchar(1024) NOT NULL,
     `withdrawn` tinyint(1) NOT NULL DEFAULT 0,

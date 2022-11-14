@@ -59,6 +59,7 @@
 
                                     $venues = get("events","id,name,image_id,address,country,start_datetime,end_datetime,capacity,ticket_offset");
                                     if ($venues=="[]") {
+                                        $venues=[];
                                         echo '<h4 class="card-title">There are no events added so far.</h4>';
                                     }
                                     else {
@@ -67,7 +68,8 @@
                                         echo '<ul class="list-arrow">';
                                         foreach($venues as $v) {
                                             echo '<li><a href="#" onclick="editevent('.$v[0].')">'.$v[1].'</a>: '.$v[3].', '.$v[4].' FROM '.$v[5].' TILL '.$v[6].' (ID: '.$v[0].')<br> Capacity: '.$v[7];
-                                            echo '<br/><a href="/register/'.$v[0].'/?cid={CID}">Registration Link: </a>/register/'.$v[0].'/?cid={CID}';
+                                            echo '<br/>Registration Link Format: /register/'.$v[0].'/?cid={CITIZEN-ID}';
+                                            echo '<br/>Checker Link Format: /check/'.$v[0].'/{CITIZEN-CID}?cid={ADMIN-CID}';
                                             echo '<br/>';
                                         }
                                         echo '</ul>';
@@ -536,8 +538,8 @@ $('#eventform').on('submit', function(e){
 function editevent(id) {
     event=[];
     <?php
-    if (!$venues) {
-      $venues=$venues;
+    if (!isset($venues)) {
+      $venues=[];
     }
     else {
       //id,name,image_id,address,country,start_datetime,end_datetime,capacity,ticket_offset

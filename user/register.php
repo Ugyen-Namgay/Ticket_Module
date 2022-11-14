@@ -23,7 +23,7 @@
   
   //if(get("users","id","cid='$cid'")!="[]") { // MEANS ADMIN
   if (False) {
-    print_r($args);
+    //print_r($args);
     $eventid = $args[0];
     $admincid = explode("?cid=",$args[sizeof($args)-1])[1];
     $cid = explode("?cid=",$args[sizeof($args)-1])[0];
@@ -32,7 +32,7 @@
     exit();
   }
   $user_detail = json_decode(api_get_phone_detail($cid))->data;
-  $eventdetail = json_decode(get("events","name,address,start_datetime,end_datetime,country,capacity","id=$eventid AND end_datetime>NOW()"));
+  $eventdetail = json_decode(get("events","name,address,start_datetime,end_datetime,country,capacity,ticket_offset","id=$eventid AND end_datetime>NOW()"));
   //var_dump($eventdetail);
   $capacity = (int)$eventdetail[0][5];
   $total_registered = (int)json_decode(get("registration_requests","COUNT(id)","event_id=$eventid"))[0][0];
@@ -142,14 +142,21 @@
   }
   else {
     $generated_form = '<form id="msform">
-  <h2>Thank you for registering to the event!</h2>
+  <h4> Please show the code below during your entry</h4>
+  <div id="qrcode">
+    </div>
+  <h2>Ticket Number: '.strtoupper(base_convert((string)((int)$eventdetail[0][6]+(int)$cid),10,36)).'</h2>
+  <h3>Thank you for registering to the event!</h3>
+  <br>
+  <hr>
   <h4>Venue: '.$eventdetail[0][0].' '.$eventdetail[0][1].'</h4>
   <h4>From: '.explode(" ",$eventdetail[0][2])[0].' Time '.explode(" ",$eventdetail[0][2])[1].'</h4>
   <h4>Till: '.explode(" ",$eventdetail[0][3])[0].' Time '.explode(" ",$eventdetail[0][3])[1].'</h4>
-  '.(($registration_detail[0][1]=="No")?'':'<h4>With dependent: <span id="dependent_list"></span></h4>').'
-  <div id="qrcode">
-    </div>
+  '.(($registration_detail[0][2]=="")?'':'<h4>Together With:<br> <i><span id="dependent_list"></span></i></h4>').'
+    <br>
 </form>';
+
+    //print_r($registration_detail);
 
     $generatescript = 'var qrcode = new QRCode("qrcode", {
       title: "ENTRY CODE",
@@ -159,7 +166,7 @@
       titleHeight: 100,
       titleTop: 30, 
     
-      subTitle: "Validated by Admins",
+      subTitle: "",
       subTitleFont: "12px Arial",
       subTitleColor: "#4F4F4F",
       subTitleTop: 50,
@@ -270,12 +277,11 @@ var dependent_list=[];
 
       <?php
       if (!empty($registration_detail)) {
-        $set_of_dependent = str_replace("+",",",$registration_detail[0][2]);
-        $dependent_detail = json_decode(get("citizen","cid,first_name,middle_name,last_name,dob","FIND_IN_SET(cid,'".$set_of_dependent."')>0"));
-        array_merge($dependent_detail,json_decode(get("minor","cid,first_name,middle_name,last_name,dob","FIND_IN_SET(cid,'".$set_of_dependent."')>0")));
+        $set_of_dependent = str_replace(";",",",$registration_detail[0][2]);
+        $dependent_detail = json_decode(get("citizens","cid,first_name,middle_name,last_name,dob","FIND_IN_SET(cid,'".$set_of_dependent."')>0"));
+        $dependent_detail = array_merge($dependent_detail,json_decode(get("minor","cid,first_name,middle_name,last_name,dob","FIND_IN_SET(cid,'".$set_of_dependent."')>0")));
         $i=0;
         foreach ($dependent_detail as $dependent) {
-          
           echo "dependent_list[$i]=(['".$dependent[1]."','".$dependent[2]."','".$dependent[3]."','".$dependent[4]."','".$dependent[0]."']);";
           $i++;
         }
@@ -533,6 +539,7 @@ $("#otpvalue").keyup(function(){
 });
 
 var get_cid_info = function(cid) {
+  toggleminor();
   if (cid=="<?php echo $cid?>") {
     alertify("You cannot add your own CID again");
     $('#dependent_firstname').prop("disabled",true);

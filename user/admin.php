@@ -12,12 +12,12 @@ $eventid = $args[0];
     $admincid = explode("?cid=",$args[sizeof($args)-1])[1];
     $cid = explode("?cid=",$args[sizeof($args)-1])[0];
 // }
-if(get("users","id","cid='$admincid'")=="[]") { // CHECK PERMISSION OF WHO IS ACCESSING THE PAGE
+if(get("admin_user","admin_id","cid='$admincid'")=="[]") { // CHECK PERMISSION OF WHO IS ACCESSING THE PAGE
     http_response_code(405);
     $data_form = '
     <form id="msform">
   <h2>You are not authorized to use this feature.</h2>
-  <img src="'.$settings["app"]["homebase"].'/'.$settings["app"]["logo"].'" height=200>
+  <img src="'.$settings["app"]["homebase"].'/images/unexpected.png'.'" height=200>
   <h4></h4>
   <h4></h4>
     </form>';
@@ -28,7 +28,6 @@ else if ($cid && strlen($cid)==11) {
         $user_detail = json_decode(api_get_phone_detail($cid))->data;
         $error = json_decode(api_get_phone_detail($cid))->error;
         $message = json_decode(api_get_phone_detail($cid))->message;
-
         if ($error) {
             $data_form = '
             <form id="msform">
@@ -41,7 +40,6 @@ else if ($cid && strlen($cid)==11) {
             $base64photo = json_decode(get("images","bin","id='".getphoto($cid)."'"))[0][0];
             $data_form = '
             <form id="msform">
-    
             <h2>REGISTRATION FOR CID: '.$cid.' NOT FOUND</h2>
             <img src="data:image/png;base64, '.$base64photo.'" style="padding:20px; height: 20vh"/>
             <hr>
@@ -59,9 +57,9 @@ else if ($cid && strlen($cid)==11) {
     else {
 
         $eventdetail = json_decode(get("events","id,address,start_datetime,end_datetime","end_datetime>NOW()"));
-        $set_of_dependents = str_replace(";",",",$registration_detail[0][2]);
+        $set_of_dependents = trim(str_replace(";",",",$registration_detail[0][2]),",");
         $dependent_detail = json_decode(get("citizens","cid,first_name,middle_name,last_name,dob","FIND_IN_SET(cid,'".$set_of_dependents."')>0"));
-        array_merge($dependent_detail,json_decode(get("minor","cid,first_name,middle_name,last_name,dob","FIND_IN_SET(cid,'".$set_of_dependents."')>0")));
+        $dependent_detail = array_merge($dependent_detail,json_decode(get("minor","cid,first_name,middle_name,last_name,dob","FIND_IN_SET(cid,'".$set_of_dependents."')>0")));
         $person_detail = json_decode(get("citizens","dob,first_name,middle_name,last_name,phonenumber,image_id","cid='$cid'"));
         $base64photo = json_decode(get("images","bin","id='".$person_detail[0][5]."'"))[0][0];
 
@@ -80,7 +78,7 @@ else if ($cid && strlen($cid)==11) {
 
         $dependent_list = '';
         foreach($dependent_detail as $dependent) {
-            $dependent_list.='<li>'.$dependent[1]." ".($dependent[2]==""?"":$dependent[2]).' '.$dependent[3].", ".$dependent[4].'<button type="button" onclick="discard_dependent('.$dependent[0].')" class="closebutton">X</button></li>';
+            $dependent_list.='<li>'.$dependent[1]." ".($dependent[2]==""?"":$dependent[2]).' '.$dependent[3].", ".$dependent[4].'<button type="button" onclick="discard_dependent(\''.$dependent[0].'\')" class="closebutton">X</button></li>';
         }
 
         $play_sound="reject";
@@ -125,11 +123,11 @@ else if ($cid && strlen($cid)==11) {
         
 
 
-        <label>Children</label>
-        <ol id="childlist">
+        <label>Dependents</label>
+        <ol id="dependentlist">
             '.$dependent_list.'
         </ol>
-        <button type="button" class="addchild action-button">Add Child</button>
+        <button type="button" class="dependentdetail action-button">Add Dependent</button>
         <hr/>
 
         <div class="buttons" style="margin-top: 20px; position:relative; top:0px">
@@ -191,8 +189,7 @@ else {
     }
     
 
-    
-    var btn5 = document.querySelector('.addchild');
+    var btn5 = document.querySelector('.dependentdetail');
         if (btn5) {
           var modalButtonOnly = new tingle.modal({
             closeMethods: [],
@@ -204,14 +201,20 @@ else {
         });
         //modalButtonOnly.setContent(document.querySelector('.tingle-demo-force-close').innerHTML);
         modalButtonOnly.setContent(`  <fieldset class="modal-field" style="padding: 0px; box-shadow: none">
-          <h2>Add New Children</h2>
-          <br><div id="dependent_error" style="position: fixed; top: 15px; color: crimson;"></div><br><hr>
+          <h2>Please put your dependent information here</h2>
+          <br><div id="dependent_error" style="position: fixed; top: 15px; color: crimson;"></div><br><hr><br>
+          <div class="form-check form-switch" style="display:flex;justify-content: flex-start;width: 100%;">
+              <input class="form-check-input" type="checkbox" style="float:left;width:60px; height:20px; " id="minortoggle" onchange="toggleminor()">
+              <label class="form-check-label" style="padding-left:20px;" for="autoformat"><strong style="font-size:14px"><span id="autoformattext">Minor &nbsp&nbsp</span></strong></label>
+          </div>
+          <input type="text" id="dependent_cid" placeholder="CID" onchange="get_cid_info(this.value)" />
           <input type="text" id="dependent_firstname" placeholder="First Name" />
           <input type="text" id="dependent_middlename" placeholder="Middle Name" />
           <input type="text" id="dependent_lastname" placeholder="Last Name" />
           <input type="date" id="dependent_dob" placeholder="Date of Birth" max="2022-08-01"/>
         </fieldset>`);
         modalButtonOnly.addFooterBtn('Add', 'tingle-btn tingle-btn--primary tingle-btn--pull-right', function () {
+          c=$("#dependent_cid").val();
           f=$('#dependent_firstname').val();
           m=$('#dependent_middlename').val();
           l=$('#dependent_lastname').val();
@@ -224,13 +227,12 @@ else {
             setTimeout(()=>{$("#dependent_error").slideUp(500)},2000);
             return false;
           }
-
-
           data = {
             "adminupdate":"adminupdate",
+            "eventid":"<?php echo $eventid;?>",
             "admincid":"<?php echo $admincid;?>",
             "command": "adddependent",
-            "value" : [f,m,l,d],
+            "value" : [f,m,l,d,c],
             "identity": "<?php echo $cid?>"
             }
             $.post("<?php echo $settings["app"]["homebase"].'/submit'?>",data,function(data){
@@ -243,7 +245,7 @@ else {
                 }
             });
             
-            
+          $("#dependent_cid").val('');
           $('#dependent_firstname').val('');
           $('#dependent_middlename').val('');
           $('#dependent_lastname').val('');
@@ -259,6 +261,62 @@ else {
             modalButtonOnly.close();
         });
         }
+ 
+    var toggleminor = function() {
+        if ($("#minortoggle").prop("checked")==true) {
+          r = (Math.random() + 1).toString(36).substring(7);
+          $("#dependent_cid").val("minor_"+r+"_"+"<?php echo $cid?>");
+          $("#dependent_cid").prop("type","hidden");
+          $('#dependent_firstname').prop("disabled",false);
+          $('#dependent_middlename').prop("disabled",false);
+          $('#dependent_lastname').prop("disabled",false);
+          $('#dependent_dob').prop("disabled",false);
+        }
+        else {
+          $("#dependent_cid").val("");
+          $("#dependent_cid").prop("type","text");
+        }
+    }
+    
+
+    var get_cid_info = function(cid) {
+  if (cid=="<?php echo $cid?>") {
+    alertify("You cannot add your own CID again");
+    $('#dependent_firstname').prop("disabled",true);
+    $('#dependent_middlename').prop("disabled",true);
+    $('#dependent_lastname').prop("disabled",true);
+    $('#dependent_dob').prop("disabled",true);
+    return 0;
+  }
+  if (cid.length==11) {
+    $.post("<?php echo $settings["app"]["homebase"].'/submit'?>",{"findcid":cid, "request":"cidinfo"},function(data){
+      d=JSON.parse(data);
+      $('#dependent_firstname').prop("disabled",false);
+          $('#dependent_middlename').prop("disabled",false);
+          $('#dependent_lastname').prop("disabled",false);
+          $('#dependent_dob').prop("disabled",false);
+      if (d.error!==false) {
+        alertify("Please enter the details manually",d.msg);
+        $('#dependent_firstname').val('');
+          $('#dependent_middlename').val('');
+          $('#dependent_lastname').val('');
+          $('#dependent_dob').val('');
+      }
+      else {
+        $('#dependent_firstname').val(d.first_name);
+          $('#dependent_middlename').val(d.middle_name);
+          $('#dependent_lastname').val(d.last_name);
+          $('#dependent_dob').val(d.dob);
+          $('#dependent_firstname').prop("disabled",true);
+          $('#dependent_middlename').prop("disabled",true);
+          $('#dependent_lastname').prop("disabled",true);
+          $('#dependent_dob').prop("disabled",true);
+      }
+    });
+  }
+  
+}
+
 
     var accepttune = document.createElement('audio');
     var rejecttune = document.createElement('audio');
@@ -281,6 +339,7 @@ else {
     $("#accept").click(function(){
         data = {
             "adminupdate":"adminupdate",
+            "eventid":"<?php echo $eventid;?>",
             "admincid":"<?php echo $admincid;?>",
             "command": "approval",
             "value" : "accept",
@@ -305,6 +364,7 @@ else {
     $("#reject").click(function(){
         data = {
             "adminupdate":"adminupdate",
+            "eventid":"<?php echo $eventid;?>",
             "admincid":"<?php echo $admincid;?>",
             "command": "approval",
             "value" : "reject",
@@ -330,6 +390,7 @@ else {
     $("#event_change").change(function(){
         data = {
             "adminupdate":"adminupdate",
+            "eventid":"<?php echo $eventid;?>",
             "admincid":"<?php echo $admincid;?>",
             "command": "venuechange",
             "value" : $(this).val(),
@@ -355,8 +416,9 @@ else {
     function discard_dependent(id) {
         data = {
             "adminupdate":"adminupdate",
+            "eventid":"<?php echo $eventid;?>",
             "admincid":"<?php echo $admincid;?>",
-            "command": "removechild",
+            "command": "removedependent",
             "value" : id,
             "identity": "<?php echo $cid?>"
         }

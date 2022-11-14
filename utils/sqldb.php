@@ -40,7 +40,7 @@ function update($table,$col,$val,$condition) {
     $tempq=rtrim($tempq,",");
 
     if (!$conn->query("UPDATE $table SET $tempq WHERE $condition;")) {
-        return raise_error("Could not update. Check data");
+        return raise_error("Could not update. Check data: "."UPDATE $table SET $tempq WHERE $condition;");
     }
     else {
         return success();

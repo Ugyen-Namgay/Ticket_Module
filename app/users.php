@@ -84,7 +84,7 @@
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label">Username</label>
                           <div class="col-sm-9">
-                            <input type="hidden" name="userid" value="">
+                            <input type="hidden" name="admin_id" value="">
                             <input type="text" class="form-control" name="username" required>
                           </div>
                         </div>
@@ -213,7 +213,7 @@
 $('#userform').on('submit', function(e){
     e.preventDefault();
     data = getFormData($("#userform"));
-    if (data.password=="" && data.userid=="") {
+    if (data.password=="" && data.admin_id=="") {
         alertify("Password cannot be empty for new user");
         return false;
     }

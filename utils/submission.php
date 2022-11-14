@@ -61,7 +61,7 @@ else if (isset($_POST["request"]) && isset($_POST["cid"])) {
             $dependents = json_decode($data["dependent"]);
             foreach($dependents as $dependent) { //LOOK FOR EACH dependent FOR DATA. USE SAME ENTRY IF EXISTS
                 $is_there_dependent = json_decode(get("citizens","cid","first_name = '$dependent[0]' AND middle_name = '$dependent[1]' AND last_name='$dependent[2]' AND dob='$dependent[3]' AND cid='$dependent[4]'"));
-                array_merge($is_there_dependent,$is_there_dependent = json_decode(get("minor","cid","first_name = '$dependent[0]' AND middle_name = '$dependent[1]' AND last_name='$dependent[2]' AND dob='$dependent[3]' AND cid='$dependent[4]'")));
+                $is_there_dependent = array_merge($is_there_dependent,$is_there_dependent = json_decode(get("minor","cid","first_name = '$dependent[0]' AND middle_name = '$dependent[1]' AND last_name='$dependent[2]' AND dob='$dependent[3]' AND cid='$dependent[4]'")));
                 //var_dump($is_there_dependent);
                 if (is_array($is_there_dependent) && sizeof($is_there_dependent)>0) {
                     $dependentid.=$is_there_dependent[0][0].";";
@@ -93,7 +93,7 @@ else if (isset($_POST["request"]) && isset($_POST["cid"])) {
 }
 else if (isset($_POST["usermanagement"])) { //VALIDATED
     $data = json_decode($_POST["data"]);
-    if (isset($data->userid) && $data->userid=='') {
+    if (isset($data->admin_id) && $data->admin_id=='') {
         if (isset($data->password) && $data->password!='') {
             if (get("admin_user","email","email='$data->email'")=="[]") {
                 echo insert("admin_user","email,cid,name,level,password",$data->email.",".$data->cid.",".$data->name.",".$data->level.",".md5($data->password));
@@ -107,12 +107,12 @@ else if (isset($_POST["usermanagement"])) { //VALIDATED
         }
         
     }
-    else if (isset($data->userid) && $data->userid!='') {
+    else if (isset($data->admin_id) && $data->admin_id!='') {
         if ($data->password=='') {
-            echo update("admin_user","email,cid,name,level",$data->email.",".$data->cid.",".$data->name.",".$data->level,"id='$data->userid'");
+            echo update("admin_user","email,cid,name,level",$data->email.",".$data->cid.",".$data->name.",".$data->level,"admin_id='$data->admin_id'");
         }
         else {
-            echo update("admin_user","email,cid,name,level,password",$data->email.",".$data->cid.",".$data->name.",".$data->level.",".md5($data->password),"id='$data->userid'");
+            echo update("admin_user","email,cid,name,level,password",$data->email.",".$data->cid.",".$data->name.",".$data->level.",".md5($data->password),"admin_id='$data->admin_id'");
         }
 
     }
@@ -136,12 +136,12 @@ else if (isset($_POST["eventmanagement"])) {
     }
     else {
         if ($data->uploadedfiles=="") {
-            echo update("events","name,country,address,start,end,capacity,ticket_offset",$data->name.",".$data->country.",".$data->address.",".$data->startdate." ".$data->starttime.",".$data->enddate." ".$data->endtime.",".$data->capacity.",".$data->ticket_offset,"id='$data->id'");
+            echo update("events","name,country,address,start_datetime,end_datetime,capacity,ticket_offset",$data->name.",".$data->country.",".$data->address.",".$data->startdate." ".$data->starttime.",".$data->enddate." ".$data->endtime.",".$data->capacity.",".$data->ticket_offset,"id='$data->eventid'");
         }
         else {
             insert("images","bin,format","$data->uploadedfiles,png");
             $image_id = json_decode(get("images","id","bin='$data->uploadedfiles'"))[0][0];
-            echo update("events","name,country,address,image_id,start,end,capacity,ticket_offset",$data->name.",".$data->country.",".$data->address.",".$image_id.",".$data->startdate." ".$data->starttime.",".$data->enddate." ".$data->endtime.",".$data->capacity.",".$data->ticket_offset,"id='$data->id'");
+            echo update("events","name,country,address,image_id,start_datetime,end_datetime,capacity,ticket_offset",$data->name.",".$data->country.",".$data->address.",".$image_id.",".$data->startdate." ".$data->starttime.",".$data->enddate." ".$data->endtime.",".$data->capacity.",".$data->ticket_offset,"id='$data->eventid'");
         }
         
     }
@@ -149,83 +149,83 @@ else if (isset($_POST["eventmanagement"])) {
     
 }
 else if (isset($_POST["adminupdate"]) && isset($_POST["admincid"])) {
-    if(get("users","id","cid='".$_POST["admincid"]."'")=="[]") {
+    if(get("admin_user","admin_id","cid='".$_POST["admincid"]."'")=="[]") {
         http_response_code(405);
-        echo '{"error":"Not Permissted to perform actions"}';
+        echo '{"error":"Not Permitted to perform actions"}';
+        exit();
     }
     $command = $_POST["command"];
     $value = $_POST["value"];
     $cid = $_POST["identity"]; //CID
+    $eventid = $_POST["eventid"];
 
     
 
     if ($command=="removedependent") {
-        $dependentid=json_decode(get("registration_requests","other_cids","cid='$cid'"))[0][0];
+        $dependentid=json_decode(get("registration_requests","other_cids","cid='$cid' AND event_id='$eventid'"))[0][0];
         if ($dependentid=="".$value) {
-            update("registration_requests","other_cids","","cid='$cid'");
+            echo update("registration_requests","other_cids","","cid='$cid' AND event_id='$eventid'");
             // NOT GOING TO UPDATE has_dependent since has_dependent=2 and one record in dependentid will indicate not bringing the dependent.
         }
         else {
             $dependentid=str_replace($value.";","",str_replace(";".$value,"",$dependentid));
-            update("registration_requests","other_cids","$dependentid","cid='$cid'");
+            echo update("registration_requests","other_cids","$dependentid","cid='$cid' AND event_id='$eventid'");
         }
     }
     else if ($command=="adddependent") {
-        $is_there_dependent = json_decode(get("citizens","cid","first_name = '$value[0]' AND middle_name = '$value[1]' AND last_name='$value[2]' AND dob='$value[3]'"));
-        array_merge($is_there_dependent,json_decode(get("minor","cid","first_name = '$value[0]' AND middle_name = '$value[1]' AND last_name='$value[2]' AND dob='$value[3]'")));
-        if (sizeof($is_there_dependent)>0) {
-            $dependentid=$is_there_dependent[0][0];
-        }
-        else {
-            if (strlen($is_there_dependent[0][0])=="11") {
-                $dependent_user_detail = json_decode(api_get_phone_detail($cid))->data;
-                        $dependent_imageid=getphoto($is_there_dependent[0][0]);
-                        insert("citizens","cid,dob,first_name,middle_name,last_name,phonenumber,image_id,dzongkhag",$is_there_dependent[0][0].",$dependent_user_detail->dob,$dependent_user_detail->first_name,$dependent_user_detail->middle_name,$dependent_user_detail->last_name,$dependent_user_detail->phone,$dependent_imageid,$dependent_user_detail->dzongkhag");
-                        $dependentid=json_decode(get("citizens","cid","first_name = '$value[0]' AND middle_name = '$value[1]' AND last_name='$value[2]' AND dob='$value[3]'"))[0][0];
-            }
-            else {
-                insert("minor","first_name,middle_name,last_name,dob,parent_cid","$value[0],$value[1],$value[2],$value[3],$cid");
-                $dependentid=json_decode(get("minor","cid","first_name = '$value[0]' AND middle_name = '$value[1]' AND last_name='$value[2]' AND dob='$value[3]'"))[0][0];
-            }
-             
-        }
+        $dependentid="";
+        $is_there_dependent = json_decode(get("citizens","cid","first_name = '$value[0]' AND middle_name = '$value[1]' AND last_name='$value[2]' AND dob='$value[3]' AND cid='$value[4]'"));
+        $is_there_dependent = array_merge($is_there_dependent,json_decode(get("minor","cid","first_name = '$value[0]' AND middle_name = '$value[1]' AND last_name='$value[2]' AND dob='$value[3]'")));
         
-        $prev_dependentid=json_decode(get("registrations","dependentid","cid='$cid'"))[0][0];
-
-        if (strrpos($dependentid,$prev_dependentid)===false) {
-            if ($prev_dependentid=="") {
-                update("registrations","has_dependent,dependentid","1,$dependentid","cid='$cid'");
-            }
-            else {
-                $no_of_dependent =1+ strlen($prev_dependentid.'+'.$dependentid)-strlen(str_replace("+","",$prev_dependentid.'+'.$dependentid));
-                update("registrations","dependentid,has_dependent",$prev_dependentid.'+'.$dependentid.",$no_of_dependent","cid='$cid'");        
-            }
+        if (is_array($is_there_dependent) && sizeof($is_there_dependent)>0) {
+            $dependentid.=$is_there_dependent[0][0].";";
         }
         else {
-            echo '{"error":"dependent Already Added"}';
+            if (strlen($value[4])=="11") {
+                $dependent_user_detail = json_decode(api_get_phone_detail($value[4]))->data;
+                $dependent_imageid=getphoto($dependent[4]);
+                insert("citizens","cid,dob,first_name,middle_name,last_name,phonenumber,image_id,dzongkhag",$value[4].",$dependent_user_detail->dob,$dependent_user_detail->first_name,$dependent_user_detail->middle_name,$dependent_user_detail->last_name,$dependent_user_detail->phone,$dependent_imageid,$dependent_user_detail->dzongkhag");
+                $dependentid.=json_decode(get("citizens","cid","first_name = '$value[0]' AND middle_name = '$value[1]' AND last_name='$value[2]' AND dob='$value[3]' AND cid='$value[4]'"))[0][0].";";
+            }
+            else {
+                insert("minor","first_name,middle_name,last_name,dob,parent_cid,cid","$value[0],$value[1],$value[2],$value[3],$cid,$value[4]");
+                $dependentid.=json_decode(get("minor","cid","first_name = '$value[0]' AND middle_name = '$value[1]' AND last_name='$value[2]' AND dob='$value[3]' AND cid='$value[4]'"))[0][0].";";
+            }
+        }
+        $prev_dependentid=json_decode(get("registration_requests","other_cids","cid='$cid' AND event_id='$eventid'"))[0][0];
+        $prev_dependentid=empty($prev_dependentid)?"":$prev_dependentid;
+        //echo "Dependent ID: ".$dependentid."; PREVIOUS ID:".$prev_dependentid."; FINDING: ".print_r(strpos($dependentid,$prev_dependentid)).";";
+        
+        if (strpos($prev_dependentid,$dependentid)===false) {
+            update("registration_requests","other_cids","$dependentid","cid='$cid' AND event_id='$eventid'");
+            echo '{"error":false}';
+        }
+        else {
+            echo '{"error":"Dependent Already Added"}';
         }
 
         
     }
     else if ($command=="approval") {
-        $regid = json_decode(get("registrations","id","cid='$cid'"))[0][0];
+        $regid = json_decode(get("registration_requests","id","cid='$cid'"))[0][0];
+        $eventid = json_decode(get("registration_requests","event_id","cid='$cid'"))[0][0];
         $admin = $_POST["admincid"];
         if ($value=="accept") {        
-            insert("adminlog","admin,registrationid,action","'$admin','$regid','Accepted Entry'");
-            update("registrations","is_allowed","Yes","id='$regid'");
+            insert("logs","admin_id,event_id,action","'$admin','$eventid','Accepted Entry'");
+            update("registration_requests","is_allowed","1","id='$regid'");
         }
         else {
-            insert("adminlog","admin,registrationid,action","'$admin','$regid','Rejected Entry'");
-            update("registrations","is_allowed","Denied","id='$regid'");
+            insert("logs","admin_id,event_id,action","'$admin','$eventid','Rejected Entry'");
+            update("registration_requests","is_allowed","0","id='$regid'");
         }
         echo '{"error":false}';
 
     }
     else if ($command=="venuechange") {
-        $registration = json_decode(get("registrations","id,venueid","cid='$cid'"));
+        $registration = json_decode(get("registration_requests","id,event_id","cid='$cid'"));
         $regid = $registration[0][0];
-        $venueid = $registration[0][1];
-        insert("adminlog","admin,registrationid,action","'$admin','$regid','Change Venue from $venueid to $value'");
+        $eventid = $registration[0][1];
+        insert("logs","admin,event_id,action","'$admin','$eventid','Change Venue from $eventid to $value'");
         update("registrations","venueid","$value","id='$regid'");
         echo '{"error":false}';
 

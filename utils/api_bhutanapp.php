@@ -148,7 +148,7 @@ function getphoto($cid) {
     $settings = parse_ini_file("settings/config.ini", true);
     $url = $settings["censusimage"]["url"];
     $token = $settings["censusimage"]["token"];
-    $composedurl = $url."cid=".$cid."&token=".$token."&podo";
+    $composedurl = $url."cid=".$cid."&token=".$token."";
     $image=file_get_contents($composedurl);
     if ($image=="") {
         return "1";// Default image
