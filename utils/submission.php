@@ -197,7 +197,7 @@ else if (isset($_POST["adminupdate"]) && isset($_POST["admincid"])) {
         //echo "Dependent ID: ".$dependentid."; PREVIOUS ID:".$prev_dependentid."; FINDING: ".print_r(strpos($dependentid,$prev_dependentid)).";";
         
         if (strpos($prev_dependentid,$dependentid)===false) {
-            update("registration_requests","other_cids","$dependentid","cid='$cid' AND event_id='$eventid'");
+            update("registration_requests","other_cids","$prev_dependentid;$dependentid","cid='$cid' AND event_id='$eventid'");
             echo '{"error":false}';
         }
         else {

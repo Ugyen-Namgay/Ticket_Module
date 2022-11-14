@@ -43,7 +43,7 @@
     <fieldset>
     <img src="'.$settings["app"]["homebase"].'/images/unexpected.png" height="200px" alt="Not supposed to Happen">
     <br>
-    <h1 class="fs-title">Sorry! But the registration is full for this event.</h1>
+    <h1 class="fs-title">Sorry! But the capcity of the registration is full for this event.</h1>
     <h2 class="fs-subtitle"></h2>
     </fieldset>
     </form>';

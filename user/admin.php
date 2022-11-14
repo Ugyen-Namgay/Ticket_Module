@@ -78,7 +78,7 @@ else if ($cid && strlen($cid)==11) {
 
         $dependent_list = '';
         foreach($dependent_detail as $dependent) {
-            $dependent_list.='<li>'.$dependent[1]." ".($dependent[2]==""?"":$dependent[2]).' '.$dependent[3].", ".$dependent[4].'<button type="button" onclick="discard_dependent(\''.$dependent[0].'\')" class="closebutton">X</button></li>';
+            $dependent_list.='<li class="dependent_list_items"><span>'.$dependent[1]." ".($dependent[2]==""?"":$dependent[2]).' '.$dependent[3]."</span><span> DOB: ".$dependent[4].'</span><button type="button" onclick="discard_dependent(\''.$dependent[0].'\')" class="closebutton">X</button></li>';
         }
 
         $play_sound="reject";
@@ -93,17 +93,17 @@ else if ($cid && strlen($cid)==11) {
             $entry_status = '<h4 id="statusbar" class="regnotallowed">Entry Status: NOT ALLOWED</h4>';
         }
         
-        
+        $event_display =json_decode(get("events","name,address","id=".$registration_detail[0][3]))[0];
         $data_form = '
         <form id="msform">
         <fieldset>
-        <h1 class="fs-title">User Details</h1>
+        <h2>User Details: '.$event_display[0].' At '.$event_display[1].'</h2>
         '.$entry_status.'
         <hr>
-        <label>Event registered on '.$registration_detail[0][4].'</label>
-        <select name="registrations_venueid" id="event_change">
+        <label class="fs-title" style="text-align:center; padding:10px">User Registered on '.$registration_detail[0][4].'</label>
+        <!--select name="registrations_venueid" id="event_change">
         '.$event_options.'
-        </select>
+        </select-->
         <table border=0 style="width:100%">
         <tr><td>
         <img src="data:image/png;base64, '.$base64photo.'" style="padding:20px; height: 20vh"/>
@@ -123,11 +123,11 @@ else if ($cid && strlen($cid)==11) {
         
 
 
-        <label>Dependents</label>
-        <ol id="dependentlist">
+        <h3 style="text-align:center; padding:10px">Dependents</h3>
+        <ol id="dependentlist" style="width:90%">
             '.$dependent_list.'
         </ol>
-        <button type="button" class="dependentdetail action-button">Add Dependent</button>
+        <button type="button" class="dependentdetail action-button" style="background: burlywood; width: 80%;">Add Dependent</button>
         <hr/>
 
         <div class="buttons" style="margin-top: 20px; position:relative; top:0px">
@@ -167,7 +167,6 @@ else {
 <link rel="shortcut icon" href="<?php echo $settings["app"]["homebase"].'/'.$settings["app"]["logo"]?>" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 </head>
-
 <body> 	
     <?php echo $data_form;?>
 </body>
