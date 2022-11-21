@@ -564,6 +564,7 @@ var get_cid_info = function(cid) {
       }
       else {
         $('#dependent_firstname').val(d.first_name);
+          $('#dependent_cid').val(cid);
           $('#dependent_middlename').val(d.middle_name);
           $('#dependent_lastname').val(d.last_name);
           $('#dependent_dob').val(d.dob);
