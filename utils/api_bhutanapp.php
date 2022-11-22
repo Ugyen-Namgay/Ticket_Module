@@ -66,10 +66,12 @@ function api_get_phone_detail($cid) {
     try {
         $context = stream_context_create($opts);
         $result = @file_get_contents($url, false, $context);
-
+        echo $result;
+        
         if (!$result) {
             echo "BAD REQUEST";
         }
+        
         return $result;
         }
             catch(Exception $e) {
