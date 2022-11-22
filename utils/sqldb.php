@@ -15,7 +15,7 @@ if( !count($cache->getServerList()))
     $cache->setOption(Memcached::OPT_TCP_NODELAY, true);
     $cache->setOption(Memcached::OPT_SERVER_FAILURE_LIMIT, 500);
     $cache->setOption(Memcached::OPT_COMPRESSION, false);
-    $cache->addServer('127.0.0.1',rand(11211));
+    $cache->addServer('127.0.0.1',11211);
 }
 
 function get_cache($key) {
