@@ -31,6 +31,8 @@
     header("Location: /check/2/$cid?cid=$admincid");
     exit();
   }
+  echo time();
+  echo "<br>";
   $user_detail = json_decode(api_get_phone_detail($cid))->data;
   $eventdetail = json_decode(get("events","name,address,start_datetime,end_datetime,country,capacity,ticket_offset","id=$eventid AND end_datetime>NOW()"));
   //var_dump($eventdetail);
@@ -38,6 +40,8 @@
   $total_registered = (int)json_decode(get("registration_requests","COUNT(id)","event_id=$eventid"))[0][0];
   $accessingfrom=get_country();
   $registration_detail=json_decode(get("registration_requests","id,withdrawn,other_cids,event_id,register_datetime","cid='".$cid."' AND event_id='$eventid'"));
+  echo time();
+  echo "<br>";
   if ($total_registered>=$capacity) {
     $generated_form = '<form id="msform">
     <fieldset>
@@ -184,6 +188,8 @@
           
       ';
   }
+  echo time();
+  echo "<br>";
 ?>
 <!DOCTYPE html>
 <html>
