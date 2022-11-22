@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS `admin_user` (
   
   CREATE TABLE IF NOT EXISTS `images` (
     `id` int(8) NOT NULL AUTO_INCREMENT,
-    `bin` blob NOT NULL,
+    `bin` longblob NOT NULL,
     `format` varchar(5) NOT NULL,
     PRIMARY KEY (`id`)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

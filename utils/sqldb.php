@@ -42,7 +42,7 @@ function set_cache($key,$data,$duration=600) {
 
 function get($table,$col="*",$condition="1") {
     $returnvalue = get_cache($table.$condition);
-    if ($returnvalue) {
+    if ($returnvalue && $table!="otp") {
         return $returnvalue;
     }
 

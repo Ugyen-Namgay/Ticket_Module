@@ -115,7 +115,7 @@
                           <div class="col-sm-9">
                             <select class="form-control form-control-lg" name="level" required>
                             <option value="0" selected>Administrator</option>
-                            <option value="checker" selected>Checker</option>
+                            <option value="1" selected>Checker</option>
                             </select>
                             </div>
                           

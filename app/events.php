@@ -104,7 +104,7 @@
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label">Country</label>
                           <div class="col-sm-9">
-                          <select name="country" class="form-control form-control-lg" required style="height: 34px;"> 
+                          <select name="country" class="form-control form-control-lg" required> 
                                 <option value="Afghanistan">Afghanistan</option> 
                                 <option value="Albania">Albania</option> 
                                 <option value="Algeria">Algeria</option> 
@@ -387,7 +387,7 @@
                             <input class="form-control" type="date" name="startdate" required/>
                           </div>
                           <div class="col-sm-4">
-                            <input class="form-control" type="time" name="starttime" style="height: 34px;" required/>
+                            <input class="form-control" type="time" name="starttime" required/>
                           </div>
                           
                         </div>
@@ -400,7 +400,7 @@
                             
                           </div>
                           <div class="col-sm-4">
-                          <input class="form-control" type="time" name="endtime" style="height: 34px;" required/>
+                          <input class="form-control" type="time" name="endtime" required/>
                           </div>
                         </div>
                       </div>

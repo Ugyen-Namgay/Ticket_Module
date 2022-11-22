@@ -82,7 +82,7 @@ CREATE TABLE `admin_user` (
   
   CREATE TABLE `images` (
     `id` int(8) NOT NULL,
-    `bin` blob NOT NULL,
+    `bin` longblob NOT NULL,
     `format` varchar(5) NOT NULL
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   
