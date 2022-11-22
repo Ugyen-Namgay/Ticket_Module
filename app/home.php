@@ -1,31 +1,9 @@
 <?php
-	if (isset($_POST["flush"])) {
-		$cache = new Memcached('persistent');
-		$cache->flush(0.1);
-		echo "OK";
-		exit();
-	}
-	else if (isset($_POST["delete"])) {
-		$cache = new Memcached('persistent');
-		$cache->delete($_POST["key"]);
-		echo "OK";
-		exit();
-	}
-	else if (isset($_POST["realtimestats"])) {
-		include_once "utils/memcached.php";
-		$ip = '127.0.0.1'; //set your ip address def: 127.0.0.1
-		$port = 11211; //set your port def: 112211
-		$mem = new Simple_memchached_dashboard($ip,$port);
-		$mem->print_event_widget();
-		$mem->print_hit_miss_widget();
-		$mem->print_memory_widget();
-		exit();
-	}
 	require_once "utils/sqldb.php";
 	$name=isonline();
 	if (!$name) {
-		#Redirect("/",true);
-		#exit();
+		Redirect("/",true);
+		exit();
 	}
 ?>
 <!DOCTYPE html>
@@ -46,7 +24,7 @@
     <!-- endinject -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css" integrity="sha512-fjy4e481VEA/OTVR4+WHMlZ4wcX/+ohNWKpVfb7q+YNnOCS++4ZDn3Vi6EaA2HJ89VXARJt7VvuAKaQ/gs1CbQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="shortcut icon" href="<?php echo $settings["app"]["logo"]?>" />
-	<!-- <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet"> -->
+	<link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="//cdn.datatables.net/plug-ins/a5734b29083/integration/bootstrap/3/dataTables.bootstrap.css">
 	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/alertify.js/0.3.11/alertify.core.min.css">
 	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/alertify.js/0.3.11/alertify.default.min.css">

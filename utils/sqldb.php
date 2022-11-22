@@ -1,6 +1,5 @@
 <?php
 require_once "utils/dbconnect.php";
-
 function raise_error($message) {
     http_response_code(500);
     return '{"error":"'.$message.'"}';
@@ -8,7 +7,35 @@ function raise_error($message) {
 function success() {
     return '{"error":false}';
 }
+
+function get_cache($key) {
+    $cache = new Memcached('persistent');
+    $cachedata = $cache->get(crc32($key));
+    if ($cachedata) {
+        return $cachedata;
+    }
+    else {
+        return false;
+    }
+}
+
+function clear_cache($key) {
+    $cache = new Memcached('persistent');
+    $cache->delete(crc32($key));
+}
+
+function set_cache($key,$data,$duration=600) {
+    $cache = new Memcached('persistent');
+    $cache->set(crc32($key),$data,$duration);
+}
+
+
 function get($table,$col="*",$condition="1") {
+    $returnvalue = get_cache($table.$condition);
+    if ($returnvalue) {
+        return $returnvalue;
+    }
+
     $conn = new mysqli(DB_HOST,DB_USER,DB_PSWD,DB_NAME);
     if ($col=="")
         $col="*";
@@ -17,13 +44,16 @@ function get($table,$col="*",$condition="1") {
     $r=$conn->query("SELECT $col FROM $table WHERE $condition;");
     //echo "SELECT $col FROM $table WHERE $condition;";
     if (!empty($r) && $r->num_rows>0) {
-        return json_encode($conn->query("SELECT $col FROM $table WHERE $condition;")->fetch_all());
+        $returnvalue = json_encode($conn->query("SELECT $col FROM $table WHERE $condition;")->fetch_all());
+        set_cache($table.$condition,$returnvalue);
+        return $returnvalue;
     }
     return "[]";
     //$conn->close();
 }
 
 function update($table,$col,$val,$condition) {
+    clear_cache($table.$condition);
     $conn = new mysqli(DB_HOST,DB_USER,DB_PSWD,DB_NAME);
     //global $conn;
     $col=explode(",",$col);
@@ -49,6 +79,7 @@ function update($table,$col,$val,$condition) {
 }
 
 function insert($table,$col,$val) {
+    clear_cache($table."1");
     $conn = new mysqli(DB_HOST,DB_USER,DB_PSWD,DB_NAME);
     //global $conn;
     $col=explode(",",str_replace("`","-",str_replace("'","",str_replace('"','',$col))));
@@ -81,6 +112,7 @@ function insert($table,$col,$val) {
 }
 
 function delete($table,$condition) {
+    clear_cache($table.$condition);
     $conn = new mysqli(DB_HOST,DB_USER,DB_PSWD,DB_NAME);
 
     if (!$conn->query("DELETE FROM $table WHERE $condition;")) {
