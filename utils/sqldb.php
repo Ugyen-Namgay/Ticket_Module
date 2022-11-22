@@ -51,7 +51,7 @@ function set_cache($key,$data,$duration=600) {
 
 
 function get($table,$col="*",$condition="1",$cache_result=true) {
-    $returnvalue = get_cache($table.$condition);
+    $returnvalue = get_cache($table.$col.$condition);
     if ($returnvalue && $cache_result) {
         return $returnvalue;
     }
@@ -65,7 +65,7 @@ function get($table,$col="*",$condition="1",$cache_result=true) {
     //echo "SELECT $col FROM $table WHERE $condition;";
     if (!empty($r) && $r->num_rows>0) {
         $returnvalue = json_encode($conn->query("SELECT $col FROM $table WHERE $condition;")->fetch_all());
-        set_cache($table.$condition,$returnvalue);
+        set_cache($table.$col.$condition,$returnvalue);
         return $returnvalue;
     }
     return "[]";
@@ -73,7 +73,8 @@ function get($table,$col="*",$condition="1",$cache_result=true) {
 }
 
 function update($table,$col,$val,$condition) {
-    clear_cache($table.$condition);
+    clear_cache($table."*1");
+    clear_cache($table.$col.$condition);
     $conn = new mysqli(DB_HOST,DB_USER,DB_PSWD,DB_NAME);
     //global $conn;
     $col=explode(",",$col);
@@ -99,7 +100,7 @@ function update($table,$col,$val,$condition) {
 }
 
 function insert($table,$col,$val) {
-    clear_cache($table."1");
+    clear_cache($table."*1");
     $conn = new mysqli(DB_HOST,DB_USER,DB_PSWD,DB_NAME);
     //global $conn;
     $col=explode(",",str_replace("`","-",str_replace("'","",str_replace('"','',$col))));
@@ -132,6 +133,7 @@ function insert($table,$col,$val) {
 }
 
 function delete($table,$condition) {
+    clear_cache($table."*1");
     clear_cache($table.$condition);
     $conn = new mysqli(DB_HOST,DB_USER,DB_PSWD,DB_NAME);
 
