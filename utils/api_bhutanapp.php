@@ -66,8 +66,8 @@ function api_get_phone_detail($cid) {
     try {
         $context = stream_context_create($opts);
         $result = @file_get_contents($url, false, $context);
-        echo $result;
-        
+        //echo $result;
+
         if (!$result) {
             echo "BAD REQUEST";
         }
@@ -139,10 +139,11 @@ function get_country() {
 
 function getphoto($cid) {
     $settings = parse_ini_file("settings/config.ini", true);
-    $url = $settings["censusimage"]["url"];
+    $url = $settings["censusimage"]["local_url"];
     $token = $settings["censusimage"]["token"];
     $composedurl = $url."cid=".$cid."&token=".$token."";
     $image=file_get_contents($composedurl);
+
     if ($image=="") {
         return "1";// Default image
     }
