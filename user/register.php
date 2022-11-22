@@ -171,7 +171,7 @@
       subTitleColor: "#4F4F4F",
       subTitleTop: 50,
     
-      text: "'.$cid.'",
+      text: "'.strtoupper(base_convert((string)((int)$eventdetail[0][6]+(int)$cid),10,36)).'",
       width: 300,
       height:300,
     

@@ -39,13 +39,13 @@ else if (isset($_POST["request"]) && isset($_POST["cid"])) {
     }
     else if ($_POST["request"]=="validate") {
         $otp=$_POST["otp"];
-        $attempts = (int)json_decode(get("otp","attempts","cid='$cid'"))[0][0];
+        $attempts = (int)json_decode(get("otp","attempts","cid='$cid'",false))[0][0];
         delete("otp","valid_till<DATE_SUB(NOW(), INTERVAL 5 MINUTE)");
         if ($attempts>5) {
             http_response_code(405);
             echo '{"error":"Too Many Attempts Made. Try after 5 minutes"}';
         }
-        if (get("otp","otp","otp='$otp' AND cid='$cid' AND valid_till>DATE_SUB(NOW(), INTERVAL 1 MINUTE)")=="[]") {          
+        if (get("otp","otp","otp='$otp' AND cid='$cid' AND valid_till>DATE_SUB(NOW(), INTERVAL 1 MINUTE)",false)=="[]") {          
             update("otp","attempts",$attempts+1,"cid='$cid'");
             echo '{"error":"Invalid or Expired OTP"}';
         }

@@ -10,7 +10,10 @@ $eventid = $args[0];
 // }
 // else {
     $admincid = explode("?cid=",$args[sizeof($args)-1])[1];
-    $cid = explode("?cid=",$args[sizeof($args)-1])[0];
+    $ticket = explode("?cid=",$args[sizeof($args)-1])[0];
+    $cid = base_convert((string)$ticket,10,36)-(int)$eventid;
+    //$ticket = strtoupper(base_convert((string)((int)$eventdetail[0][6]+(int)$cid),10,36))
+    
 // }
 if(get("admin_user","admin_id","cid='$admincid'")=="[]") { // CHECK PERMISSION OF WHO IS ACCESSING THE PAGE
     http_response_code(405);
