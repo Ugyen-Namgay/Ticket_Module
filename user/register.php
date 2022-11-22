@@ -32,7 +32,7 @@
     header("Location: /check/2/$cid?cid=$admincid");
     exit();
   }
-  
+  $settings = parse_ini_file("settings/config.ini", true);
   $eventdetail = json_decode(get("events","name,address,start_datetime,end_datetime,country,capacity,ticket_offset","id=$eventid AND end_datetime>NOW()"));
   //var_dump($eventdetail);
   $capacity = (int)$eventdetail[0][5];
@@ -192,7 +192,7 @@
 <html>
 <head>
 	<title>Register</title>
-	<link rel="stylesheet" type="text/css" href="slide navbar style.css">
+	<!-- <link rel="stylesheet" type="text/css" href="slide/navbar/style.css"> -->
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap" rel="stylesheet">
 <link href="<?php echo $settings["app"]["homebase"].'/css/select2.min.css'?>" rel="stylesheet">
 <link href="<?php echo $settings["app"]["homebase"].'/css/select2-bootstrap.min.css'?>" rel="stylesheet">
