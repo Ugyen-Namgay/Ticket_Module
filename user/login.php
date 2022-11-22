@@ -23,18 +23,21 @@ if (isset($_POST["email"]) && isset($_POST["password"])) {
 	else {
 		client_detail($_POST["email"]);
 		$alert="OH NOOO!!!<br>Looks like you credentials are incorrect. Please try again.";
-		include "app/landing.php";
+		Redirect("/",True);
+		//include "app/landing.php";
 	}
 }
 else if (isset($_POST["logout"])) {
 	$_SESSION = array();
 	session_regenerate_id();
-	include "app/landing.php";
+	Redirect("/",True);
+	//include "app/landing.php";
 
 }
 else {
 	//Redirect("",true);
-	include "app/landing.php";
+	Redirect("/",True);
+	//include "app/landing.php";
 }
 
 
