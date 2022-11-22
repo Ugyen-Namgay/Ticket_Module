@@ -8,8 +8,18 @@ function success() {
     return '{"error":false}';
 }
 
+$cache = new Memcached('persistent');
+if( !count($cache->getServerList()))
+{
+    $cache->setOption(Memcached::OPT_LIBKETAMA_COMPATIBLE, true);
+    $cache->setOption(Memcached::OPT_TCP_NODELAY, true);
+    $cache->setOption(Memcached::OPT_SERVER_FAILURE_LIMIT, 500);
+    $cache->setOption(Memcached::OPT_COMPRESSION, false);
+    $cache->addServer('127.0.0.1',rand(11211));
+}
+
 function get_cache($key) {
-    $cache = new Memcached('persistent');
+    //$cache = new Memcached('persistent');
     $cachedata = $cache->get(crc32($key));
     if ($cachedata) {
         return $cachedata;
@@ -40,9 +50,9 @@ function set_cache($key,$data,$duration=600) {
 // }
 
 
-function get($table,$col="*",$condition="1",$cache=true) {
+function get($table,$col="*",$condition="1",$cache_result=true) {
     $returnvalue = get_cache($table.$condition);
-    if ($returnvalue && $cache) {
+    if ($returnvalue && $cache_result) {
         return $returnvalue;
     }
 
