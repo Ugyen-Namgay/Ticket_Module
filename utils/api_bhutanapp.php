@@ -40,12 +40,7 @@ function api_get_token_for_phone($cid,$password) {
 function api_get_phone_detail($cid) {
     $settings = parse_ini_file("settings/config.ini", true);
     $url = $settings["bhutanapp"]["new_user_detail_url"];
-    $token = file_exists("apitoken")?file_get_contents("apitoken"):"";
-    if ($token=="") {
-        $token = api_get_token_for_phone($settings["bhutanapp"]["cid"],$settings["bhutanapp"]["password"]);
-        file_put_contents("apitoken",$token);
-        
-    }
+    $token = api_get_token_for_phone($settings["bhutanapp"]["cid"],$settings["bhutanapp"]["password"]);
 
     $data = '{
         "cid":"'.$cid.'"
@@ -86,11 +81,7 @@ function api_get_phone_detail($cid) {
 function send_sms($phone,$message) {
     $settings = parse_ini_file("settings/config.ini", true);
     $url = $settings["sms"]["url"];
-    $token = file_exists("apitoken")?file_get_contents("apitoken"):"";
-    if ($token=="") {
-        $token = api_get_token_for_phone($settings["bhutanapp"]["cid"],$settings["bhutanapp"]["password"]);
-        file_put_contents("apitoken",$token);
-    }
+    $token = api_get_token_for_phone($settings["bhutanapp"]["cid"],$settings["bhutanapp"]["password"]);
 
     $data = '{
         "phone":"'.$phone.'",
