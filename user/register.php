@@ -209,8 +209,8 @@
 
 </div>
 </body>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+<script src="<?php echo $settings["app"]["homebase"].'/js/jquery.min.js'?>"></script>
+<script src="<?php echo $settings["app"]["homebase"].'/js/jquery.easing.min.js'?>"></script>
 <script src="<?php echo $settings["app"]["homebase"].'/js/select2.min.js'?>"></script>
 <script src="<?php echo $settings["app"]["homebase"].'/js/tingle.min.js'?>"></script>
 <script src="<?php echo $settings["app"]["homebase"].'/js/easy.qrcode.min.js'?>"></script>
