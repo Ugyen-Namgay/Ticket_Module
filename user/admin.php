@@ -11,7 +11,7 @@ $eventid = $args[0];
 // else {
     $admincid = explode("?cid=",$args[sizeof($args)-1])[1];
     $ticket = explode("?cid=",$args[sizeof($args)-1])[0];
-    $cid = base_convert((string)$ticket,10,36)-(int)$eventid;
+    $cid = (string)((int)base_convert((string)$ticket,10,36)-(int)$eventid);
     //$ticket = strtoupper(base_convert((string)((int)$eventdetail[0][6]+(int)$cid),10,36))
     
 // }
