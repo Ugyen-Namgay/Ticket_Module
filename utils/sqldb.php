@@ -8,6 +8,7 @@ function success() {
     return '{"error":false}';
 }
 
+
 $cache = new Memcached('persistent');
 if( !count($cache->getServerList()))
 {
@@ -39,23 +40,7 @@ function set_cache($key,$data,$duration=600) {
     $cache->set(crc32($key),$data,$duration);
 }
 
-// function get_cache($key) {
-//     return false;
-// }
-// function clear_cache($key) {
-//     return false;
-// }
-// function set_cache($key,$data,$duration=600) {
-//     return false;
-// }
-
-
-function get($table,$col="*",$condition="1",$cache_result=true) {
-    $returnvalue = get_cache($table.$col.$condition);
-    if ($returnvalue && $cache_result) {
-        return $returnvalue;
-    }
-
+function get($table,$col="*",$condition="1") {
     $conn = new mysqli(DB_HOST,DB_USER,DB_PSWD,DB_NAME);
     if ($col=="")
         $col="*";
@@ -65,7 +50,6 @@ function get($table,$col="*",$condition="1",$cache_result=true) {
     //echo "SELECT $col FROM $table WHERE $condition;";
     if (!empty($r) && $r->num_rows>0) {
         $returnvalue = json_encode($conn->query("SELECT $col FROM $table WHERE $condition;")->fetch_all());
-        set_cache($table.$col.$condition,$returnvalue);
         return $returnvalue;
     }
     return "[]";
@@ -73,8 +57,6 @@ function get($table,$col="*",$condition="1",$cache_result=true) {
 }
 
 function update($table,$col,$val,$condition) {
-    clear_cache($table."*1");
-    clear_cache($table.$col.$condition);
     $conn = new mysqli(DB_HOST,DB_USER,DB_PSWD,DB_NAME);
     //global $conn;
     $col=explode(",",$col);
@@ -100,7 +82,6 @@ function update($table,$col,$val,$condition) {
 }
 
 function insert($table,$col,$val) {
-    clear_cache($table."*1");
     $conn = new mysqli(DB_HOST,DB_USER,DB_PSWD,DB_NAME);
     //global $conn;
     $col=explode(",",str_replace("`","-",str_replace("'","",str_replace('"','',$col))));
@@ -133,8 +114,6 @@ function insert($table,$col,$val) {
 }
 
 function delete($table,$condition) {
-    clear_cache($table."*1");
-    clear_cache($table.$condition);
     $conn = new mysqli(DB_HOST,DB_USER,DB_PSWD,DB_NAME);
 
     if (!$conn->query("DELETE FROM $table WHERE $condition;")) {
