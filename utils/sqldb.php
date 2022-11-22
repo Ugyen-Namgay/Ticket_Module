@@ -19,7 +19,7 @@ if( !count($cache->getServerList()))
 }
 
 function get_cache($key) {
-    //$cache = new Memcached('persistent');
+    $cache = new Memcached('persistent');
     $cachedata = $cache->get(crc32($key));
     if ($cachedata) {
         return $cachedata;
