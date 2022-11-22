@@ -555,26 +555,26 @@ var get_cid_info = function(cid) {
     $.post("<?php echo $settings["app"]["homebase"].'/submit'?>",{"findcid":cid, "request":"cidinfo"},function(data){
       d=JSON.parse(data);
       $('#dependent_firstname').prop("disabled",false);
-          $('#dependent_middlename').prop("disabled",false);
-          $('#dependent_lastname').prop("disabled",false);
-          $('#dependent_dob').prop("disabled",false);
+      $('#dependent_middlename').prop("disabled",false);
+      $('#dependent_lastname').prop("disabled",false);
+      $('#dependent_dob').prop("disabled",false);
       if (d.error!==false) {
         alertify("Please enter the details manually",d.msg);
         $('#dependent_firstname').val('');
-          $('#dependent_middlename').val('');
-          $('#dependent_lastname').val('');
-          $('#dependent_dob').val('');
+        $('#dependent_middlename').val('');
+        $('#dependent_lastname').val('');
+        $('#dependent_dob').val('');
       }
       else {
         $('#dependent_firstname').val(d.first_name);
-          $('#dependent_cid').val(cid);
-          $('#dependent_middlename').val(d.middle_name);
-          $('#dependent_lastname').val(d.last_name);
-          $('#dependent_dob').val(d.dob);
-          $('#dependent_firstname').prop("disabled",true);
-          $('#dependent_middlename').prop("disabled",true);
-          $('#dependent_lastname').prop("disabled",true);
-          $('#dependent_dob').prop("disabled",true);
+        $('#dependent_cid').val(cid);
+        $('#dependent_middlename').val(d.middle_name);
+        $('#dependent_lastname').val(d.last_name);
+        $('#dependent_dob').val(d.dob);
+        $('#dependent_firstname').prop("disabled",true);
+        $('#dependent_middlename').prop("disabled",true);
+        $('#dependent_lastname').prop("disabled",true);
+        $('#dependent_dob').prop("disabled",true);
       }
     });
   }
