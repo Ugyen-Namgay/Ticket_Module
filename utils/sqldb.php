@@ -40,9 +40,9 @@ function set_cache($key,$data,$duration=600) {
 // }
 
 
-function get($table,$col="*",$condition="1") {
+function get($table,$col="*",$condition="1",$cache=true) {
     $returnvalue = get_cache($table.$condition);
-    if ($returnvalue && $table!="otp") {
+    if ($returnvalue && $cache) {
         return $returnvalue;
     }
 
