@@ -11,7 +11,8 @@ $eventid = $args[0];
 // else {
     $admincid = explode("?cid=",$args[sizeof($args)-1])[1];
     $ticket = explode("?cid=",$args[sizeof($args)-1])[0];
-    $cid = (string)((int)base_convert($ticket,36,10)-(int)$eventid);
+    $offset = json_decode(get("events","ticket_offset","id=$eventid AND end_datetime>NOW()"))[0][0];
+    $cid = (string)((int)base_convert($ticket,36,10)-(int)$offset);
     //$ticket = strtoupper(base_convert((string)((int)$eventdetail[0][6]+(int)$cid),10,36))
     
 // }
