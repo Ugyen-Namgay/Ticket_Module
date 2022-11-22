@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS `admin_user` (
   --
   
   CREATE TABLE IF NOT EXISTS `citizens` (
-    `cid` varchar(19) NOT NULL,
+    `cid` varchar(50) NOT NULL,
     `dob` date NOT NULL,
     `dzongkhag` varchar(255) NOT NULL,
     `first_name` varchar(255) NOT NULL,
@@ -106,7 +106,7 @@ CREATE TABLE IF NOT EXISTS `admin_user` (
   --
   
   CREATE TABLE IF NOT EXISTS `minor` (
-    `cid` varchar(255) NOT NULL,
+    `cid` varchar(50) NOT NULL,
     `dob` date NOT NULL,
     `first_name` varchar(255) NOT NULL,
     `middle_name` varchar(255) NOT NULL,

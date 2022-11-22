@@ -46,7 +46,7 @@ CREATE TABLE `admin_user` (
   --
   
   CREATE TABLE `citizens` (
-    `cid` varchar(255) NOT NULL,
+    `cid` varchar(50) NOT NULL,
     `dob` date NOT NULL,
     `dzongkhag` varchar(255) NOT NULL,
     `first_name` varchar(255) NOT NULL,
@@ -121,7 +121,7 @@ CREATE TABLE `admin_user` (
   --
   
   CREATE TABLE `minor` (
-    `cid` varchar(255) NOT NULL,
+    `cid` varchar(50) NOT NULL,
     `dob` date NOT NULL,
     `first_name` varchar(255) NOT NULL,
     `middle_name` varchar(255) NOT NULL,
@@ -151,7 +151,7 @@ CREATE TABLE `admin_user` (
   CREATE TABLE `registration_requests` (
     `id` int(8) NOT NULL,
     `event_id` int(8) NOT NULL,
-    `cid` varchar(255) NOT NULL,
+    `cid` varchar(50) NOT NULL,
     `register_datetime` datetime DEFAULT current_timestamp(),
     `other_cids` varchar(1024) NOT NULL,
     `withdrawn` tinyint(1) NOT NULL DEFAULT 0,

@@ -226,7 +226,7 @@ else if (isset($_POST["adminupdate"]) && isset($_POST["admincid"])) {
         $regid = $registration[0][0];
         $eventid = $registration[0][1];
         insert("logs","admin,event_id,action","'$admin','$eventid','Change Venue from $eventid to $value'");
-        update("registrations","venueid","$value","id='$regid'");
+        update("registration_requests","event_id","$value","id='$regid'");
         echo '{"error":false}';
 
     }
