@@ -6,6 +6,7 @@
   try {
     $received_args = explode("?cid=",$args[1]);
     $eventid=(int)$args[0];
+    $cid = "";
     foreach($args as $arg) {
       if (strstr($arg,"?cid=")) {
         $cid = explode("?cid=",$arg)[1];
@@ -31,17 +32,14 @@
     header("Location: /check/2/$cid?cid=$admincid");
     exit();
   }
-  echo time();
-  echo "<br>";
-  $user_detail = json_decode(api_get_phone_detail($cid))->data;
+  
   $eventdetail = json_decode(get("events","name,address,start_datetime,end_datetime,country,capacity,ticket_offset","id=$eventid AND end_datetime>NOW()"));
   //var_dump($eventdetail);
   $capacity = (int)$eventdetail[0][5];
   $total_registered = (int)json_decode(get("registration_requests","COUNT(id)","event_id=$eventid"))[0][0];
   $accessingfrom=get_country();
   $registration_detail=json_decode(get("registration_requests","id,withdrawn,other_cids,event_id,register_datetime","cid='".$cid."' AND event_id='$eventid'"));
-  echo time();
-  echo "<br>";
+
   if ($total_registered>=$capacity) {
     $generated_form = '<form id="msform">
     <fieldset>
@@ -86,6 +84,7 @@
     }
   }
   else if (empty($registration_detail) || count($registration_detail[0])==0) { //No registration found at all so all good to go
+    $user_detail = json_decode(api_get_phone_detail($cid))->data;
     $generated_form = '<form id="msform">
     <h2>Registration for <b>'.$eventdetail[0][0].' '.$eventdetail[0][1].'</b></h2>
     <br>
@@ -188,8 +187,6 @@
           
       ';
   }
-  echo time();
-  echo "<br>";
 ?>
 <!DOCTYPE html>
 <html>

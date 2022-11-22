@@ -51,10 +51,10 @@ else if (isset($_POST["request"]) && isset($_POST["cid"])) {
         }
         else {
             
-            $data = $_POST["data"];
-            $user_detail = json_decode(api_get_phone_detail($cid))->data;
-            $imageid=getphoto($cid);         
+            $data = $_POST["data"];        
             if (get("citizens","cid","cid='$cid'")=="[]") { //INSERT CITIZEN DATA IF NOT THERE
+                $user_detail = json_decode(api_get_phone_detail($cid))->data;
+                $imageid=getphoto($cid); 
                 insert("citizens","cid,dob,first_name,middle_name,last_name,phonenumber,image_id,dzongkhag","$cid,$user_detail->dob,$user_detail->first_name,$user_detail->middle_name,$user_detail->last_name,$user_detail->phone,$imageid,$user_detail->dzongkhag");
             }
             $dependentid="";
@@ -68,7 +68,7 @@ else if (isset($_POST["request"]) && isset($_POST["cid"])) {
                 }
                 else {
                     if (strlen($dependent[4])=="11") {
-                        $dependent_user_detail = json_decode(api_get_phone_detail($cid))->data;
+                        $dependent_user_detail = json_decode(api_get_phone_detail($dependent[4]))->data;
                         $dependent_imageid=getphoto($dependent[4]);
                         insert("citizens","cid,dob,first_name,middle_name,last_name,phonenumber,image_id,dzongkhag",$dependent[4].",$dependent_user_detail->dob,$dependent_user_detail->first_name,$dependent_user_detail->middle_name,$dependent_user_detail->last_name,$dependent_user_detail->phone,$dependent_imageid,$dependent_user_detail->dzongkhag");
                         $dependentid.=json_decode(get("citizens","cid","first_name = '$dependent[0]' AND middle_name = '$dependent[1]' AND last_name='$dependent[2]' AND dob='$dependent[3]' AND cid='$dependent[4]'"))[0][0].";";
