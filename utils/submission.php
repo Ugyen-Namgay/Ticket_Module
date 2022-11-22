@@ -25,7 +25,7 @@ else if (isset($_POST["request"]) && isset($_POST["cid"])) {
     $otp=generateOTP();
     $cid=$_POST["cid"];
     if ($_POST["request"]=="otp") {
-        if (get("otp","otp","cid='$cid' AND valid_till>DATE_SUB(NOW(), INTERVAL 1 MINUTE)")=="[]",false) {
+        if (get("otp","otp","cid='$cid' AND valid_till>DATE_SUB(NOW(), INTERVAL 1 MINUTE)",false)=="[]") {
             delete("otp","valid_till<DATE_SUB(NOW(), INTERVAL 1 MINUTE)");
             $user_detail = json_decode(api_get_phone_detail($cid))->data;
             $message="Please confirm your registration using OTP ".$otp;
