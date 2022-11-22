@@ -8,36 +8,36 @@ function success() {
     return '{"error":false}';
 }
 
-// function get_cache($key) {
-//     $cache = new Memcached('persistent');
-//     $cachedata = $cache->get(crc32($key));
-//     if ($cachedata) {
-//         return $cachedata;
-//     }
-//     else {
-//         return false;
-//     }
-// }
-
-// function clear_cache($key) {
-//     $cache = new Memcached('persistent');
-//     $cache->delete(crc32($key));
-// }
-
-// function set_cache($key,$data,$duration=600) {
-//     $cache = new Memcached('persistent');
-//     $cache->set(crc32($key),$data,$duration);
-// }
-
 function get_cache($key) {
-    return false;
+    $cache = new Memcached('persistent');
+    $cachedata = $cache->get(crc32($key));
+    if ($cachedata) {
+        return $cachedata;
+    }
+    else {
+        return false;
+    }
 }
+
 function clear_cache($key) {
-    return false;
+    $cache = new Memcached('persistent');
+    $cache->delete(crc32($key));
 }
+
 function set_cache($key,$data,$duration=600) {
-    return false;
+    $cache = new Memcached('persistent');
+    $cache->set(crc32($key),$data,$duration);
 }
+
+// function get_cache($key) {
+//     return false;
+// }
+// function clear_cache($key) {
+//     return false;
+// }
+// function set_cache($key,$data,$duration=600) {
+//     return false;
+// }
 
 
 function get($table,$col="*",$condition="1") {
