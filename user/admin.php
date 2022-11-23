@@ -11,7 +11,7 @@ $eventid = $args[0];
 // else {
     $admincid = explode("?cid=",$args[sizeof($args)-1])[1];
     $ticket = explode("?cid=",$args[sizeof($args)-1])[0];
-    $offset = json_decode(get("events","ticket_offset","id=$eventid"))[0][0];
+    $offset = json_decode(get("events","*","id=$eventid",true))[0]["ticket_offset"];
     $cid = (string)((int)base_convert($ticket,36,10)-(int)$offset);
     //$ticket = strtoupper(base_convert((string)((int)$eventdetail[0][6]+(int)$cid),10,36))
     
@@ -27,7 +27,9 @@ if(get("admin_user","admin_id","cid='$admincid'")=="[]") { // CHECK PERMISSION O
     </form>';
 }
 else if ($cid && strlen($cid)==11) {
-    $registration_detail=json_decode(get("registration_requests","id,withdrawn,other_cids,event_id,register_datetime,is_allowed","cid='".$cid."' AND event_id='$eventid'"));
+    //id,withdrawn,other_cids,event_id,register_datetime,is_allowed
+    $regid = json_decode(get("registration_requests","id","cid='".$cid."' AND event_id='$eventid'"));
+    $registration_detail=json_decode(get("registration_requests","*","id=$regid",true));
     if(sizeof($registration_detail)==0) {
         $user_detail = json_decode(api_get_phone_detail($cid))->data;
         $error = json_decode(api_get_phone_detail($cid))->error;
@@ -61,17 +63,21 @@ else if ($cid && strlen($cid)==11) {
     else {
 
         $eventdetail = json_decode(get("events","id,address,start_datetime,end_datetime","end_datetime>NOW()"));
-        $set_of_dependents = trim(str_replace(";",",",$registration_detail[0][2]),",");
-        $dependent_detail = json_decode(get("citizens","cid,first_name,middle_name,last_name,dob","FIND_IN_SET(cid,'".$set_of_dependents."')>0"));
-        $dependent_detail = array_merge($dependent_detail,json_decode(get("minor","cid,first_name,middle_name,last_name,dob","FIND_IN_SET(cid,'".$set_of_dependents."')>0")));
-        $person_detail = json_decode(get("citizens","dob,first_name,middle_name,last_name,phonenumber,image_id","cid='$cid'"));
-        $base64photo = json_decode(get("images","bin","id='".$person_detail[0][5]."'"))[0][0];
+        $set_of_dependent = trim(str_replace(";",",",$registration_detail[0]["other_cids"]),",");
+        $dependent_detail=[];
+        foreach (explode(";",$set_of_dependent) as $dcid) {
+          $dependent_detail = array_merge($dependent_detail,json_decode(get("citizens","*","cid='$dcid'",true)));
+          $dependent_detail = array_merge($dependent_detail,json_decode(get("minor","*","cid='$dcid'",true)));
+        }
+        $person_detail = json_decode(get("citizens","*","cid='$cid'",true));
+        
+        $base64photo = json_decode(get("images","bin","id='".$person_detail[0]["image_id"]."'",true))[0]["bin"];
 
 
 
         $event_options = '';
         foreach($eventdetail as $event) {
-            if ($event[0]==$registration_detail[0][3]) {
+            if ($event[0]==$registration_detail[0]["event_id"]) {
                 $event_options.='<option selected value="'.$event[0].'">'.$event[1].' - '.$event[2].'</option>';
             }
             else {
@@ -82,14 +88,15 @@ else if ($cid && strlen($cid)==11) {
 
         $dependent_list = '';
         foreach($dependent_detail as $dependent) {
-            $dependent_list.='<li class="dependent_list_items"><span>'.$dependent[1]." ".($dependent[2]==""?"":$dependent[2]).' '.$dependent[3]."</span><span> DOB: ".$dependent[4].'</span><button type="button" onclick="discard_dependent(\''.$dependent[0].'\')" class="closebutton">X</button></li>';
+            $dependent_list.='<li class="dependent_list_items"><span>'.$dependent["first_name"]." ".($dependent["middle_name"]==""?"":$dependent["middle_name"]).' '.$dependent["last_name"]."</span><span> DOB: ".$dependent["dob"].'</span><button type="button" onclick="discard_dependent(\''.$dependent["cid"].'\')" class="closebutton">X</button></li>';
         }
 
         $play_sound="reject";
-        if ($registration_detail[0][5]=="0") {
+        
+        if ($registration_detail[0]["is_allowed"]=="0") {
             $entry_status = '<h4 id="statusbar" class="regpending">Entry Status: PENDING</h4>';
         }
-        else if ($registration_detail[0][5]=="1") {
+        else if ($registration_detail[0]["is_allowed"]=="1") {
             $entry_status = '<h4 id="statusbar"  class="regallowed">Entry Status: ALLOWED</h4>';
             $play_sound="accept";
         }
@@ -97,14 +104,14 @@ else if ($cid && strlen($cid)==11) {
             $entry_status = '<h4 id="statusbar" class="regnotallowed">Entry Status: NOT ALLOWED</h4>';
         }
         
-        $event_display =json_decode(get("events","name,address","id=".$registration_detail[0][3]))[0];
+        $event_display =json_decode(get("events","*","id=".$registration_detail[0]["event_id"],true))[0];
         $data_form = '
         <form id="msform">
         <fieldset>
-        <h2>User Details: '.$event_display[0].' At '.$event_display[1].'</h2>
+        <h2>User Details: '.$event_display["name"].' At '.$event_display["address"].'</h2>
         '.$entry_status.'
         <hr>
-        <label class="fs-title" style="text-align:center; padding:10px">User Registered on '.$registration_detail[0][4].'</label>
+        <label class="fs-title" style="text-align:center; padding:10px">User Registered on '.$registration_detail[0]["register_datetime"].'</label>
         <!--select name="registrations_venueid" id="event_change">
         '.$event_options.'
         </select-->
@@ -112,14 +119,14 @@ else if ($cid && strlen($cid)==11) {
         <tr><td>
         <img src="data:image/png;base64, '.$base64photo.'" style="padding:20px; height: 20vh"/>
         
-
+        
         </td><td>
         <label>First Name</label>
-        <input type="text" name="citizen_firstname" value="'.$person_detail[0][1].'" disabled>
+        <input type="text" name="citizen_firstname" value="'.$person_detail[0]["first_name"].'" disabled>
         <label>Middle Name</label>
-        <input type="text" name="citizen_middlename" value="'.$person_detail[0][2].'" disabled>
+        <input type="text" name="citizen_middlename" value="'.$person_detail[0]["middle_name"].'" disabled>
         <label>Last Name</label>
-        <input type="text" name="citizen_lastname" value="'.$person_detail[0][3].'" disabled>
+        <input type="text" name="citizen_lastname" value="'.$person_detail[0]["last_name"].'" disabled>
         
 
         </td></tr>

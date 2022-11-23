@@ -38,6 +38,10 @@ function api_get_token_for_phone($cid,$password) {
     }
 
 function api_get_phone_detail($cid) {
+    $cacheddata = get_cache("APIDETAIL".$cid);
+    if ($cacheddata) {
+        return $cacheddata;
+    }
     $settings = parse_ini_file("settings/config.ini", true);
     $url = $settings["bhutanapp"]["new_user_detail_url"];
     $token = api_get_token_for_phone($settings["bhutanapp"]["cid"],$settings["bhutanapp"]["password"]);
@@ -69,12 +73,14 @@ function api_get_phone_detail($cid) {
         //echo $result;
 
         if (!$result) {
-            echo "BAD REQUEST";
+            set_cache("APIDETAIL".$cid,false,10);
+            return false;
         }
-        
+        set_cache("APIDETAIL".$cid,$result,0);
         return $result;
         }
             catch(Exception $e) {
+                set_cache("APIDETAIL".$cid,false,10);
                 return false;
             }
 
@@ -132,12 +138,20 @@ function generateOTP($n=6) {
 
 function get_country() {
     $remote_ip=getVisIPAddr();
+    if (get_cache($remote_ip)) {
+        return get_cache($remote_ip);
+    }
     $ipdat = @json_decode(file_get_contents(
       "http://www.geoplugin.net/json.gp?ip=" . $remote_ip));
+    set_cache($remote_ip,str_replace(",","-",$ipdat->geoplugin_countryName));
     return str_replace(",","-",$ipdat->geoplugin_countryName);
   }
 
 function getphoto($cid) {
+    $cachedphoto = get_cache("PHOTO".$cid);
+    if ($cachedphoto) {
+        return $cachedphoto;
+    }
     $settings = parse_ini_file("settings/config.ini", true);
     $url = $settings["censusimage"]["local_url"];
     $token = $settings["censusimage"]["token"];
@@ -187,9 +201,11 @@ function getphoto($cid) {
         $previd = json_decode(get("images","id","bin='$theme_image_enc_little'"));
         if (sizeof($previd)==0) {
             insert("images","bin,format","$theme_image_enc_little,png");
+            set_cache("PHOTO".$cid,json_decode(get("images","id","bin='$theme_image_enc_little'"))[0][0],0);
             return json_decode(get("images","id","bin='$theme_image_enc_little'"))[0][0];
         }
         else {
+            set_cache("PHOTO".$cid,$previd[0][0],0);
             return $previd[0][0];
         }
     }

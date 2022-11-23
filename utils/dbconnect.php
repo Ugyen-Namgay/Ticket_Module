@@ -1,13 +1,13 @@
 <?php
 
 //namespace dbconnect;
-
-$prerequisite='
+$dbcreate = '
 
 CREATE DATABASE IF NOT EXISTS `ticket_module`;
 
 USE `ticket_module`;
-
+';
+$prerequisite='
 CREATE TABLE IF NOT EXISTS `admin_user` (
     `admin_id` int(8) NOT NULL AUTO_INCREMENT,
     `email` varchar(255) NOT NULL,
@@ -20,12 +20,7 @@ CREATE TABLE IF NOT EXISTS `admin_user` (
     PRIMARY KEY (`admin_id`)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   
-  INSERT INTO `admin_user` (admin_id,email,name,password,cid,level) VALUES(1,"admin@admin.bt","Administrator",MD5("admin@admin.bt"),"00000000000","0");
-  -- --------------------------------------------------------
-  
-  --
-  -- Table structure for table `citizens`
-  --
+  INSERT INTO `admin_user` (admin_id,email,name,password,cid,level) VALUES(1,"admin@admin.bt","Administrator","a289d649338577b8d3792f1fbb7b16cd","00000000000","0");
   
   CREATE TABLE IF NOT EXISTS `citizens` (
     `cid` varchar(50) NOT NULL,
@@ -38,12 +33,7 @@ CREATE TABLE IF NOT EXISTS `admin_user` (
     `image_id` int(8) NOT NULL,
     PRIMARY KEY (`cid`)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-  
-  -- --------------------------------------------------------
-  
-  --
-  -- Table structure for table `events`
-  --
+
   
   CREATE TABLE IF NOT EXISTS `events` (
     `id` int(8) NOT NULL AUTO_INCREMENT,
@@ -58,11 +48,6 @@ CREATE TABLE IF NOT EXISTS `admin_user` (
     PRIMARY KEY (`id`)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   
-  -- --------------------------------------------------------
-  
-  --
-  -- Table structure for table `images`
-  --
   
   CREATE TABLE IF NOT EXISTS `images` (
     `id` int(8) NOT NULL AUTO_INCREMENT,
@@ -71,11 +56,6 @@ CREATE TABLE IF NOT EXISTS `admin_user` (
     PRIMARY KEY (`id`)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   
-  -- --------------------------------------------------------
-  
-  --
-  -- Table structure for table `logs`
-  --
   
   CREATE TABLE IF NOT EXISTS `logs` (
     `admin_id` varchar(255) NOT NULL,
@@ -84,11 +64,6 @@ CREATE TABLE IF NOT EXISTS `admin_user` (
     `event_id` int(8) NOT NULL
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   
-  -- --------------------------------------------------------
-  
-  --
-  -- Table structure for table `luckydraw`
-  --
   
   CREATE TABLE IF NOT EXISTS `luckydraw` (
     `event_id` int(8) NOT NULL,
@@ -99,11 +74,6 @@ CREATE TABLE IF NOT EXISTS `admin_user` (
     `consolation_winners` varchar(2048) NOT NULL
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   
-  -- --------------------------------------------------------
-  
-  --
-  -- Table structure for table `minor`
-  --
   
   CREATE TABLE IF NOT EXISTS `minor` (
     `cid` varchar(50) NOT NULL,
@@ -115,11 +85,6 @@ CREATE TABLE IF NOT EXISTS `admin_user` (
     PRIMARY KEY (`cid`)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   
-  -- --------------------------------------------------------
-  
-  --
-  -- Table structure for table `otp`
-  --
   
   CREATE TABLE IF NOT EXISTS `otp` (
     `cid` varchar(255) NOT NULL,
@@ -127,12 +92,6 @@ CREATE TABLE IF NOT EXISTS `admin_user` (
     `valid_till` datetime NOT NULL,
     `attempts` int(3) NOT NULL
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-  
-  -- --------------------------------------------------------
-  
-  --
-  -- Table structure for table `registration_requests`
-  --
   
   CREATE TABLE IF NOT EXISTS `registration_requests` (
     `id` int(8) NOT NULL AUTO_INCREMENT,
@@ -160,6 +119,7 @@ DEFINE ('DB_NAME', $settings["db"]["database"]);
 
 try {
     $conn = new mysqli(DB_HOST,DB_USER,DB_PSWD);
+    $conn->multi_query($dbcreate);
     $conn->multi_query($prerequisite);
 
 }

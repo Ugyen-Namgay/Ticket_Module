@@ -33,12 +33,15 @@
     exit();
   }
   $settings = parse_ini_file("settings/config.ini", true);
-  $eventdetail = json_decode(get("events","name,address,start_datetime,end_datetime,country,capacity,ticket_offset","id=$eventid AND end_datetime>NOW()"));
+  $eventdetail = json_decode(get("events","*","id=$eventid",true));
+  if (time()>strtotime($eventdetail[0]["end_datetime"])) { // END OF TIME
+    $eventdetail=[];
+  }
   //var_dump($eventdetail);
-  $capacity = (int)$eventdetail[0][5];
-  $total_registered = (int)json_decode(get("registration_requests","COUNT(id)","event_id=$eventid"))[0][0];
+  $capacity = (int)$eventdetail[0]["capacity"];
+  $total_registered = (int)json_decode(get("registration_requests","COUNT(id) as num","event_id=$eventid"))[0]["num"];
   $accessingfrom=get_country();
-  $registration_detail=json_decode(get("registration_requests","id,withdrawn,other_cids,event_id,register_datetime","cid='".$cid."' AND event_id='$eventid'"));
+  $regid = json_decode(get("registration_requests","id","cid='".$cid."' AND event_id='$eventid'"));
 
   if ($total_registered>=$capacity) {
     $generated_form = '<form id="msform">
@@ -50,13 +53,14 @@
     </fieldset>
     </form>';
   }
-  else if ($eventdetail[0][4]!=$accessingfrom && false) {
+
+  else if ($eventdetail[0]["country"]!=$accessingfrom && false) {
     $generated_form = '<form id="msform">
     <fieldset>
     <img src="'.$settings["app"]["homebase"].'/images/unexpected.png" height="200px" alt="Not supposed to Happen">
     <br>
     <h1 class="fs-title">Sorry! You are not allowed to apply from '.$accessingfrom.'</h1>
-    <h2 class="fs-subtitle">This event is only meant for '.$eventdetail[0][4].'</h2>
+    <h2 class="fs-subtitle">This event is only meant for '.$eventdetail[0]["country"].'</h2>
     </fieldset>
     </form>';
   }
@@ -83,10 +87,11 @@
       </form>';
     }
   }
-  else if (empty($registration_detail) || count($registration_detail[0])==0) { //No registration found at all so all good to go
+  else if (empty($regid) || count($regid[0])==0) { //No registration found at all so all good to go
     $user_detail = json_decode(api_get_phone_detail($cid))->data;
     $generated_form = '<form id="msform">
-    <h2>Registration for <b>'.$eventdetail[0][0].' '.$eventdetail[0][1].'</b></h2>
+    
+    <h2>Registration for <b>'.$eventdetail[0]["name"].' '.$eventdetail[0]["address"].'</b></h2>
     <br>
     <!-- progressbar -->
     <ul id="progressbar">
@@ -144,18 +149,20 @@
     
   }
   else {
+    $registration_detail=json_decode(get("registration_requests","*","id=$regid",true));
     $generated_form = '<form id="msform">
   <h4> Please show the code below during your entry</h4>
   <div id="qrcode">
     </div>
-  <h2>Ticket Number: '.strtoupper(base_convert((string)((int)$eventdetail[0][6]+(int)$cid),10,36)).'</h2>
+    
+  <h2>Ticket Number: '.strtoupper(base_convert((string)((int)$eventdetail[0]["ticket_offset"]+(int)$cid),10,36)).'</h2>
   <h3>Thank you for registering to the event!</h3>
   <br>
   <hr>
-  <h4>Venue: '.$eventdetail[0][0].' '.$eventdetail[0][1].'</h4>
-  <h4>From: '.explode(" ",$eventdetail[0][2])[0].' Time '.explode(" ",$eventdetail[0][2])[1].'</h4>
-  <h4>Till: '.explode(" ",$eventdetail[0][3])[0].' Time '.explode(" ",$eventdetail[0][3])[1].'</h4>
-  '.(($registration_detail[0][2]=="")?'':'<h4>Together With:<br> <i><span id="dependent_list"></span></i></h4>').'
+  <h4>Venue: '.$eventdetail[0]["name"].' '.$eventdetail[0]["address"].'</h4>
+  <h4>From: '.explode(" ",$eventdetail[0]["start_datetime"])[0].' Time '.explode(" ",$eventdetail[0]["start_datetime"])[1].'</h4>
+  <h4>Till: '.explode(" ",$eventdetail[0]["end_datetime"])[0].' Time '.explode(" ",$eventdetail[0]["end_datetime"])[1].'</h4>
+  '.(($registration_detail[0]["other_cids"]=="")?'':'<h4>Together With:<br> <i><span id="dependent_list"></span></i></h4>').'
     <br>
 </form>';
 
@@ -173,8 +180,8 @@
       subTitleFont: "12px Arial",
       subTitleColor: "#4F4F4F",
       subTitleTop: 50,
-    
-      text: "'.strtoupper(base_convert((string)((int)$eventdetail[0][6]+(int)$cid),10,36)).'",
+      
+      text: "'.strtoupper(base_convert((string)((int)$eventdetail[0]["ticket_offset"]+(int)$cid),10,36)).'",
       width: 300,
       height:300,
     
@@ -280,12 +287,15 @@ var dependent_list=[];
 
       <?php
       if (!empty($registration_detail)) {
-        $set_of_dependent = str_replace(";",",",$registration_detail[0][2]);
-        $dependent_detail = json_decode(get("citizens","cid,first_name,middle_name,last_name,dob","FIND_IN_SET(cid,'".$set_of_dependent."')>0"));
-        $dependent_detail = array_merge($dependent_detail,json_decode(get("minor","cid,first_name,middle_name,last_name,dob","FIND_IN_SET(cid,'".$set_of_dependent."')>0")));
+        $set_of_dependent = str_replace(";",",",$registration_detail[0]["other_cids"]);
+        $dependent_detail=[];
+        foreach (explode(";",$set_of_dependent) as $dcid) {
+          $dependent_detail = array_merge($dependent_detail,json_decode(get("citizens","*","cid='$dcid'",true)));
+          $dependent_detail = array_merge($dependent_detail,json_decode(get("minor","*","cid='$dcid'",true)));
+        }   
         $i=0;
         foreach ($dependent_detail as $dependent) {
-          echo "dependent_list[$i]=(['".$dependent[1]."','".$dependent[2]."','".$dependent[3]."','".$dependent[4]."','".$dependent[0]."']);";
+          echo "dependent_list[$i]=(['".$dependent["first_name"]."','".$dependent["middle_name"]."','".$dependent["last_name"]."','".$dependent["dob"]."','".$dependent["cid"]."']);";
           $i++;
         }
       }
