@@ -54,7 +54,7 @@ function get($table,$col="*",$condition="1",$cached = false) {
     $r=$conn->query("SELECT $col FROM $table WHERE $condition;");
     //echo "SELECT $col FROM $table WHERE $condition;";
     if (!empty($r) && $r->num_rows>0) {
-        $returnvalue = json_encode(json_decode(json_encode($conn->query("SELECT $col FROM $table WHERE $condition;")->fetch_all(MYSQLI_ASSOC)),true));
+        $returnvalue = json_encode($conn->query("SELECT $col FROM $table WHERE $condition;")->fetch_all(MYSQLI_ASSOC));
         if ($cached) {
             set_cache($table.$col.$condition,$returnvalue);
         }
@@ -141,7 +141,7 @@ function isonline() {
     if (!session_id()) {
         return False;
     }
-    $user = json_decode(get("admin_user","email,name","session_id='".session_id()."'"));
+    $user = json_decode(get("admin_user","email,name","session_id='".session_id()."'"),true);
     //exit();
     if (empty($user) || count($user)==0) {
         return False;

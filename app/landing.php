@@ -22,7 +22,7 @@ require_once "utils/sqldb.php";
 $alert="This is a closed page permitted to only authorized user. Any suspected attempts to login will be captured and reported by the system.";
 
 if (isset($_POST["email"]) && isset($_POST["password"])) {
-	$valid = json_decode(get("admin_user","admin_id","password=MD5('".$_POST["password"]."') AND  email='".$_POST["email"]."'"));
+	$valid = json_decode(get("admin_user","admin_id","password=MD5('".$_POST["password"]."') AND  email='".$_POST["email"]."'"),true);
 	//echo $valid;
 	if (!empty($valid) && count($valid[0])>0) {
 		$alert="Thank you. Please while we redirect you to your page.";
