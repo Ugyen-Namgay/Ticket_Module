@@ -11,7 +11,7 @@ $eventid = $args[0];
 // else {
     $admincid = explode("?cid=",$args[sizeof($args)-1])[1];
     $ticket = explode("?cid=",$args[sizeof($args)-1])[0];
-    $offset = json_decode(get("events","*","id=$eventid",true))[0]["ticket_offset"];
+    $offset = json_decode(get("events","*","id=$eventid",true),true)[0]["ticket_offset"];
     $cid = (string)((int)base_convert($ticket,36,10)-(int)$offset);
     //$ticket = strtoupper(base_convert((string)((int)$eventdetail[0][6]+(int)$cid),10,36))
     
@@ -28,8 +28,8 @@ if(get("admin_user","admin_id","cid='$admincid'")=="[]") { // CHECK PERMISSION O
 }
 else if ($cid && strlen($cid)==11) {
     //id,withdrawn,other_cids,event_id,register_datetime,is_allowed
-    $regid = json_decode(get("registration_requests","id","cid='".$cid."' AND event_id='$eventid'"));
-    $registration_detail=json_decode(get("registration_requests","*","id=$regid",true));
+    $regid = json_decode(get("registration_requests","id","cid='".$cid."' AND event_id='$eventid'"),true);
+    $registration_detail=json_decode(get("registration_requests","*","id=$regid",true),true);
     if(sizeof($registration_detail)==0) {
         $user_detail = json_decode(api_get_phone_detail($cid))->data;
         $error = json_decode(api_get_phone_detail($cid))->error;
@@ -43,7 +43,7 @@ else if ($cid && strlen($cid)==11) {
             </form>';
         }
         else {
-            $base64photo = json_decode(get("images","bin","id='".getphoto($cid)."'"))[0][0];
+            $base64photo = json_decode(get("images","bin","id='".getphoto($cid)."'",true),true)[0]["bin"];
             $data_form = '
             <form id="msform">
             <h2>REGISTRATION FOR CID: '.$cid.' NOT FOUND</h2>
@@ -62,16 +62,16 @@ else if ($cid && strlen($cid)==11) {
     }
     else {
 
-        $eventdetail = json_decode(get("events","id,address,start_datetime,end_datetime","end_datetime>NOW()"));
+        $eventdetail = json_decode(get("events","id,address,start_datetime,end_datetime","end_datetime>NOW()"),true);
         $set_of_dependent = trim(str_replace(";",",",$registration_detail[0]["other_cids"]),",");
         $dependent_detail=[];
         foreach (explode(";",$set_of_dependent) as $dcid) {
           $dependent_detail = array_merge($dependent_detail,json_decode(get("citizens","*","cid='$dcid'",true)));
           $dependent_detail = array_merge($dependent_detail,json_decode(get("minor","*","cid='$dcid'",true)));
         }
-        $person_detail = json_decode(get("citizens","*","cid='$cid'",true));
+        $person_detail = json_decode(get("citizens","*","cid='$cid'",true),true);
         
-        $base64photo = json_decode(get("images","bin","id='".$person_detail[0]["image_id"]."'",true))[0]["bin"];
+        $base64photo = json_decode(get("images","bin","id='".$person_detail[0]["image_id"]."'",true),true)[0]["bin"];
 
 
 
@@ -104,7 +104,7 @@ else if ($cid && strlen($cid)==11) {
             $entry_status = '<h4 id="statusbar" class="regnotallowed">Entry Status: NOT ALLOWED</h4>';
         }
         
-        $event_display =json_decode(get("events","*","id=".$registration_detail[0]["event_id"],true))[0];
+        $event_display =json_decode(get("events","*","id=".$registration_detail[0]["event_id"],true),true)[0];
         $data_form = '
         <form id="msform">
         <fieldset>

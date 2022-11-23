@@ -59,11 +59,11 @@
                                         echo '';
                                     }
                                     else {
-                                        $users = json_decode($users);
+                                        $users = json_decode($users,true);
                                         echo '<h4 class="card-title">List of Users</h4>';
                                         echo '<ul class="list-arrow">';
                                         foreach($users as $v) {
-                                            echo '<li><a href="#" onclick="edituser('.$v[0].')">'.$v[1].'</a>: '.$v[3].'</li>';
+                                            echo '<li><a href="#" onclick="edituser('.$v["admin_id"].')">'.$v["email"].'</a>: '.$v["name"].'</li>';
                                         }
                                         echo '</ul>';
                                     }

@@ -33,15 +33,15 @@
     exit();
   }
   $settings = parse_ini_file("settings/config.ini", true);
-  $eventdetail = json_decode(get("events","*","id=$eventid",true));
+  $eventdetail = json_decode(get("events","*","id=$eventid",true),true);
   if (time()>strtotime($eventdetail[0]["end_datetime"])) { // END OF TIME
     $eventdetail=[];
   }
   //var_dump($eventdetail);
   $capacity = (int)$eventdetail[0]["capacity"];
-  $total_registered = (int)json_decode(get("registration_requests","COUNT(id) as num","event_id=$eventid"))[0]["num"];
+  $total_registered = (int)json_decode(get("registration_requests","COUNT(id) as num","event_id=$eventid"),true)[0]["num"];
   $accessingfrom=get_country();
-  $regid = json_decode(get("registration_requests","id","cid='".$cid."' AND event_id='$eventid'"));
+  $regid = json_decode(get("registration_requests","id","cid='".$cid."' AND event_id='$eventid'"),true);
 
   if ($total_registered>=$capacity) {
     $generated_form = '<form id="msform">
@@ -65,7 +65,7 @@
     </form>';
   }
   else if (empty($eventdetail) || count($eventdetail[0])==0) { //No venue or Venue registration time expired
-    $temp = json_decode(get("venues","address,location,end","id=$eventid"));
+    $temp = json_decode(get("venues","address,location,end","id=$eventid"),true);
     if (empty($temp)) {
       $generated_form = '<form id="msform">
       <fieldset>
@@ -149,7 +149,7 @@
     
   }
   else {
-    $registration_detail=json_decode(get("registration_requests","*","id=$regid",true));
+    $registration_detail=json_decode(get("registration_requests","*","id=$regid",true),true);
     $generated_form = '<form id="msform">
   <h4> Please show the code below during your entry</h4>
   <div id="qrcode">
@@ -290,8 +290,8 @@ var dependent_list=[];
         $set_of_dependent = str_replace(";",",",$registration_detail[0]["other_cids"]);
         $dependent_detail=[];
         foreach (explode(";",$set_of_dependent) as $dcid) {
-          $dependent_detail = array_merge($dependent_detail,json_decode(get("citizens","*","cid='$dcid'",true)));
-          $dependent_detail = array_merge($dependent_detail,json_decode(get("minor","*","cid='$dcid'",true)));
+          $dependent_detail = array_merge($dependent_detail,json_decode(get("citizens","*","cid='$dcid'",true)),true);
+          $dependent_detail = array_merge($dependent_detail,json_decode(get("minor","*","cid='$dcid'",true)),true);
         }   
         $i=0;
         foreach ($dependent_detail as $dependent) {

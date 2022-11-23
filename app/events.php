@@ -64,16 +64,16 @@
                                         echo '<h4 class="card-title">There are no events added so far.</h4>';
                                     }
                                     else {
-                                        $venues = json_decode($venues);
+                                        $venues = json_decode($venues,true);
                                         $pageURL = 'http';
                                         if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != "off") {$pageURL .= "s";}
                                         $pageURL .= "://";
                                         echo '<h4 class="card-title">List of all events.</h4>';
                                         echo '<ul class="list-arrow">';
                                         foreach($venues as $v) {
-                                            echo '<li><a href="#" onclick="editevent('.$v[0].')">'.$v[1].'</a>: '.$v[3].', '.$v[4].' FROM '.$v[5].' TILL '.$v[6].' (ID: '.$v[0].')<br> Capacity: '.$v[7];
-                                            echo '<br/><a target="_blank" href="'.$pageURL.$_SERVER["SERVER_NAME"].'/register/'.$v[0].'/?cid=11512005551">Registration Link Format </a>: '.$pageURL.$_SERVER["SERVER_NAME"].'/register/'.$v[0].'/?cid={CITIZEN-ID}';
-                                            echo '<br/><a target="_blank"  href="'.$pageURL.$_SERVER["SERVER_NAME"].'/check/'.$v[0].'/11512005551?cid=00000000000"> Checker Link Format </a>: '.$pageURL.$_SERVER["SERVER_NAME"].'/check/'.$v[0].'/{CITIZEN-CID}?cid={ADMIN-CID}';
+                                            echo '<li><a href="#" onclick="editevent('.$v["id"].')">'.$v["name"].'</a>: '.$v["address"].', '.$v["country"].' FROM '.$v["start_datetime"].' TILL '.$v["end_datetime"].' (ID: '.$v["id"].')<br> Capacity: '.$v["capacity"];
+                                            echo '<br/><a target="_blank" href="'.$pageURL.$_SERVER["SERVER_NAME"].'/register/'.$v[0].'/?cid=11512005551">Registration Link Format </a>: '.$pageURL.$_SERVER["SERVER_NAME"].'/register/'.$v["id"].'/?cid={CITIZEN-ID}';
+                                            echo '<br/><a target="_blank"  href="'.$pageURL.$_SERVER["SERVER_NAME"].'/check/'.$v[0].'/11512005551?cid=00000000000"> Checker Link Format </a>: '.$pageURL.$_SERVER["SERVER_NAME"].'/check/'.$v["id"].'/{CITIZEN-CID}?cid={ADMIN-CID}';
                                             echo '<br/>';
                                         }
                                         echo '</ul>';
