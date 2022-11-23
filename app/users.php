@@ -228,7 +228,7 @@ function edituser(userid) {
     users=[];
     <?php
     foreach($users as $v) {
-        echo 'users['.$v[0].']= {"admin_id":"'.$v[0].'","email":"'.$v[1].'","cid":"'.$v[2].'","name":"'.$v[3].'","level":"'.$v[4].'"};';
+        echo 'users['.$v["admin_id"].']= {"admin_id":"'.$v["admin_id"].'","email":"'.$v["email"].'","cid":"'.$v["cid"].'","name":"'.$v["name"].'","level":"'.$v["level"].'"};';
     }
     ?>
     $.each(users[userid],function(k,v){

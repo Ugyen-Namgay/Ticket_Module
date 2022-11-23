@@ -554,7 +554,7 @@ function editevent(id) {
     else {
       //id,name,image_id,address,country,start_datetime,end_datetime,capacity,ticket_offset
       foreach($venues as $v) {
-        echo 'event['.$v[0].']= {"eventid":"'.$v[0].'","name":"'.$v[1].'","address":"'.$v[3].'","country":"'.$v[4].'","startdate":"'.explode(" ",$v[5])[0].'","enddate":"'.explode(" ",$v[6])[0].'","starttime":"'.explode(" ",$v[5])[1].'","endtime":"'.explode(" ",$v[6])[1].'","capacity":"'.$v[7].'","ticket_offset":"'.$v[8].'"};';
+        echo 'event['.$v["id"].']= {"eventid":"'.$v["id"].'","name":"'.$v["name"].'","address":"'.$v["address"].'","country":"'.$v["country"].'","startdate":"'.explode(" ",$v["start_datetime"])[0].'","enddate":"'.explode(" ",$v["end_datetime"])[0].'","starttime":"'.explode(" ",$v["start_datetime"])[1].'","endtime":"'.explode(" ",$v["end_datetime"])[1].'","capacity":"'.$v[7].'","ticket_offset":"'.$v["ticket_offset"].'"};';
       }
     }
     
