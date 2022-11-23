@@ -54,7 +54,7 @@ function get($table,$col="*",$condition="1",$cached = false) {
     $r=$conn->query("SELECT $col FROM $table WHERE $condition;");
     //echo "SELECT $col FROM $table WHERE $condition;";
     if (!empty($r) && $r->num_rows>0) {
-        $returnvalue = json_encode($conn->query("SELECT $col FROM $table WHERE $condition;")->fetch_all(MYSQLI_ASSOC));
+        $returnvalue = json_encode(json_decode(json_encode($conn->query("SELECT $col FROM $table WHERE $condition;")->fetch_all(MYSQLI_ASSOC)),true));
         if ($cached) {
             set_cache($table.$col.$condition,$returnvalue);
         }

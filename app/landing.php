@@ -26,7 +26,7 @@ if (isset($_POST["email"]) && isset($_POST["password"])) {
 	//echo $valid;
 	if (!empty($valid) && count($valid[0])>0) {
 		$alert="Thank you. Please while we redirect you to your page.";
-		update("admin_user","session_id",session_id(),"admin_id=".$valid[0][0]."");
+		update("admin_user","session_id",session_id(),"admin_id=".$valid[0]["admin_id"]."");
 		//Redirect("post",true);
 		//echo "LOGIN SUCCESS";
 		//client_detail($_POST["email"],False);
