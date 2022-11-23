@@ -1,13 +1,11 @@
 <?php
 
 //namespace dbconnect;
-$dbcreate = '
-
+$prerequisite='
 CREATE DATABASE IF NOT EXISTS `ticket_module`;
 
 USE `ticket_module`;
-';
-$prerequisite='
+
 CREATE TABLE IF NOT EXISTS `admin_user` (
     `admin_id` int(8) NOT NULL AUTO_INCREMENT,
     `email` varchar(255) NOT NULL,
@@ -119,7 +117,6 @@ DEFINE ('DB_NAME', $settings["db"]["database"]);
 
 try {
     $conn = new mysqli(DB_HOST,DB_USER,DB_PSWD);
-    $conn->multi_query($dbcreate);
     $conn->multi_query($prerequisite);
 
 }

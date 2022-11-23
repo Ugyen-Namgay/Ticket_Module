@@ -1,5 +1,6 @@
 <?php
 require_once "utils/dbconnect.php";
+
 function raise_error($message) {
     http_response_code(500);
     return '{"error":"'.$message.'"}';
