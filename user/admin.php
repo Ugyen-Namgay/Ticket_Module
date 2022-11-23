@@ -66,8 +66,8 @@ else if ($cid && strlen($cid)==11) {
         $set_of_dependent = trim(str_replace(";",",",$registration_detail[0]["other_cids"]),",");
         $dependent_detail=[];
         foreach (explode(";",$set_of_dependent) as $dcid) {
-          $dependent_detail = array_merge($dependent_detail,json_decode(get("citizens","*","cid='$dcid'",true)));
-          $dependent_detail = array_merge($dependent_detail,json_decode(get("minor","*","cid='$dcid'",true)));
+          $dependent_detail = array_merge($dependent_detail,json_decode(get("citizens","*","cid='$dcid'",true),true));
+          $dependent_detail = array_merge($dependent_detail,json_decode(get("minor","*","cid='$dcid'",true),true));
         }
         $person_detail = json_decode(get("citizens","*","cid='$cid'",true),true);
         
