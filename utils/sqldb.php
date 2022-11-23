@@ -143,11 +143,11 @@ function isonline() {
     }
     $user = json_decode(get("admin_user","email,name","session_id='".session_id()."'"));
     //exit();
-    if (empty($user) || count($user[0])==0) {
+    if (empty($user) || count($user)==0) {
         return False;
     }
 
-    return $user[0][1];
+    return $user[0]["name"];
 }
 
 
