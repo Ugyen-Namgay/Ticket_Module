@@ -4,10 +4,10 @@
 	<title>Admin App</title>
 	<!-- <link rel="stylesheet" type="text/css" href="slide/navbar/style.css"> -->
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap" rel="stylesheet">
-<link href="<?php echo $settings["app"]["homebase"].'/css/select2.min.css'?>" rel="stylesheet">
+<!-- <link href="<?php echo $settings["app"]["homebase"].'/css/select2.min.css'?>" rel="stylesheet">
 <link href="<?php echo $settings["app"]["homebase"].'/css/select2-bootstrap.min.css'?>" rel="stylesheet">
 <link href="<?php echo $settings["app"]["homebase"].'/css/tingle.min.css'?>" rel="stylesheet">
-<link href="<?php echo $settings["app"]["homebase"].'/css/register.css'?>" rel="stylesheet">
+<link href="<?php echo $settings["app"]["homebase"].'/css/register.css'?>" rel="stylesheet"> -->
 <link rel="shortcut icon" href="<?php echo $settings["app"]["homebase"].'/'.$settings["app"]["logo"]?>" />
 
 </head>
@@ -609,6 +609,8 @@ h3,
 
 </style>
 <body> 	
+
+
 <div id="successful_login" class="fix-middle">
   <div class="container text-center">
     <h1>Welcome back to the internet!</h1>
@@ -684,7 +686,7 @@ h3,
       </form>
     </div>
   </div>
-</div>      
+</div>
 
 
 
