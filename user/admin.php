@@ -28,7 +28,18 @@ if(get("admin_user","admin_id","cid='$admincid'")=="[]") { // CHECK PERMISSION O
 }
 else if ($cid && strlen($cid)==11) {
     //id,withdrawn,other_cids,event_id,register_datetime,is_allowed
-    $regid = json_decode(get("registration_requests","id","cid='".$cid."' AND event_id='$eventid'"),true)[0]["id"];
+    $regid_get = json_decode(get("registration_requests","id","cid='".$cid."' AND event_id='$eventid'"),true);
+    if (empty($regid_get)) {
+        $data_form = '
+            <form id="msform">
+
+            <h2>USER WITH CID: '.$cid.' NOT FOUND IN THE APP</h2>
+            
+            </form>';
+    }
+    else {
+        $regid = $regid_get[0]["id"];
+    
     $registration_detail=json_decode(get("registration_requests","*","id=$regid",true),true);
     if(sizeof($registration_detail)==0) {
         $user_detail = json_decode(api_get_phone_detail($cid))->data;
@@ -57,6 +68,9 @@ else if ($cid && strlen($cid)==11) {
             
             </form>';
         }
+        
+    }
+    
 
 
     }
