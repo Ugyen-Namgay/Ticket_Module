@@ -28,16 +28,18 @@ if(empty($admin_id)) { // CHECK PERMISSION OF WHO IS ACCESSING THE PAGE
   <h4></h4>
     </form>';
 }
-else if ($cid && strlen($cid)==11 && !empty($regid_get)) {
-    //id,withdrawn,other_cids,event_id,register_datetime,is_allowed
-    if () {
-        $data_form = '
-            <form id="msform">
+else if (empty($regid_get)) {
+    $data_form = '
+    <form id="msform">
 
-            <h2>USER WITH CID: '.$cid.' NOT FOUND IN THE APP</h2>
-            
-            </form>';
-    }
+    <h2>USER WITH CID: '.$cid.' NOT FOUND IN THE EVENT</h2>
+    <br>
+    <i>Registration ID not found for this CID for the event</i>
+    
+    </form>';
+
+}
+else if ($cid && strlen($cid)==11) {
     
     $regid = $regid_get[0]["id"]; 
     $registration_detail=json_decode(get("registration_requests","*","id=$regid",true),true);
