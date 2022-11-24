@@ -10,7 +10,7 @@ $router->get('events', 'app/events');
 $router->get('submit', 'utils/submission');
 
 $router->get('test', 'utils/cachemodule');
-$router->get('app', 'user/app');
+$router->get('adminapp', 'user/adminapp');
 
 
 $router->get('register', 'user/register');
