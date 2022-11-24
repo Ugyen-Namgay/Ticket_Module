@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Register</title>
+	<title>Admin App</title>
 	<!-- <link rel="stylesheet" type="text/css" href="slide/navbar/style.css"> -->
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap" rel="stylesheet">
 <link href="<?php echo $settings["app"]["homebase"].'/css/select2.min.css'?>" rel="stylesheet">
@@ -9,7 +9,7 @@
 <link href="<?php echo $settings["app"]["homebase"].'/css/tingle.min.css'?>" rel="stylesheet">
 <link href="<?php echo $settings["app"]["homebase"].'/css/register.css'?>" rel="stylesheet">
 <link rel="shortcut icon" href="<?php echo $settings["app"]["homebase"].'/'.$settings["app"]["logo"]?>" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+
 </head>
 <style>
 .pad-top-20 {
