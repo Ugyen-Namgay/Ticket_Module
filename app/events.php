@@ -68,7 +68,7 @@
                                         $pageURL = 'http';
                                         if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != "off") {$pageURL .= "s";}
                                         $pageURL .= "://";
-                                        echo '<h4 class="card-title">List of all events.</h4>';
+                                        echo '<h4 class="card-title text-center text-decoration-underline">List of all events</h4>';
                                         echo '<ul class="list-arrow">';
                                         foreach($venues as $v) {
                                             echo '<li><a href="#" onclick="editevent('.$v[0].')">'.$v[1].'</a>: '.$v[3].', '.$v[4].' FROM '.$v[5].' TILL '.$v[6].' (ID: '.$v[0].')<br> Capacity: '.$v[7];
@@ -86,24 +86,24 @@
 						<div class="col-lg-7 grid-margin stretch-card">
                         <div class="card">
                 <div class="card-body">
-                  <h4 class="card-title">Add Events</h4>
+                  <h4 class="card-title text-center text-decoration-underline">Add Events</h4>
                   <form class="form-sample" id="eventform">
                     <p class="card-description">
                     </p>
                     <div class="row">
                       <div class="col-md-6">
                         <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Event Name</label>
-                          <div class="col-sm-9">
+                          <label class="col-sm-4 col-form-label">Event Name</label>
+                          <div class="col-sm-8">
                             <input type="hidden" name="eventid" value="">
-                            <input type="text" class="form-control" name="name" required>
+                            <input type="text" class="form-control form-control-lg" name="name" required style="height: 34px;">
                           </div>
                         </div>
                       </div>
                       <div class="col-md-6">
                         <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Country</label>
-                          <div class="col-sm-9">
+                          <label class="col-sm-4 col-form-label">Country</label>
+                          <div class="col-sm-8">
                           <select name="country" class="form-control form-control-lg" required style="height: 34px;"> 
                                 <option value="Afghanistan">Afghanistan</option> 
                                 <option value="Albania">Albania</option> 
@@ -352,27 +352,27 @@
                     <div class="row">
                       <div class="col-md-6">
                         <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Address</label>
-                          <div class="col-sm-9">
-                            <input type="text" class="form-control" name="address" required/>
+                          <label class="col-sm-4 col-form-label">Address</label>
+                          <div class="col-sm-8">
+                            <input type="text" class="form-control form-control-lg" name="address" required style="height: 34px;"/>
                           </div>
                         </div>
                       </div>
                       <div class="col-md-6">
                         <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Capacity</label>
-                          <div class="col-sm-9">
-                            <input class="form-control" type="number" name="capacity" required/>
+                          <label class="col-sm-4 col-form-label">Capacity</label>
+                          <div class="col-sm-8">
+                            <input class="form-control form-control-lg" type="number" name="capacity" required style="height: 34px;"/>
                           </div>
                         </div>
                       </div>
                       
                       <div class="row">
-                      <div class="col-md-6">
+                      <div class="col-md-7">
                         <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Ticket Offset</label>
-                          <div class="col-sm-9">
-                            <input type="number" min="100000" value="100000" class="form-control" name="ticket_offset" required/>
+                          <label class="col-sm-4 col-form-label">Ticket Offset</label>
+                          <div class="col-sm-8">
+                            <input type="number" min="100000" value="100000" class="form-control form-control-lg" name="ticket_offset" required style="height: 34px;"/>
                           </div>
                         </div>
                       </div>
@@ -380,27 +380,27 @@
                       
                     </div>
                     <div class="row">
-                      <div class="col-md-6">
+                      <div class="col-md-8">
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label">Start</label>
-                          <div class="col-sm-5">
-                            <input class="form-control" type="date" name="startdate" required/>
+                          <div class="col-sm-4">
+                            <input class="form-control form-control-sm" type="date" name="startdate" required style="height: 34px;"/>
                           </div>
                           <div class="col-sm-4">
-                            <input class="form-control" type="time" name="starttime" style="height: 34px;" required/>
+                            <input class="form-control form-control-sm" type="time" name="starttime" style="height: 34px;" required/>
                           </div>
                           
                         </div>
                       </div>
-                      <div class="col-md-6">
+                      <div class="col-md-8">
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label">End</label>
-                          <div class="col-sm-5">
-                            <input class="form-control" type="date" name="enddate" required/>
+                          <div class="col-sm-4">
+                            <input class="form-control form-control-sm" type="date" name="enddate" required style="height: 34px;"/>
                             
                           </div>
                           <div class="col-sm-4">
-                          <input class="form-control" type="time" name="endtime" style="height: 34px;" required/>
+                          <input class="form-control form-control-sm" type="time" name="endtime" style="height: 34px;" required/>
                           </div>
                         </div>
                       </div>
