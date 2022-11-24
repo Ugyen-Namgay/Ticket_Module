@@ -16,7 +16,9 @@ $eventid = $args[0];
     //$ticket = strtoupper(base_convert((string)((int)$eventdetail[0][6]+(int)$cid),10,36))
     
 // }
-if(get("admin_user","admin_id","cid='$admincid'")=="[]") { // CHECK PERMISSION OF WHO IS ACCESSING THE PAGE
+$regid_get = json_decode(get("registration_requests","id","cid='".$cid."' AND event_id='$eventid'"),true);
+$admin_id = json_decode(get("admin_user","admin_id","cid='$admincid'",true),true);
+if(empty($admin_id)) { // CHECK PERMISSION OF WHO IS ACCESSING THE PAGE
     http_response_code(405);
     $data_form = '
     <form id="msform">
@@ -26,10 +28,9 @@ if(get("admin_user","admin_id","cid='$admincid'")=="[]") { // CHECK PERMISSION O
   <h4></h4>
     </form>';
 }
-else if ($cid && strlen($cid)==11) {
+else if ($cid && strlen($cid)==11 && !empty($regid_get)) {
     //id,withdrawn,other_cids,event_id,register_datetime,is_allowed
-    $regid_get = json_decode(get("registration_requests","id","cid='".$cid."' AND event_id='$eventid'"),true);
-    if (empty($regid_get)) {
+    if () {
         $data_form = '
             <form id="msform">
 
@@ -37,9 +38,8 @@ else if ($cid && strlen($cid)==11) {
             
             </form>';
     }
-    else {
-        $regid = $regid_get[0]["id"];
     
+    $regid = $regid_get[0]["id"]; 
     $registration_detail=json_decode(get("registration_requests","*","id=$regid",true),true);
     if(sizeof($registration_detail)==0) {
         $user_detail = json_decode(api_get_phone_detail($cid))->data;
@@ -68,9 +68,6 @@ else if ($cid && strlen($cid)==11) {
             
             </form>';
         }
-        
-    }
-    
 
 
     }
