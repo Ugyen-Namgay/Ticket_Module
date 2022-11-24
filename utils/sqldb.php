@@ -10,7 +10,10 @@ function success() {
 }
 
 
-$cache = new Memcached('persistent');
+global $cache;
+global $conn;
+$conn = new mysqli(DB_HOST,DB_USER,DB_PSWD,DB_NAME);
+$cache= new Memcached('persistent');
 if( !count($cache->getServerList()))
 {
     $cache->setOption(Memcached::OPT_LIBKETAMA_COMPATIBLE, true);
@@ -21,7 +24,8 @@ if( !count($cache->getServerList()))
 }
 
 function get_cache($key) {
-    $cache = new Memcached('persistent');
+    //echo "CACHED: $key<BR>";
+    global $cache;
     $cachedata = $cache->get(crc32($key));
     if ($cachedata) {
         return $cachedata;
@@ -32,21 +36,24 @@ function get_cache($key) {
 }
 
 function clear_cache($key) {
-    $cache = new Memcached('persistent');
+    //echo "CLEARING: $key<BR>";
+    global $cache;
+    //echo "BEFORE CACHED: ".(string)$cache->get(crc32($key))."<BR>";
     $cache->delete(crc32($key));
+    //echo "AFTER CACHED: ".(string)$cache->get(crc32($key))."<BR>";
 }
 
 function set_cache($key,$data,$duration=600) {
-    $cache = new Memcached('persistent');
+    global $cache;
     $cache->set(crc32($key),$data,$duration);
 }
 
 function get($table,$col="*",$condition="1",$cached = false) {
+    global $conn;
     $cacheresult = get_cache($table.$col.$condition);
     if ($cacheresult && $cached) {
         return $cacheresult;
     }
-    $conn = new mysqli(DB_HOST,DB_USER,DB_PSWD,DB_NAME);
     if ($col=="")
         $col="*";
     
@@ -65,10 +72,9 @@ function get($table,$col="*",$condition="1",$cached = false) {
 }
 
 function update($table,$col,$val,$condition) {
+    global $conn;
     clear_cache($table.$col.$condition);
     clear_cache($table."*".$condition);
-    $conn = new mysqli(DB_HOST,DB_USER,DB_PSWD,DB_NAME);
-    //global $conn;
     $col=explode(",",$col);
     $val=explode(",",$val);
     if (count($col)!==count($val)) {
@@ -92,8 +98,7 @@ function update($table,$col,$val,$condition) {
 }
 
 function insert($table,$col,$val) {
-    $conn = new mysqli(DB_HOST,DB_USER,DB_PSWD,DB_NAME);
-    //global $conn;
+    global $conn;
     $col=explode(",",str_replace("`","-",str_replace("'","",str_replace('"','',$col))));
     $val=explode(",",str_replace("`","-",str_replace("'","",str_replace('"','',$val))));
 
@@ -124,8 +129,8 @@ function insert($table,$col,$val) {
 }
 
 function delete($table,$condition) {
+    global $conn;
     clear_cache($table."*".$condition);
-    $conn = new mysqli(DB_HOST,DB_USER,DB_PSWD,DB_NAME);
 
     if (!$conn->query("DELETE FROM $table WHERE $condition;")) {
         return raise_error("Could not Delete");

@@ -28,7 +28,7 @@ if(get("admin_user","admin_id","cid='$admincid'")=="[]") { // CHECK PERMISSION O
 }
 else if ($cid && strlen($cid)==11) {
     //id,withdrawn,other_cids,event_id,register_datetime,is_allowed
-    $regid = json_decode(get("registration_requests","id","cid='".$cid."' AND event_id='$eventid'"),true);
+    $regid = json_decode(get("registration_requests","id","cid='".$cid."' AND event_id='$eventid'"),true)[0]["id"];
     $registration_detail=json_decode(get("registration_requests","*","id=$regid",true),true);
     if(sizeof($registration_detail)==0) {
         $user_detail = json_decode(api_get_phone_detail($cid))->data;
@@ -62,12 +62,14 @@ else if ($cid && strlen($cid)==11) {
     }
     else {
 
-        $eventdetail = json_decode(get("events","id,address,start_datetime,end_datetime","end_datetime>NOW()"),true);
-        $set_of_dependent = trim(str_replace(";",",",$registration_detail[0]["other_cids"]),",");
+        $eventdetail = json_decode(get("events","id,name,address,start_datetime,end_datetime","end_datetime>NOW()"),true);
+        $set_of_dependent = trim($registration_detail[0]["other_cids"],";");
         $dependent_detail=[];
         foreach (explode(";",$set_of_dependent) as $dcid) {
           $dependent_detail = array_merge($dependent_detail,json_decode(get("citizens","*","cid='$dcid'",true),true));
           $dependent_detail = array_merge($dependent_detail,json_decode(get("minor","*","cid='$dcid'",true),true));
+        //   $dependent_detail[] = json_decode(get("citizens","*","cid='$dcid'",true),true);
+        //   $dependent_detail[] = json_decode(get("minor","*","cid='$dcid'",true),true);        
         }
         $person_detail = json_decode(get("citizens","*","cid='$cid'",true),true);
         
@@ -77,11 +79,11 @@ else if ($cid && strlen($cid)==11) {
 
         $event_options = '';
         foreach($eventdetail as $event) {
-            if ($event[0]==$registration_detail[0]["event_id"]) {
-                $event_options.='<option selected value="'.$event[0].'">'.$event[1].' - '.$event[2].'</option>';
+            if ($event["id"]==$registration_detail[0]["event_id"]) {
+                $event_options.='<option selected value="'.$event["id"].'">'.$event["name"].' - '.$event["address"].'</option>';
             }
             else {
-                $event_options.='<option value="'.$event[0].'">'.$event[1].' - '.$event[2].'</option>';
+                $event_options.='<option value="'.$event["id"].'">'.$event["name"].' - '.$event["address"].'</option>';
             }
             
         }
@@ -93,10 +95,11 @@ else if ($cid && strlen($cid)==11) {
 
         $play_sound="reject";
         
-        if ($registration_detail[0]["is_allowed"]=="0") {
-            $entry_status = '<h4 id="statusbar" class="regpending">Entry Status: PENDING</h4>';
-        }
-        else if ($registration_detail[0]["is_allowed"]=="1") {
+        // if ($registration_detail[0]["is_allowed"]=="0") {
+        //     $entry_status = '<h4 id="statusbar" class="regpending">Entry Status: PENDING</h4>';
+        // }
+        // else 
+        if ($registration_detail[0]["is_allowed"]=="1") {
             $entry_status = '<h4 id="statusbar"  class="regallowed">Entry Status: ALLOWED</h4>';
             $play_sound="accept";
         }
@@ -307,7 +310,10 @@ var get_cid_info = function(cid) {
         $('#dependent_lastname').prop("disabled",false);
         $('#dependent_dob').prop("disabled",false);
       if (d.error!==false) {
-        alertify("Please enter the details manually",d.msg);
+        alertify(d.msg);
+        if (d.cleardata) {
+          $('#dependent_cid').val('');
+        
         $('#dependent_firstname').val('');
         $('#dependent_middlename').val('');
         $('#dependent_lastname').val('');

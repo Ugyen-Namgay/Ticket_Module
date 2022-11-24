@@ -8,7 +8,9 @@ $router->get('home', 'app/home');
 $router->get('users', 'app/users');
 $router->get('events', 'app/events');
 $router->get('submit', 'utils/submission');
+
 $router->get('test', 'utils/cachemodule');
+$router->get('app', 'user/app');
 
 
 $router->get('register', 'user/register');

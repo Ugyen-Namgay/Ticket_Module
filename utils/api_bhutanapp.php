@@ -198,15 +198,15 @@ function getphoto($cid) {
         imagedestroy($im);
         $size=strlen($temp);
         //return $theme_image_enc_little;
-        $previd = json_decode(get("images","id","bin='$theme_image_enc_little'"));
+        $previd = json_decode(get("images","id","bin='$theme_image_enc_little'"),true);
         if (sizeof($previd)==0) {
             insert("images","bin,format","$theme_image_enc_little,png");
-            set_cache("PHOTO".$cid,json_decode(get("images","id","bin='$theme_image_enc_little'"))[0][0],0);
-            return json_decode(get("images","id","bin='$theme_image_enc_little'"))[0][0];
+            set_cache("PHOTO".$cid,json_decode(get("images","id","bin='$theme_image_enc_little'"),true)[0]["id"],0);
+            return json_decode(get("images","id","bin='$theme_image_enc_little'"),true)[0]["id"];
         }
         else {
-            set_cache("PHOTO".$cid,$previd[0][0],0);
-            return $previd[0][0];
+            set_cache("PHOTO".$cid,$previd[0]["id"],0);
+            return $previd[0]["id"];
         }
     }
 

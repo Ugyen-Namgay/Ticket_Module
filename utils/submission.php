@@ -13,13 +13,19 @@ if (isset($_POST["request"]) && $_POST["request"]=="cidinfo") {
             echo '{"error":false,"first_name":"'.$user_detail->first_name.'","middle_name":"'.$user_detail->middle_name.'","last_name":"'.$user_detail->last_name.'","dob":"'.$user_detail->dob.'"}';
         }
         else {
-            echo '{"error":true,"msg":"No details could be found for this CID"}';
+            echo '{"error":true,"msg":"Please enter the details manually: No details could be found for this CID"}';
         }
         
     }
     else {
-        $user_detail = json_decode($details,true)[0];
-        echo '{"error":false,"first_name":"'.$user_detail["first_name"].'","middle_name":"'.$user_detail["middle_name"].'","last_name":"'.$user_detail["last_name"].'","dob":"'.$user_detail["dob"].'"}';
+        if (empty(json_decode(get("registration_requests","other_cids","other_cids LIKE '%$cid%' AND NOT cid='$cid'"),true))) {
+            $user_detail = json_decode($details,true)[0];
+            echo '{"error":false,"first_name":"'.$user_detail["first_name"].'","middle_name":"'.$user_detail["middle_name"].'","last_name":"'.$user_detail["last_name"].'","dob":"'.$user_detail["dob"].'"}';
+        }
+        else {
+            echo '{"error":true,"msg":"Sorry, The dependent is already registered by others.","cleardata":true}';
+        }
+        
     }
 }
 else if (isset($_POST["request"]) && isset($_POST["cid"])) {
@@ -62,7 +68,7 @@ else if (isset($_POST["request"]) && isset($_POST["cid"])) {
             $dependents = json_decode($data["dependent"]);
             foreach($dependents as $dependent) { //LOOK FOR EACH dependent FOR DATA. USE SAME ENTRY IF EXISTS
                 $is_there_dependent = json_decode(get("citizens","*","first_name = '$dependent[0]' AND middle_name = '$dependent[1]' AND last_name='$dependent[2]' AND dob='$dependent[3]' AND cid='$dependent[4]'"),true);
-                $is_there_dependent = array_merge($is_there_dependent,json_decode(get("minor","*","first_name = '$dependent[0]' AND middle_name = '$dependent[1]' AND last_name='$dependent[2]' AND dob='$dependent[3]' AND cid='$dependent[4]'")),true);
+                $is_there_dependent = array_merge($is_there_dependent,json_decode(get("minor","*","first_name = '$dependent[0]' AND middle_name = '$dependent[1]' AND last_name='$dependent[2]' AND dob='$dependent[3]' AND cid='$dependent[4]'"),true));
                 //var_dump($is_there_dependent);
                 if (is_array($is_there_dependent) && sizeof($is_there_dependent)>0) {
                     $dependentid.=$is_there_dependent[0]["cid"].";";

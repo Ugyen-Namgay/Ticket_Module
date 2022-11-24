@@ -286,7 +286,7 @@ var dependent_list=[];
 
       <?php
       if (!empty($registration_detail)) {
-        $set_of_dependent = str_replace(";",",",$registration_detail[0]["other_cids"]);
+        $set_of_dependent = trim($registration_detail[0]["other_cids"],";");
         $dependent_detail=[];
         foreach (explode(";",$set_of_dependent) as $dcid) {
           $dependent_detail = array_merge($dependent_detail,json_decode(get("citizens","*","cid='$dcid'",true),true));
@@ -568,7 +568,10 @@ var get_cid_info = function(cid) {
       $('#dependent_lastname').prop("disabled",false);
       $('#dependent_dob').prop("disabled",false);
       if (d.error!==false) {
-        alertify("Please enter the details manually",d.msg);
+        alertify(d.msg);
+        if (d.cleardata) {
+          $('#dependent_cid').val('');
+        }
         $('#dependent_firstname').val('');
         $('#dependent_middlename').val('');
         $('#dependent_lastname').val('');
