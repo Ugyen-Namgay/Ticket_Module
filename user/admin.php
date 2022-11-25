@@ -214,6 +214,21 @@ else {
         alert.open();
     }
     
+    var toggleminor = function() {
+        if ($("#minortoggle").prop("checked")==true) {
+          r = (Math.random() + 1).toString(36).substring(7);
+          $("#dependent_cid").val("minor_"+r+"_"+"<?php echo $cid?>");
+          $("#dependent_cid").prop("type","hidden");
+          $('#dependent_firstname').prop("disabled",false);
+          $('#dependent_middlename').prop("disabled",false);
+          $('#dependent_lastname').prop("disabled",false);
+          $('#dependent_dob').prop("disabled",false);
+        }
+        else {
+          $("#dependent_cid").val("");
+          $("#dependent_cid").prop("type","text");
+        }
+    }
 
     var btn5 = document.querySelector('.dependentdetail');
         if (btn5) {
@@ -276,6 +291,8 @@ else {
           $('#dependent_middlename').val('');
           $('#dependent_lastname').val('');
           $('#dependent_dob').val('');
+          $("#minortoggle").prop("checked",false);
+          toggleminor();
             modalButtonOnly.close();
         });
 
@@ -284,25 +301,13 @@ else {
           $('#dependent_middlename').val('');
           $('#dependent_lastname').val('');
           $('#dependent_dob').val('');
+          $("#minortoggle").prop("checked",false);
+          toggleminor();
             modalButtonOnly.close();
         });
         }
  
-    var toggleminor = function() {
-        if ($("#minortoggle").prop("checked")==true) {
-          r = (Math.random() + 1).toString(36).substring(7);
-          $("#dependent_cid").val("minor_"+r+"_"+"<?php echo $cid?>");
-          $("#dependent_cid").prop("type","hidden");
-          $('#dependent_firstname').prop("disabled",false);
-          $('#dependent_middlename').prop("disabled",false);
-          $('#dependent_lastname').prop("disabled",false);
-          $('#dependent_dob').prop("disabled",false);
-        }
-        else {
-          $("#dependent_cid").val("");
-          $("#dependent_cid").prop("type","text");
-        }
-    }
+    
     
 
 var get_cid_info = function(cid) {
