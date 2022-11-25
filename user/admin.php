@@ -326,7 +326,7 @@ var get_cid_info = function(cid) {
         alertify(d.msg);
         if (d.cleardata) {
           $('#dependent_cid').val('');
-        
+        }
         $('#dependent_firstname').val('');
         $('#dependent_middlename').val('');
         $('#dependent_lastname').val('');

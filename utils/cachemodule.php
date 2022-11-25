@@ -105,3 +105,4 @@ require_once "utils/dbconnect.php";
 // $results = $stmt->fetchArray(SQLITE3_ASSOC);
 // print_r($results);
 
+?>

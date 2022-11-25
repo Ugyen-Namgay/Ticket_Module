@@ -3,7 +3,7 @@
 <head>
 	<title>Admin App</title>
 	<!-- <link rel="stylesheet" type="text/css" href="slide/navbar/style.css"> -->
-<link href="https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap" rel="stylesheet">
+<!-- <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap" rel="stylesheet"> -->
 <!-- <link href="<?php echo $settings["app"]["homebase"].'/css/select2.min.css'?>" rel="stylesheet">
 <link href="<?php echo $settings["app"]["homebase"].'/css/select2-bootstrap.min.css'?>" rel="stylesheet">
 <link href="<?php echo $settings["app"]["homebase"].'/css/tingle.min.css'?>" rel="stylesheet">
@@ -695,9 +695,9 @@ h3,
 </div>
 </body>
 <script src="<?php echo $settings["app"]["homebase"].'/js/jquery.min.js'?>"></script>
-<script src="<?php echo $settings["app"]["homebase"].'/js/jquery.easing.min.js'?>"></script>
+<!-- <script src="<?php echo $settings["app"]["homebase"].'/js/jquery.easing.min.js'?>"></script>
 <script src="<?php echo $settings["app"]["homebase"].'/js/select2.min.js'?>"></script>
-<script src="<?php echo $settings["app"]["homebase"].'/js/tingle.min.js'?>"></script>
+<script src="<?php echo $settings["app"]["homebase"].'/js/tingle.min.js'?>"></script> -->
 <script src="<?php echo $settings["app"]["homebase"].'/js/easy.qrcode.min.js'?>"></script>
 <script>
 
