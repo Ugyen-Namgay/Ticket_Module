@@ -18,7 +18,7 @@ if (isset($_POST["request"]) && $_POST["request"]=="cidinfo") {
         
     }
     else {
-        if (empty(json_decode(get("registration_requests","other_cids","other_cids LIKE '%$cid%' AND NOT cid='$cid'"),true))) {
+        if (empty(json_decode(get("registration_requests","other_cids","other_cids LIKE '%$cid%' OR cid='$cid'"),true))) {
             $user_detail = json_decode($details,true)[0];
             echo '{"error":false,"first_name":"'.$user_detail["first_name"].'","middle_name":"'.$user_detail["middle_name"].'","last_name":"'.$user_detail["last_name"].'","dob":"'.$user_detail["dob"].'"}';
         }
