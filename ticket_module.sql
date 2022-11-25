@@ -155,6 +155,8 @@ CREATE TABLE `admin_user` (
     `register_datetime` datetime DEFAULT current_timestamp(),
     `other_cids` varchar(1024) NOT NULL,
     `withdrawn` tinyint(1) NOT NULL DEFAULT 0,
+    `dzongkhag` varchar(50) NOT NULL,
+    `gewog` varchar(50) NOT NULL,
     `is_allowed` tinyint(1) NOT NULL DEFAULT 0
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   

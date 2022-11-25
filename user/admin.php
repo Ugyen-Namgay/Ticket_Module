@@ -1,7 +1,6 @@
 <?php
 include_once "utils/api_bhutanapp.php";
 //URL: domain.com/check/[VENUEID]/[CITIZENID]?cid=[SCANNERID]
-
 $play_sound="reject";//USED LATER.
 $eventid = $args[0];
 // if (strpos($args[1],"?cid=")===false) {
@@ -16,8 +15,10 @@ $eventid = $args[0];
     //$ticket = strtoupper(base_convert((string)((int)$eventdetail[0][6]+(int)$cid),10,36))
     
 // }
+
 $regid_get = json_decode(get("registration_requests","id","cid='".$cid."' AND event_id='$eventid'"),true);
 $admin_id = json_decode(get("admin_user","admin_id","cid='$admincid'",true),true);
+
 if(empty($admin_id)) { // CHECK PERMISSION OF WHO IS ACCESSING THE PAGE
     http_response_code(405);
     $data_form = '
@@ -40,7 +41,6 @@ else if (empty($regid_get)) {
 
 }
 else if ($cid && strlen($cid)==11) {
-    
     $regid = $regid_get[0]["id"]; 
     $registration_detail=json_decode(get("registration_requests","*","id=$regid",true),true);
     if(sizeof($registration_detail)==0) {
@@ -56,11 +56,12 @@ else if ($cid && strlen($cid)==11) {
             </form>';
         }
         else {
+            
             $base64photo = json_decode(get("images","bin","id='".getphoto($cid)."'",true),true)[0]["bin"];
             $data_form = '
             <form id="msform">
             <h2>REGISTRATION FOR CID: '.$cid.' NOT FOUND</h2>
-            <img src="data:image/png;base64, '.$base64photo.'" style="padding:20px; height: 20vh"/>
+            <img src="data:image/png;base64,'.$base64photo.'" style="padding:20px; height: 20vh"/>
             <hr>
             <h4>First Name: '.$user_detail->first_name.'</h4>
             <h4>Middle Name: '.$user_detail->middle_name.'</h4>
@@ -85,9 +86,7 @@ else if ($cid && strlen($cid)==11) {
         //   $dependent_detail[] = json_decode(get("minor","*","cid='$dcid'",true),true);        
         }
         $person_detail = json_decode(get("citizens","*","cid='$cid'",true),true);
-        
         $base64photo = json_decode(get("images","bin","id='".$person_detail[0]["image_id"]."'",true),true)[0]["bin"];
-
 
 
         $event_options = '';
@@ -119,7 +118,6 @@ else if ($cid && strlen($cid)==11) {
         else {
             $entry_status = '<h4 id="statusbar" class="regnotallowed">Entry Status: NOT ALLOWED</h4>';
         }
-        
         $event_display =json_decode(get("events","*","id=".$registration_detail[0]["event_id"],true),true)[0];
         $data_form = '
         <form id="msform">
@@ -164,7 +162,6 @@ else if ($cid && strlen($cid)==11) {
         </fieldset>
         </form>
         ';
-
     }
 }
 else {
@@ -367,7 +364,7 @@ var get_cid_info = function(cid) {
             $("#statusbar").html("Entry Status: ALLOWED");
         }    
         else {
-            $("#statusbar").html("Entry Status: NOW ALLOWED");
+            $("#statusbar").html("Entry Status: NOT ALLOWED");
         }
         $("#statusbar").addClass(a);
     }
@@ -471,4 +468,4 @@ var get_cid_info = function(cid) {
 
     </script>
     <!-- <embed src='<?php echo $settings["app"]["homebase"].'/resources/'.$play_sound.'.wav'?>' hidden=true autostart=true loop=false> -->
-</html>
+    </html>

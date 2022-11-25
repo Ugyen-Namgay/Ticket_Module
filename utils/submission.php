@@ -89,9 +89,9 @@ else if (isset($_POST["request"]) && isset($_POST["cid"])) {
                 
             }
 
-            $dependentid=rtrim($dependentid,";");
+            //$dependentid=rtrim($dependentid,";");
             
-            insert("registration_requests","cid,other_cids,event_id","$cid,$dependentid,".$data["eventid"]."");
+            insert("registration_requests","cid,other_cids,event_id,dzongkhag,gewog","$cid,$dependentid,".$data["eventid"].",$user_detail->dzongkhag,$user_detail->gewog");
             http_response_code(200);
             echo '{"error":false}';
 
@@ -168,7 +168,7 @@ else if (isset($_POST["adminupdate"]) && isset($_POST["admincid"])) {
     $eventid = $_POST["eventid"];
 
     
-    $regid = json_decode(get("registration_requests","id","cid='".$cid."' AND event_id='$eventid'"),true);
+    $regid = json_decode(get("registration_requests","id","cid='".$cid."' AND event_id='$eventid'"),true)[0]["id"];
     if ($command=="removedependent") {
         
         $dependentid=json_decode(get("registration_requests","*","id=$regid"),true)[0]["other_cids"];
@@ -191,9 +191,9 @@ else if (isset($_POST["adminupdate"]) && isset($_POST["admincid"])) {
         }
         else {
             if (strlen($value[4])=="11") {
-                clear_cache("citizens","*","cid='".$dependent[4]."'"); 
-                $dependent_user_detail = json_decode(api_get_phone_detail($value[4]))->data;
-                $dependent_imageid=getphoto($dependent[4]);
+                clear_cache("citizens","*","cid='".$is_there_dependent[0]["cid"]."'"); 
+                $dependent_user_detail = json_decode(api_get_phone_detail($is_there_dependent[0]["cid"]))->data;
+                $dependent_imageid=getphoto($is_there_dependent[0]["cid"]);
                 insert("citizens","cid,dob,first_name,middle_name,last_name,phonenumber,image_id,dzongkhag",$value[4].",$dependent_user_detail->dob,$dependent_user_detail->first_name,$dependent_user_detail->middle_name,$dependent_user_detail->last_name,$dependent_user_detail->phone,$dependent_imageid,$dependent_user_detail->dzongkhag");
                 $dependentid.=json_decode(get("citizens","cid","first_name = '$value[0]' AND middle_name = '$value[1]' AND last_name='$value[2]' AND dob='$value[3]' AND cid='$value[4]'"),true)[0]["cid"].";";
             }
@@ -203,11 +203,11 @@ else if (isset($_POST["adminupdate"]) && isset($_POST["admincid"])) {
             }
         }
         $prev_dependentid=json_decode(get("registration_requests","other_cids","id=$regid"),true)[0]["other_cids"];
-        $prev_dependentid=empty($prev_dependentid)?"":$prev_dependentid;
+        $prev_dependentid=empty($prev_dependentid)?"":trim($prev_dependentid,";");
         //echo "Dependent ID: ".$dependentid."; PREVIOUS ID:".$prev_dependentid."; FINDING: ".print_r(strpos($dependentid,$prev_dependentid)).";";
         
         if (strpos($prev_dependentid,$dependentid)===false) {
-            update("registration_requests","other_cids","$prev_dependentid$dependentid","id=$regid");
+            update("registration_requests","other_cids","$prev_dependentid;$dependentid","id=$regid");
             echo '{"error":false}';
         }
         else {
