@@ -17,6 +17,9 @@ $router->get('register', 'user/register');
 $router->get('check', 'user/admin');
 $router->get('login','user/login');
 
+$router->get('luckydraw', 'user/luckydraw');
+$router->get('luckydrawsettings', 'user/luckydrawsettings');
+
 $router->get('error-401','errorpage/error-401');
 $router->get('error-404','errorpage/error-404');
 $router->get('error-403','errorpage/error-403-invalid');
