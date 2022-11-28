@@ -12,680 +12,242 @@
 
 </head>
 <style>
-.pad-top-20 {
-  padding-top: 20px;
-}
-.pad-btm-20 {
-  padding-bottom: 20px;
-}
-.pad-sep-20 {
-  padding-top: 20px;
-  padding-bottom: 20px;
-}
-.pad-top-40 {
-  padding-top: 40px;
-}
-.pad-btm-40 {
-  padding-bottom: 40px;
-}
-.pad-sep-40 {
-  padding-top: 40px;
-  padding-bottom: 40px;
-}
-.pad-top-60 {
-  padding-top: 60px;
-}
-.pad-btm-60 {
-  padding-bottom: 60px;
-}
-.pad-sep-60 {
-  padding-top: 60px;
-  padding-bottom: 60px;
-}
-.pad-top-80 {
-  padding-top: 80px;
-}
-.pad-btm-80 {
-  padding-bottom: 80px;
-}
-.pad-sep-80 {
-  padding-top: 80px;
-  padding-bottom: 80px;
-}
-.pad-top-100 {
-  padding-top: 100px;
-}
-.pad-btm-100 {
-  padding-bottom: 100px;
-}
-.pad-sep-100 {
-  padding-top: 100px;
-  padding-bottom: 100px;
-}
-@font-face {
-  font-family: 'Roboto';
-  font-style: normal;
-  font-weight: 100;
-  src: url(https://fonts.gstatic.com/s/roboto/v30/KFOkCnqEu92Fr1MmgVxIIzc.ttf) format('truetype');
-}
-@font-face {
-  font-family: 'Roboto';
-  font-style: normal;
-  font-weight: 300;
-  src: url(https://fonts.gstatic.com/s/roboto/v30/KFOlCnqEu92Fr1MmSU5fBBc9.ttf) format('truetype');
-}
-@font-face {
-  font-family: 'Roboto';
-  font-style: normal;
-  font-weight: 400;
-  src: url(https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Mu4mxP.ttf) format('truetype');
-}
-@font-face {
-  font-family: 'Roboto';
-  font-style: normal;
-  font-weight: 500;
-  src: url(https://fonts.gstatic.com/s/roboto/v30/KFOlCnqEu92Fr1MmEU9fBBc9.ttf) format('truetype');
-}
-@font-face {
-  font-family: 'Roboto';
-  font-style: normal;
-  font-weight: 700;
-  src: url(https://fonts.gstatic.com/s/roboto/v30/KFOlCnqEu92Fr1MmWUlfBBc9.ttf) format('truetype');
-}
-html,
-body {
-  height: 100%;
-}
-body {
-  margin: 0;
-  padding: 0;
-  color: #fff;
-  overflow: hidden;
-  background-color: #222;
-  font-size: 14px;
-  position: relative;
-  font-family: 'Roboto', Helvetica, Arial, sans-serif;
-}
-h1,
-.h1,
-h2,
-.h2,
-h3,
-.h3 {
-  font-weight: 300;
-  color: #22A7F0;
-}
-.fix-middle {
-  position: absolute;
-  padding: 10px;
-  top: 50%;
-  left: 50%;
-  -webkit-transform: translate(-50%, -50%);
-  -moz-transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-  z-index: 3;
-}
-.dialog {
-  color: #222;
-  -webkit-perspective: 1200px;
-  -moz-perspective: 1200px;
-  -ms-perspective: 1200px;
-  -o-perspective: 1200px;
-  perspective: 1200px;
-  z-index: 1000;
-  opacity: 1;
-  visibility: visible;
-  -webkit-transition: opacity 0.2s cubic-bezier(0.25, 0.5, 0.5, 0.9), visibility 0.2s cubic-bezier(0.25, 0.5, 0.5, 0.9);
-  -moz-transition: opacity 0.2s cubic-bezier(0.25, 0.5, 0.5, 0.9), visibility 0.2s cubic-bezier(0.25, 0.5, 0.5, 0.9);
-  -ms-transition: opacity 0.2s cubic-bezier(0.25, 0.5, 0.5, 0.9), visibility 0.2s cubic-bezier(0.25, 0.5, 0.5, 0.9);
-  transition: opacity 0.2s cubic-bezier(0.25, 0.5, 0.5, 0.9), visibility 0.2s cubic-bezier(0.25, 0.5, 0.5, 0.9);
-}
-.dialog,
-.dialog .dialog-front,
-.dialog .dialog-back {
-  width: auto;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  padding: 0;
-  margin: 0;
-  -webkit-transform: translate(-50%, -50%);
-  -moz-transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-}
-.dialog.dialog-effect-in {
-  -webkit-animation: showDialog 1000ms linear both;
-  -moz-animation: showDialog 1000ms linear both;
-  -ms-animation: showDialog 1000ms linear both;
-  animation: showDialog 1000ms linear both;
-}
-.dialog.shakeit {
-  -webkit-animation: shakeDialog 300ms linear both;
-  -moz-animation: shakeDialog 300ms linear both;
-  -ms-animation: shakeDialog 300ms linear both;
-  animation: shakeDialog 300ms linear both;
-}
-.dialog .dialog-content {
-  width: 300px;
-  background: #fff;
-  /* Old browsers */
-  background: -moz-radial-gradient(center, ellipse cover, #ffffff 59%, #e5e5e5 100%);
-  /* FF3.6+ */
-  background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(59%, #ffffff), color-stop(100%, #e5e5e5));
-  /* Chrome,Safari4+ */
-  background: -webkit-radial-gradient(center, ellipse cover, #ffffff 59%, #e5e5e5 100%);
-  /* Chrome10+,Safari5.1+ */
-  background: -o-radial-gradient(center, ellipse cover, #ffffff 59%, #e5e5e5 100%);
-  /* Opera 12+ */
-  background: -ms-radial-gradient(center, ellipse cover, #ffffff 59%, #e5e5e5 100%);
-  /* IE10+ */
-  background: radial-gradient(ellipse at center, #ffffff 59%, #e5e5e5 100%);
-  /* W3C */
-  border-radius: 6px;
-  -webkit-box-shadow: 0 2px 12px -3px rgba(0, 0, 0, 0.6);
-  -moz-box-shadow: 0 2px 12px -3px rgba(0, 0, 0, 0.6);
-  -ms-box-shadow: 0 2px 12px -3px rgba(0, 0, 0, 0.6);
-  box-shadow: 0 2px 12px -3px rgba(0, 0, 0, 0.6);
-  padding: 20px 25px;
-}
-.dialog .dialog-front,
-.dialog .dialog-back {
-  -webkit-transform-style: preserve-3d;
-  -moz-transform-style: preserve-3d;
-  -webkit-backface-visibility: hidden;
-  -moz-backface-visibility: hidden;
-  -ms-backface-visibility: hidden;
-  backface-visibility: hidden;
-  -webkit-transition: all 0.4s cubic-bezier(0.25, 0.5, 0.5, 0.9);
-  -moz-transition: all 0.4s cubic-bezier(0.25, 0.5, 0.5, 0.9);
-  -ms-transition: all 0.4s cubic-bezier(0.25, 0.5, 0.5, 0.9);
-  transition: all 0.4s cubic-bezier(0.25, 0.5, 0.5, 0.9);
-}
-.dialog .dialog-front {
-  -webkit-transform: translate(-50%, -50%) rotateX(0deg) rotateY(0deg);
-  -moz-transform: translate(-50%, -50%) rotateX(0deg) rotateY(0deg);
-  -ms-transform: translate(-50%, -50%) rotateX(0deg) rotateY(0deg);
-  -o-transform: translate(-50%, -50%) rotateX(0deg) rotateY(0deg);
-  z-index: 900;
-}
-.dialog .dialog-back {
-  -webkit-transform: translate(-50%, -50%) rotateY(-180deg);
-  -moz-transform: translate(-50%, -50%) rotateY(-180deg);
-  -ms-transform: translate(-50%, -50%) rotateY(-180deg);
-  -o-transform: translate(-50%, -50%) rotateY(-180deg);
-  z-index: 800;
-}
-.dialog.flip .dialog-front {
-  z-index: 800;
-  visibility: hidden;
-  -webkit-transform: translate(-50%, -50%) rotateY(180deg);
-  -moz-transform: translate(-50%, -50%) rotateY(180deg);
-  -ms-transform: translate(-50%, -50%) rotateY(180deg);
-  -o-transform: translate(-50%, -50%) rotateY(180deg);
-}
-.dialog.flip .dialog-back {
-  z-index: 900;
-  visibility: visible;
-  -webkit-transform: translate(-50%, -50%) rotateX(0deg) rotateY(0deg);
-  -moz-transform: translate(-50%, -50%) rotateX(0deg) rotateY(0deg);
-  -ms-transform: translate(-50%, -50%) rotateX(0deg) rotateY(0deg);
-  -o-transform: translate(-50%, -50%) rotateX(0deg) rotateY(0deg);
-}
-.dialog.dialog-effect-out {
-  z-index: 1;
-  opacity: 0;
-  visibility: hidden;
-}
-.dialog.dialog-effect-out .dialog-front {
-  -webkit-transform: translate(-50%, -20%) rotateX(-30deg);
-  -moz-transform: translate(-50%, -20%) rotateX(-30deg);
-  -ms-transform: translate(-50%, -20%) rotateX(-30deg);
-  -o-transform: translate(-50%, -20%) rotateX(-30deg);
-}
-.dialog.dialog-effect-out .dialog-back {
-  -webkit-transform: translate(-50%, -20%) rotateX(-30deg) rotateY(-180deg);
-  -moz-transform: translate(-50%, -20%) rotateX(-30deg) rotateY(-180deg);
-  -ms-transform: translate(-50%, -20%) rotateX(-30deg) rotateY(-180deg);
-  -o-transform: translate(-50%, -20%) rotateX(-30deg) rotateY(-180deg);
-}
-.dialog.dialog-effect-out.flip .dialog-front {
-  -webkit-transform: translate(-50%, -20%) rotateX(-30deg) rotateY(180deg);
-  -moz-transform: translate(-50%, -20%) rotateX(-30deg) rotateY(180deg);
-  -ms-transform: translate(-50%, -20%) rotateX(-30deg) rotateY(180deg);
-  -o-transform: translate(-50%, -20%) rotateX(-30deg) rotateY(180deg);
-}
-.dialog.dialog-effect-out.flip .dialog-back {
-  -webkit-transform: translate(-50%, -20%) rotateX(-30deg) rotateY(0deg);
-  -moz-transform: translate(-50%, -20%) rotateX(-30deg) rotateY(0deg);
-  -ms-transform: translate(-50%, -20%) rotateX(-30deg) rotateY(0deg);
-  -o-transform: translate(-50%, -20%) rotateX(-30deg) rotateY(0deg);
-}
-.dialog.dialog-effect-out .dialog-content {
-  background: #00B16A;
-}
-.dialog.dialog-effect-out .dialog-content .dialog-form {
-  visibility: hidden;
-}
-.dialog .dialog-form {
-  -webkit-animation: swooshUp30 300ms linear both;
-  -moz-animation: swooshUp30 300ms linear both;
-  -ms-animation: swooshUp30 300ms linear both;
-  animation: swooshUp30 300ms linear both;
-  -webkit-animation-delay: 300ms;
-  -moz-animation-delay: 300ms;
-  -ms-animation-delay: 300ms;
-  animation-delay: 300ms;
-}
-.dialog .dialog-form legend {
-  margin-bottom: 40px;
-  font-size: 26px;
-  font-weight: 300;
-  color: #222;
-  border-bottom: none;
-}
-.dialog .dialog-form .form-group {
-  margin-bottom: 20px;
-  position: relative;
-}
-.dialog .dialog-form .form-group .form-control {
-  color: #222;
-  background-color: transparent;
-  border: none;
-  border-bottom: 2px solid #222;
-  border-radius: 0;
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  -ms-box-shadow: none;
-  box-shadow: none;
-}
-.dialog .dialog-form .form-group label {
+@import url(https://fonts.googleapis.com/css?family=Open+Sans);
+.btn {
   display: inline-block;
-  max-width: 100%;
-  margin-bottom: 5px;
-  font-weight: 700;
+  *display: inline;
+  *zoom: 1;
+  padding: 4px 10px 4px;
+  margin-bottom: 0;
+  font-size: 13px;
+  line-height: 18px;
+  color: #333333;
+  text-align: center;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+  vertical-align: middle;
+  background-color: #f5f5f5;
+  background-image: -moz-linear-gradient(top, #ffffff, #e6e6e6);
+  background-image: -ms-linear-gradient(top, #ffffff, #e6e6e6);
+  background-image: -webkit-gradient(
+    linear,
+    0 0,
+    0 100%,
+    from(#ffffff),
+    to(#e6e6e6)
+  );
+  background-image: -webkit-linear-gradient(top, #ffffff, #e6e6e6);
+  background-image: -o-linear-gradient(top, #ffffff, #e6e6e6);
+  background-image: linear-gradient(top, #ffffff, #e6e6e6);
+  background-repeat: repeat-x;
+  filter: progid:dximagetransform.microsoft.gradient(startColorstr=#ffffff, endColorstr=#e6e6e6, GradientType=0);
+  border-color: #e6e6e6 #e6e6e6 #e6e6e6;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  border: 1px solid #e6e6e6;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 1px 2px rgba(0, 0, 0, 0.05);
+  -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 1px 2px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  *margin-left: 0.3em;
 }
-.dialog .dialog-form .form-group.has-error .error-msg {
-  display: block;
-}
-.dialog .dialog-form .form-group.has-error label {
-  color: #E74C3C;
-}
-.dialog .dialog-form .form-group.has-error .form-control {
-  border-color: #E74C3C;
-}
-.dialog .dialog-form .form-group .checkbox label {
-  padding-left: 40px;
-}
-.dialog .dialog-form .form-group .checkbox input[type="checkbox"] {
-  width: 20px;
-  height: 20px;
-  background: none;
-  border: 2px solid #222;
-  margin-left: -40px;
-  -webkit-appearance: none;
-  appearance: none;
-}
-.dialog .dialog-form .form-group .checkbox input[type="checkbox"]:hover {
+.btn:hover,
+.btn:active,
+.btn.active,
+.btn.disabled,
+.btn[disabled] {
   background-color: #e6e6e6;
 }
-.dialog .dialog-form .form-group .checkbox input[type="checkbox"]:checked {
-  background-color: #222;
+.btn-large {
+  padding: 9px 14px;
+  font-size: 15px;
+  line-height: normal;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
 }
-.dialog .dialog-form .form-group .checkbox input[type="checkbox"]:disabled {
-  background-color: #6f6f6f;
-  border-color: #555555;
+.btn:hover {
+  color: #333333;
+  text-decoration: none;
+  background-color: #e6e6e6;
+  background-position: 0 -15px;
+  -webkit-transition: background-position 0.1s linear;
+  -moz-transition: background-position 0.1s linear;
+  -ms-transition: background-position 0.1s linear;
+  -o-transition: background-position 0.1s linear;
+  transition: background-position 0.1s linear;
 }
-.dialog .dialog-form .error-msg {
+.btn-primary,
+.btn-primary:hover {
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  color: #ffffff;
+}
+.btn-primary.active {
+  color: rgba(255, 255, 255, 0.75);
+}
+.btn-primary {
+  background-color: #4a77d4;
+  background-image: -moz-linear-gradient(top, #6eb6de, #4a77d4);
+  background-image: -ms-linear-gradient(top, #6eb6de, #4a77d4);
+  background-image: -webkit-gradient(
+    linear,
+    0 0,
+    0 100%,
+    from(#6eb6de),
+    to(#4a77d4)
+  );
+  background-image: -webkit-linear-gradient(top, #6eb6de, #4a77d4);
+  background-image: -o-linear-gradient(top, #6eb6de, #4a77d4);
+  background-image: linear-gradient(top, #6eb6de, #4a77d4);
+  background-repeat: repeat-x;
+  filter: progid:dximagetransform.microsoft.gradient(startColorstr=#6eb6de, endColorstr=#4a77d4, GradientType=0);
+  border: 1px solid #3762bc;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 1px 2px rgba(0, 0, 0, 0.5);
+}
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary.active,
+.btn-primary.disabled,
+.btn-primary[disabled] {
+  filter: none;
+  background-color: #4a77d4;
+}
+.btn-block {
+  width: 100%;
+  display: block;
+}
+
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  -o-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+html {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  width: 100%;
+  height: 100%;
+  font-family: "Open Sans", sans-serif;
+  background: #092756;
+  background: -moz-radial-gradient(
+      0% 100%,
+      ellipse cover,
+      rgba(104, 128, 138, 0.4) 10%,
+      rgba(138, 114, 76, 0) 40%
+    ),
+    -moz-linear-gradient(top, rgba(57, 173, 219, 0.25) 0%, rgba(42, 60, 87, 0.4)
+          100%),
+    -moz-linear-gradient(-45deg, #670d10 0%, #092756 100%);
+  background: -webkit-radial-gradient(
+      0% 100%,
+      ellipse cover,
+      rgba(104, 128, 138, 0.4) 10%,
+      rgba(138, 114, 76, 0) 40%
+    ),
+    -webkit-linear-gradient(top, rgba(57, 173, 219, 0.25) 0%, rgba(
+            42,
+            60,
+            87,
+            0.4
+          )
+          100%),
+    -webkit-linear-gradient(-45deg, #670d10 0%, #092756 100%);
+  background: -o-radial-gradient(
+      0% 100%,
+      ellipse cover,
+      rgba(104, 128, 138, 0.4) 10%,
+      rgba(138, 114, 76, 0) 40%
+    ),
+    -o-linear-gradient(top, rgba(57, 173, 219, 0.25) 0%, rgba(42, 60, 87, 0.4)
+          100%),
+    -o-linear-gradient(-45deg, #670d10 0%, #092756 100%);
+  background: -ms-radial-gradient(
+      0% 100%,
+      ellipse cover,
+      rgba(104, 128, 138, 0.4) 10%,
+      rgba(138, 114, 76, 0) 40%
+    ),
+    -ms-linear-gradient(top, rgba(57, 173, 219, 0.25) 0%, rgba(42, 60, 87, 0.4)
+          100%),
+    -ms-linear-gradient(-45deg, #670d10 0%, #092756 100%);
+  background: -webkit-radial-gradient(
+      0% 100%,
+      ellipse cover,
+      rgba(104, 128, 138, 0.4) 10%,
+      rgba(138, 114, 76, 0) 40%
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(57, 173, 219, 0.25) 0%,
+      rgba(42, 60, 87, 0.4) 100%
+    ),
+    linear-gradient(135deg, #670d10 0%, #092756 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3E1D6D', endColorstr='#092756',GradientType=1 );
+}
+.login {
   position: absolute;
   top: 50%;
-  left: 0;
-  right: auto;
-  background-color: #E74C3C;
+  left: 50%;
+  margin: -150px 0 0 -150px;
+  width: 300px;
+  height: 300px;
+}
+.login h1 {
   color: #fff;
-  padding: 10px;
-  z-index: 3;
-  max-width: 150px;
-  border-radius: 3px;
-  -webkit-transform: translate(-110%, -50%);
-  -moz-transform: translate(-110%, -50%);
-  -ms-transform: translate(-110%, -50%);
-  transform: translate(-110%, -50%);
-  -webkit-animation: swooshleft 200ms ease-in-out both;
-  -moz-animation: swooshleft 200ms ease-in-out both;
-  -ms-animation: swooshleft 200ms ease-in-out both;
-  animation: swooshleft 200ms ease-in-out both;
-  display: none;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  letter-spacing: 1px;
+  text-align: center;
 }
-.dialog .dialog-form .error-msg:after {
-  position: absolute;
-  content: '';
-  top: 50%;
-  right: 0;
-  -webkit-transform: translate(97%, -50%);
-  -moz-transform: translate(97%, -50%);
-  -ms-transform: translate(97%, -50%);
-  transform: translate(97%, -50%);
-  width: 0;
-  height: 0;
-  border-style: solid;
-  border-width: 10px 0 10px 10px;
-  border-color: transparent transparent transparent #E74C3C;
-}
-.dialog .dialog-form .btn {
-  font-weight: 700;
-  border-width: 0;
-  border-radius: 0;
-  text-transform: uppercase;
-  -webkit-transition: all 0.2s cubic-bezier(0.25, 0.5, 0.5, 0.9);
-  -moz-transition: all 0.2s cubic-bezier(0.25, 0.5, 0.5, 0.9);
-  -ms-transition: all 0.2s cubic-bezier(0.25, 0.5, 0.5, 0.9);
-  transition: all 0.2s cubic-bezier(0.25, 0.5, 0.5, 0.9);
-}
-.dialog .dialog-form .btn.btn-default {
-  color: #fff;
-  background-color: #446CB3;
-  margin: 0 -10%;
-  width: 120%;
+
+input {
+  width: 100%;
+  margin-bottom: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border: none;
   outline: none;
-}
-.dialog .dialog-form .btn.btn-default:hover {
-  background-color: #222;
+  padding: 10px;
+  font-size: 13px;
   color: #fff;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  box-shadow: inset 0 -5px 45px rgba(100, 100, 100, 0.2),
+    0 1px 1px rgba(255, 255, 255, 0.2);
+  -webkit-transition: box-shadow 0.5s ease;
+  -moz-transition: box-shadow 0.5s ease;
+  -o-transition: box-shadow 0.5s ease;
+  -ms-transition: box-shadow 0.5s ease;
+  transition: box-shadow 0.5s ease;
 }
-.dialog .dialog-form .btn.btn-default:active,
-.dialog .dialog-form .btn.btn-default:focus {
-  background-color: #222;
-  color: #fff;
-}
-@-webkit-keyframes swooshUp30 {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-@-moz-keyframes swooshUp30 {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-@keyframes swooshUp30 {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-@-webkit-keyframes swooshleft {
-  0% {
-    -webkit-transform: translate(-90%, -50%);
-    -moz-transform: translate(-90%, -50%);
-    -ms-transform: translate(-90%, -50%);
-    transform: translate(-90%, -50%);
-  }
-  100% {
-    -webkit-transform: translate(-110%, -50%);
-    -moz-transform: translate(-110%, -50%);
-    -ms-transform: translate(-110%, -50%);
-    transform: translate(-110%, -50%);
-  }
-}
-@-moz-keyframes swooshleft {
-  0% {
-    -webkit-transform: translate(-90%, -50%);
-    -moz-transform: translate(-90%, -50%);
-    -ms-transform: translate(-90%, -50%);
-    transform: translate(-90%, -50%);
-  }
-  100% {
-    -webkit-transform: translate(-110%, -50%);
-    -moz-transform: translate(-110%, -50%);
-    -ms-transform: translate(-110%, -50%);
-    transform: translate(-110%, -50%);
-  }
-}
-@keyframes swooshleft {
-  0% {
-    -webkit-transform: translate(-90%, -50%);
-    -moz-transform: translate(-90%, -50%);
-    -ms-transform: translate(-90%, -50%);
-    transform: translate(-90%, -50%);
-  }
-  100% {
-    -webkit-transform: translate(-110%, -50%);
-    -moz-transform: translate(-110%, -50%);
-    -ms-transform: translate(-110%, -50%);
-    transform: translate(-110%, -50%);
-  }
-}
-@-webkit-keyframes shakeDialog {
-  0% {
-    left: 51%;
-  }
-  25% {
-    left: 49%;
-  }
-  50% {
-    left: 51%;
-  }
-  100% {
-    left: 50%;
-  }
-}
-@-moz-keyframes shakeDialog {
-  0% {
-    left: 51%;
-  }
-  25% {
-    left: 49%;
-  }
-  50% {
-    left: 51%;
-  }
-  100% {
-    left: 50%;
-  }
-}
-@keyframes shakeDialog {
-  0% {
-    left: 51%;
-  }
-  25% {
-    left: 49%;
-  }
-  50% {
-    left: 51%;
-  }
-  100% {
-    left: 50%;
-  }
-}
-/* Generated with Bounce.js. Edit at https://goo.gl/KtDT8H */
-@-webkit-keyframes showDialog {
-  0% {
-    -webkit-transform: matrix3d(0.8, 0, 0, 0, 0, 0.8, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-    transform: matrix3d(0.8, 0, 0, 0, 0, 0.8, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-  }
-  7.61% {
-    -webkit-transform: matrix3d(0.907, 0, 0, 0, 0, 0.907, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-    transform: matrix3d(0.907, 0, 0, 0, 0, 0.907, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-  }
-  11.41% {
-    -webkit-transform: matrix3d(0.948, 0, 0, 0, 0, 0.948, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-    transform: matrix3d(0.948, 0, 0, 0, 0, 0.948, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-  }
-  15.12% {
-    -webkit-transform: matrix3d(0.976, 0, 0, 0, 0, 0.976, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-    transform: matrix3d(0.976, 0, 0, 0, 0, 0.976, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-  }
-  18.92% {
-    -webkit-transform: matrix3d(0.996, 0, 0, 0, 0, 0.996, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-    transform: matrix3d(0.996, 0, 0, 0, 0, 0.996, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-  }
-  22.72% {
-    -webkit-transform: matrix3d(1.008, 0, 0, 0, 0, 1.008, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-    transform: matrix3d(1.008, 0, 0, 0, 0, 1.008, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-  }
-  30.23% {
-    -webkit-transform: matrix3d(1.014, 0, 0, 0, 0, 1.014, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-    transform: matrix3d(1.014, 0, 0, 0, 0, 1.014, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-  }
-  50.25% {
-    -webkit-transform: matrix3d(1.003, 0, 0, 0, 0, 1.003, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-    transform: matrix3d(1.003, 0, 0, 0, 0, 1.003, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-  }
-  70.27% {
-    -webkit-transform: matrix3d(0.999, 0, 0, 0, 0, 0.999, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-    transform: matrix3d(0.999, 0, 0, 0, 0, 0.999, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-  }
-  100% {
-    -webkit-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-    transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-  }
-}
-@keyframes showDialog {
-  0% {
-    -webkit-transform: matrix3d(0.8, 0, 0, 0, 0, 0.8, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-    transform: matrix3d(0.8, 0, 0, 0, 0, 0.8, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-  }
-  7.61% {
-    -webkit-transform: matrix3d(0.907, 0, 0, 0, 0, 0.907, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-    transform: matrix3d(0.907, 0, 0, 0, 0, 0.907, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-  }
-  11.41% {
-    -webkit-transform: matrix3d(0.948, 0, 0, 0, 0, 0.948, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-    transform: matrix3d(0.948, 0, 0, 0, 0, 0.948, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-  }
-  15.12% {
-    -webkit-transform: matrix3d(0.976, 0, 0, 0, 0, 0.976, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-    transform: matrix3d(0.976, 0, 0, 0, 0, 0.976, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-  }
-  18.92% {
-    -webkit-transform: matrix3d(0.996, 0, 0, 0, 0, 0.996, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-    transform: matrix3d(0.996, 0, 0, 0, 0, 0.996, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-  }
-  22.72% {
-    -webkit-transform: matrix3d(1.008, 0, 0, 0, 0, 1.008, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-    transform: matrix3d(1.008, 0, 0, 0, 0, 1.008, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-  }
-  30.23% {
-    -webkit-transform: matrix3d(1.014, 0, 0, 0, 0, 1.014, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-    transform: matrix3d(1.014, 0, 0, 0, 0, 1.014, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-  }
-  50.25% {
-    -webkit-transform: matrix3d(1.003, 0, 0, 0, 0, 1.003, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-    transform: matrix3d(1.003, 0, 0, 0, 0, 1.003, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-  }
-  70.27% {
-    -webkit-transform: matrix3d(0.999, 0, 0, 0, 0, 0.999, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-    transform: matrix3d(0.999, 0, 0, 0, 0, 0.999, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-  }
-  100% {
-    -webkit-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-    transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-  }
-}
-#successful_login,
-#successful_registration {
-  opacity: 0;
-  visibility: hidden;
-  -webkit-transition: opacity 0.4s cubic-bezier(0.25, 0.5, 0.5, 0.9), visibility 0.6s cubic-bezier(0.25, 0.5, 0.5, 0.9);
-  -moz-transition: opacity 0.4s cubic-bezier(0.25, 0.5, 0.5, 0.9), visibility 0.6s cubic-bezier(0.25, 0.5, 0.5, 0.9);
-  -ms-transition: opacity 0.4s cubic-bezier(0.25, 0.5, 0.5, 0.9), visibility 0.6s cubic-bezier(0.25, 0.5, 0.5, 0.9);
-  transition: opacity 0.4s cubic-bezier(0.25, 0.5, 0.5, 0.9), visibility 0.6s cubic-bezier(0.25, 0.5, 0.5, 0.9);
-}
-#successful_login.active,
-#successful_registration.active {
-  opacity: 1;
-  visibility: visible;
+input:focus {
+  box-shadow: inset 0 -5px 45px rgba(100, 100, 100, 0.4),
+    0 1px 1px rgba(255, 255, 255, 0.2);
 }
 
 </style>
 <body> 	
 
 
-<div id="successful_login" class="fix-middle">
-  <div class="container text-center">
-    <h1>Welcome back to the internet!</h1>
-    <p>You've successfully managed to log into a nonexistant account in order to test a login dialog box.<br> If you like it, you are welcomed to use it wherever you want, no strings attached.<br><br><a href="#" class="link dialog-reset">Rerun the whole thing.</a></p>
-  </div>
-</div>
-<div id="successful_registration" class="fix-middle">
-  <div class="container text-center">
-    <h1>Welcome to the internet!</h1>
-    <p>You've successfully managed to register for a nonexistant account in order to test a registration dialog box.<br> If you like it, you are welcomed to use it wherever you want, no strings attached.<br><br><a href="#" class="link dialog-reset">Rerun the whole thing.</a></p>
-  </div>
-</div>
-
-<div id="dialog" class="dialog dialog-effect-in">
-  <div class="dialog-front">
-    <div class="dialog-content">
-      <form id="login_form" class="dialog-form" action="" method="POST">
-        <fieldset>
-          <legend>Log in</legend>
-          <div class="form-group">
-            <label for="user_username" class="control-label">Username:</label>
-            <input type="text" id="user_username" class="form-control" name="user_username" autofocus/>
-          </div>
-          <div class="form-group">
-            <label for="user_password" class="control-label">Password:</label>
-            <input type="password" id="user_password" class="form-control" name="user_password"/>
-          </div>
-          <div class="text-center pad-top-20">
-            <p>Have you forgotten your<br><a href="#" class="link"><strong>username</strong></a> or <a href="#" class="link"><strong>password</strong></a>?</p>
-          </div>
-          <div class="pad-top-20 pad-btm-20">
-            <input type="submit" class="btn btn-default btn-block btn-lg" value="Continue">
-          </div>
-          <div class="text-center">
-            <p>Do you wish to register<br> for <a href="#" class="link user-actions"><strong>a new account</strong></a>?</p>
-          </div>
-        </fieldset>
-      </form>
-    </div>
-  </div>
-  <div class="dialog-back">
-    <div class="dialog-content">
-      <form id="register_form" class="dialog-form" action="" method="POST">
-        <fieldset>
-          <legend>Register</legend>
-          <div class="form-group">
-            <label for="user_username" class="control-label">Username:</label>
-            <input type="text" id="user_username" class="form-control" name="user_username"/> 
-          </div>
-          <div class="form-group">
-            <label for="user_password" class="control-label">Password:</label>
-            <input type="password" id="user_password" class="form-control" name="user_password"/>
-          </div>
-          <div class="form-group">
-            <label for="user_cnf_password" class="control-label">Confirm password:</label>
-            <input type="password" id="user_cnf_password" class="form-control" name="user_cnf_password"/>
-          </div>
-          <div class="form-group pad-top-20 form-group-checkbox">
-            <div class="checkbox">
-              <label>
-                <input type="checkbox" id="user_terms" name="user_terms">
-                I have read and I agree with the Terms and Conditions
-              </label>
-            </div>
-          </div>
-          <div class="pad-btm-20">
-            <input type="submit" class="btn btn-default btn-block btn-lg" value="Continue"/>
-          </div>
-          <div class="text-center">
-            <p>Return to <a href="#" class="link user-actions"><strong>log in page</strong></a>?</p>
-          </div>
-        </fieldset>
-      </form>
-    </div>
-  </div>
+<div class="login">
+	<h1>Login</h1>
+    <form method="post">
+    	<input type="text" name="u" placeholder="Username" required="required" />
+        <input type="password" name="p" placeholder="Password" required="required" />
+        <button type="submit" class="btn btn-primary btn-block btn-large">Let me in.</button>
+    </form>
 </div>
 
 
@@ -694,7 +256,7 @@ h3,
 
 </div>
 </body>
-<script src="<?php echo $settings["app"]["homebase"].'/js/jquery.min.js'?>"></script>
+<!-- <script src="<?php echo $settings["app"]["homebase"].'/js/jquery.min.js'?>"></script> -->
 <!-- <script src="<?php echo $settings["app"]["homebase"].'/js/jquery.easing.min.js'?>"></script>
 <script src="<?php echo $settings["app"]["homebase"].'/js/select2.min.js'?>"></script>
 <script src="<?php echo $settings["app"]["homebase"].'/js/tingle.min.js'?>"></script> -->

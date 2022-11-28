@@ -102,7 +102,7 @@ else if ($cid && strlen($cid)==11) {
 
         $dependent_list = '';
         foreach($dependent_detail as $dependent) {
-            $dependent_list.='<li class="dependent_list_items"><span>'.$dependent["first_name"]." ".($dependent["middle_name"]==""?"":$dependent["middle_name"]).' '.$dependent["last_name"]."</span><span> DOB: ".$dependent["dob"].'</span><button type="button" onclick="discard_dependent(\''.$dependent["cid"].'\')" class="closebutton">X</button></li>';
+            $dependent_list.='<li class="dependent_list_items"><span>'.$dependent["first_name"]." ".($dependent["middle_name"]==""?"":$dependent["middle_name"]).' '.$dependent["last_name"]."</span><span> DOB: ".$dependent["dob"].'</span>'"</span><span> Gender: ".$dependent["gender"].'<span><button type="button" onclick="discard_dependent(\''.$dependent["cid"].'\')" class="closebutton">X</button></li>';
         }
 
         $play_sound="reject";
@@ -249,6 +249,11 @@ else {
           <input type="text" id="dependent_firstname" placeholder="First Name" />
           <input type="text" id="dependent_middlename" placeholder="Middle Name" />
           <input type="text" id="dependent_lastname" placeholder="Last Name" />
+          <select id="dependent_gender" required>
+            <option value="" disabled>Gender</option>
+            <option value="M">Male</option>
+            <option value="F">Femail</option>
+          </select>
           <input type="date" id="dependent_dob" placeholder="Date of Birth" max="2022-08-01"/>
         </fieldset>`);
         modalButtonOnly.addFooterBtn('Add', 'tingle-btn tingle-btn--primary tingle-btn--pull-right', function () {
@@ -257,6 +262,7 @@ else {
           m=$('#dependent_middlename').val();
           l=$('#dependent_lastname').val();
           d=$('#dependent_dob').val();
+          g=$('#dependent_gender').val();
           if (f=='' || d=='') {
             
             $("#dependent_error").html("First name and Date of Birth is mandatory");
@@ -288,6 +294,7 @@ else {
           $('#dependent_middlename').val('');
           $('#dependent_lastname').val('');
           $('#dependent_dob').val('');
+          $('#dependent_gender').val('');
           $("#minortoggle").prop("checked",false);
           toggleminor();
             modalButtonOnly.close();
@@ -298,6 +305,7 @@ else {
           $('#dependent_middlename').val('');
           $('#dependent_lastname').val('');
           $('#dependent_dob').val('');
+          $('#dependent_gender').val('');
           $("#minortoggle").prop("checked",false);
           toggleminor();
             modalButtonOnly.close();
@@ -306,29 +314,31 @@ else {
  
     
     
-
 var get_cid_info = function(cid) {
-    toggleminor();
+  toggleminor();
   if (cid=="<?php echo $cid?>") {
     alertify("You cannot add your own CID again");
     $('#dependent_firstname').prop("disabled",true);
     $('#dependent_middlename').prop("disabled",true);
     $('#dependent_lastname').prop("disabled",true);
     $('#dependent_dob').prop("disabled",true);
+    $('#dependent_gender').prop("disabled",true);
     return 0;
   }
   if (cid.length==11) {
     $.post("<?php echo $settings["app"]["homebase"].'/submit'?>",{"findcid":cid, "request":"cidinfo"},function(data){
-        d=JSON.parse(data);
-        $('#dependent_firstname').prop("disabled",false);
-        $('#dependent_middlename').prop("disabled",false);
-        $('#dependent_lastname').prop("disabled",false);
-        $('#dependent_dob').prop("disabled",false);
+      d=JSON.parse(data);
+      $('#dependent_firstname').prop("disabled",false);
+      $('#dependent_middlename').prop("disabled",false);
+      $('#dependent_lastname').prop("disabled",false);
+      $('#dependent_dob').prop("disabled",false);
+      $('#dependent_gender').prop("disabled",false);
       if (d.error!==false) {
         alertify(d.msg);
         if (d.cleardata) {
           $('#dependent_cid').val('');
         }
+        $('#dependent_gender').val('');
         $('#dependent_firstname').val('');
         $('#dependent_middlename').val('');
         $('#dependent_lastname').val('');
@@ -337,6 +347,7 @@ var get_cid_info = function(cid) {
       else {
         $('#dependent_firstname').val(d.first_name);
         $('#dependent_cid').val(cid);
+        $('#dependent_gender').val(d.gender);
         $('#dependent_middlename').val(d.middle_name);
         $('#dependent_lastname').val(d.last_name);
         $('#dependent_dob').val(d.dob);
@@ -344,12 +355,12 @@ var get_cid_info = function(cid) {
         $('#dependent_middlename').prop("disabled",true);
         $('#dependent_lastname').prop("disabled",true);
         $('#dependent_dob').prop("disabled",true);
+        $('#dependent_gender').prop("disabled",true);
       }
     });
   }
   
 }
-
 
     var accepttune = document.createElement('audio');
     var rejecttune = document.createElement('audio');

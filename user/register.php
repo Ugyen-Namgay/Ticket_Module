@@ -507,7 +507,7 @@ var dependent_list=[];
     if (<?php echo isset($generatescript)?"false":"true";?>) {
     table = '<table class="dependent" style="width:90%">';
     for (i=0; i<dependent_list.length; i++) {
-      table+='<tr><td>'+(i+1)+'</td><td>'+dependent_list[i][0]+' '+(dependent_list[i][1]==""?'':dependent_list[i][1]+' ')+dependent_list[i][2]+'</td><td>Date of Birth: '+dependent_list[i][3]+'</td>';
+      table+='<tr><td>'+(i+1)+'</td><td>'+dependent_list[i][0]+' '+(dependent_list[i][1]==""?'':dependent_list[i][1]+' ')+dependent_list[i][2]+'</td><td>Date of Birth: '+dependent_list[i][3]+'</td><td>Gender: '+dependent_list[i][4]+'</td>';
       table+='<td><button type="button" onclick="remove_dependent('+i+')" class="closebutton">X</button></td>';
       table+='</tr>';  
       }
@@ -559,7 +559,7 @@ var dependent_list=[];
         }   
         $i=0;
         foreach ($dependent_detail as $dependent) {
-          echo "dependent_list[$i]=(['".$dependent["first_name"]."','".$dependent["middle_name"]."','".$dependent["last_name"]."','".$dependent["dob"]."','".$dependent["cid"]."']);";
+          echo "dependent_list[$i]=(['".$dependent["first_name"]."','".$dependent["middle_name"]."','".$dependent["last_name"]."','".$dependent["dob"]."','".$dependent["cid"]."','".$dependent["gender"]."']);";
           $i++;
         }
       }
@@ -765,6 +765,11 @@ $("#check_before_submit").click(function(){
           <input type="text" id="dependent_firstname" placeholder="First Name" />
           <input type="text" id="dependent_middlename" placeholder="Middle Name" />
           <input type="text" id="dependent_lastname" placeholder="Last Name" />
+          <select id="dependent_gender" required>
+            <option value="" disabled>Gender</option>
+            <option value="M">Male</option>
+            <option value="F">Femail</option>
+          </select>
           <input type="date" id="dependent_dob" placeholder="Date of Birth" max="2022-08-01"/>
         </fieldset>`);
         modalButtonOnly.addFooterBtn('Add', 'tingle-btn tingle-btn--primary tingle-btn--pull-right', function () {
@@ -773,6 +778,7 @@ $("#check_before_submit").click(function(){
           m=$('#dependent_middlename').val();
           l=$('#dependent_lastname').val();
           d=$('#dependent_dob').val();
+          g=$('#dependent_gender').val();
           if (f=='' || d=='') {
             
             $("#dependent_error").html("First name and Date of Birth is mandatory");
@@ -781,13 +787,14 @@ $("#check_before_submit").click(function(){
             setTimeout(()=>{$("#dependent_error").slideUp(500)},2000);
             return false;
           }
-          dependent_list.push([f,m,l,d,c]);
+          dependent_list.push([f,m,l,d,c,g]);
           parse_dependent();
           $("#dependent_cid").val('');
           $('#dependent_firstname').val('');
           $('#dependent_middlename').val('');
           $('#dependent_lastname').val('');
           $('#dependent_dob').val('');
+          $('#dependent_gender').val('');
           $("#minortoggle").prop("checked",false);
           toggleminor();
             modalButtonOnly.close();
@@ -798,6 +805,7 @@ $("#check_before_submit").click(function(){
           $('#dependent_middlename').val('');
           $('#dependent_lastname').val('');
           $('#dependent_dob').val('');
+          $('#dependent_gender').val('');
           $("#minortoggle").prop("checked",false);
           toggleminor();
             modalButtonOnly.close();
@@ -827,6 +835,7 @@ var get_cid_info = function(cid) {
     $('#dependent_middlename').prop("disabled",true);
     $('#dependent_lastname').prop("disabled",true);
     $('#dependent_dob').prop("disabled",true);
+    $('#dependent_gender').prop("disabled",true);
     return 0;
   }
   if (cid.length==11) {
@@ -836,11 +845,13 @@ var get_cid_info = function(cid) {
       $('#dependent_middlename').prop("disabled",false);
       $('#dependent_lastname').prop("disabled",false);
       $('#dependent_dob').prop("disabled",false);
+      $('#dependent_gender').prop("disabled",false);
       if (d.error!==false) {
         alertify(d.msg);
         if (d.cleardata) {
           $('#dependent_cid').val('');
         }
+        $('#dependent_gender').val('');
         $('#dependent_firstname').val('');
         $('#dependent_middlename').val('');
         $('#dependent_lastname').val('');
@@ -849,6 +860,7 @@ var get_cid_info = function(cid) {
       else {
         $('#dependent_firstname').val(d.first_name);
         $('#dependent_cid').val(cid);
+        $('#dependent_gender').val(d.gender);
         $('#dependent_middlename').val(d.middle_name);
         $('#dependent_lastname').val(d.last_name);
         $('#dependent_dob').val(d.dob);
@@ -856,6 +868,7 @@ var get_cid_info = function(cid) {
         $('#dependent_middlename').prop("disabled",true);
         $('#dependent_lastname').prop("disabled",true);
         $('#dependent_dob').prop("disabled",true);
+        $('#dependent_gender').prop("disabled",true);
       }
     });
   }

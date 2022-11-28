@@ -1,5 +1,22 @@
 <?php
-require_once "utils/dbconnect.php";
+$domain="http://43.230.208.133";
+$domain="http://43.230.208.133/cidapi.php?cid=11512005551&token=gG3eFFRuPrVW4KH26aTj&podo";
+echo crc32("checkOnlinehttp://43.230.208.133/vehicleapi.php?cid=11512005551&token=By3CC2B8Z3ee8FvzmGPf");
+$curlInit = curl_init($domain);
+curl_setopt($curlInit,CURLOPT_HEADER,false);
+curl_setopt($curlInit,CURLOPT_TIMEOUT_MS,2000);
+//curl_setopt($curlInit,CURLOPT_NOBODY,true);
+curl_setopt($curlInit,CURLOPT_RETURNTRANSFER,true);
+
+//get answer
+$response = curl_exec($curlInit);
+//$response = $domain;
+
+curl_close($curlInit);
+
+var_dump($response);
+
+//require_once "utils/dbconnect.php";
 // $cache = new Memcached('persistent');
 // if( !count($cache->getServerList()))
 // {
