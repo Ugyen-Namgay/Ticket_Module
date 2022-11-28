@@ -410,7 +410,7 @@ animation: neon 1s ease-in-out infinite alternate; */
             }
           },timetostop);
         }
-        drawing = false;
+        
       },delay);
 
       
@@ -419,31 +419,52 @@ animation: neon 1s ease-in-out infinite alternate; */
         
       
     }
+
+    function completed() {
+        drawing = false;
+        parseWinners();
+    }
 //drawit(12125595);
 winners = [];
-setInterval(function(){
-    //{"data":{"winners":[]},"error":false,"message":"Winners list returned"}
-    $.post("https://api.bhutanapp.bt/v1.0.1/nationalday/lucky-draw/winners/",function(data){
-        d = JSON.parse(data);
-        console.log(d.data.winners);
-        if (d.data.winners==winners) {
-            return 0;
-        }
-        thewinner = d.data.winners.filter(x => !winners.includes(x));
-        winners = d.data.winners;
-        drawit(parseInt(thewinner));
-    });
-},1000);
+    setInterval(function(){
+        //{"data":{"winners":[]},"error":false,"message":"Winners list returned"}
+        $.post("ndapi",{"winners":"get"},function(data){
+            //console.log(data);
+            d = JSON.parse(data);
+            if (d.data.winners.length==winners.length) {
+                return 0;
+            }
+            thewinner = d.data.winners.filter(x => !winners.includes(x));
+            winners = d.data.winners;
+            console.log(thewinner);
+            drawit(parseInt(thewinner));
+        });
+    },3000);
 
+function parseWinners() {
+    var list = "<ul>";
+    for (i=winners.length; i>=1; i--) {
+        list+="<li>Rank "+i+": TICKET "+winners[winners.length-i]+"</li>";
+    }
+    list+="</ul>";
+    $("#winnerbody").html(list);
+}
 function trigger() {
     if (drawing) {
         console.log("Already Drawing");
         return false;
     }
-    drawing = true;
     //{"data":{"winning_ticket":"259879"},"error":false,"message":"Winning ticket returned!"}
-    $.post("https://api.bhutanapp.bt/v1.0.1/nationalday/lucky-draw/select_winner/",function(data){
+    $.post("ndapi",{"select_winner":"get"},function(data){
         console.log(data);
+        
+        d = JSON.parse(data);
+        if (d.error) {
+            alertify(d.message);
+            return 0;
+        }
+        drawing = true;
+
     });
 }
  </script>

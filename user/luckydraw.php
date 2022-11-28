@@ -391,7 +391,6 @@ animation: neon 1s ease-in-out infinite alternate; */
             if (globalcounter==digits.length) {
               setTimeout(function(){
                 waveflow();
-                completed();
                 initConfetti();
                 render();
               },4000);
@@ -405,16 +404,17 @@ animation: neon 1s ease-in-out infinite alternate; */
     winners = [];
     setInterval(function(){
         //{"data":{"winners":[]},"error":false,"message":"Winners list returned"}
-        $.post("https://api.bhutanapp.bt/v1.0.1/nationalday/lucky-draw/winners/",function(data){
+        $.post("ndapi",{"winners":"get"},function(data){
+            //console.log(data);
             d = JSON.parse(data);
-            console.log(d.data.winners);
-            if (d.data.winners==winners) {
+            if (d.data.winners.length==winners.length) {
                 return 0;
             }
             thewinner = d.data.winners.filter(x => !winners.includes(x));
             winners = d.data.winners;
+            console.log(thewinner);
             drawit(parseInt(thewinner));
         });
-    },1000);
+    },3000);
  </script>
 </html>

@@ -19,6 +19,7 @@ $router->get('login','user/login');
 
 $router->get('luckydraw', 'user/luckydraw');
 $router->get('luckydrawsettings', 'user/luckydrawsettings');
+$router->get('ndapi', 'utils/nationaldayapi');
 
 $router->get('error-401','errorpage/error-401');
 $router->get('error-404','errorpage/error-404');
