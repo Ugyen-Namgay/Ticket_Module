@@ -423,7 +423,7 @@ animation: neon 1s ease-in-out infinite alternate; */
 winners = [];
 setInterval(function(){
     //{"data":{"winners":[]},"error":false,"message":"Winners list returned"}
-    $.get("https://api.bhutanapp.bt/v1.0.1/nationalday/lucky-draw/winners/",function(data){
+    $.post("https://api.bhutanapp.bt/v1.0.1/nationalday/lucky-draw/winners/",function(data){
         d = JSON.parse(data);
         console.log(d.data.winners);
         if (d.data.winners==winners) {
@@ -442,7 +442,7 @@ function trigger() {
     }
     drawing = true;
     //{"data":{"winning_ticket":"259879"},"error":false,"message":"Winning ticket returned!"}
-    $.get("https://api.bhutanapp.bt/v1.0.1/nationalday/lucky-draw/select_winner/",function(data){
+    $.post("https://api.bhutanapp.bt/v1.0.1/nationalday/lucky-draw/select_winner/",function(data){
         console.log(data);
     });
 }

@@ -405,7 +405,7 @@ animation: neon 1s ease-in-out infinite alternate; */
     winners = [];
     setInterval(function(){
         //{"data":{"winners":[]},"error":false,"message":"Winners list returned"}
-        $.get("https://api.bhutanapp.bt/v1.0.1/nationalday/lucky-draw/winners/",function(data){
+        $.post("https://api.bhutanapp.bt/v1.0.1/nationalday/lucky-draw/winners/",function(data){
             d = JSON.parse(data);
             console.log(d.data.winners);
             if (d.data.winners==winners) {
