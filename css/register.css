@@ -44,7 +44,7 @@
      display: none;
      }
      /*inputs*/
-     #msform input,#msform select, #msform textarea, .modal-field input, .modal-field textarea {
+     #msform input,#msform select, #msform textarea, .modal-field input, .modal-field textarea, .modal-field select {
      padding: 15px;
      border: 1px solid #ccc;
      border-radius: 3px;

@@ -768,7 +768,7 @@ $("#check_before_submit").click(function(){
           <select id="dependent_gender" required>
             <option value="" disabled>Gender</option>
             <option value="M">Male</option>
-            <option value="F">Femail</option>
+            <option value="F">Female</option>
           </select>
           <input type="date" id="dependent_dob" placeholder="Date of Birth" max="2022-08-01"/>
         </fieldset>`);

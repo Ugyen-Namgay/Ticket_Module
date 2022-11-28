@@ -102,7 +102,7 @@ else if ($cid && strlen($cid)==11) {
 
         $dependent_list = '';
         foreach($dependent_detail as $dependent) {
-            $dependent_list.='<li class="dependent_list_items"><span>'.$dependent["first_name"]." ".($dependent["middle_name"]==""?"":$dependent["middle_name"]).' '.$dependent["last_name"]."</span><span> DOB: ".$dependent["dob"].'</span>'"</span><span> Gender: ".$dependent["gender"].'<span><button type="button" onclick="discard_dependent(\''.$dependent["cid"].'\')" class="closebutton">X</button></li>';
+            $dependent_list.='<li class="dependent_list_items"><span>'.$dependent["first_name"]." ".($dependent["middle_name"]==""?"":$dependent["middle_name"]).' '.$dependent["last_name"]."</span><span> DOB: ".$dependent["dob"]."</span><span> Gender: ".$dependent["gender"].'<span><button type="button" onclick="discard_dependent(\''.$dependent["cid"].'\')" class="closebutton">X</button></li>';
         }
 
         $play_sound="reject";
@@ -252,7 +252,7 @@ else {
           <select id="dependent_gender" required>
             <option value="" disabled>Gender</option>
             <option value="M">Male</option>
-            <option value="F">Femail</option>
+            <option value="F">Female</option>
           </select>
           <input type="date" id="dependent_dob" placeholder="Date of Birth" max="2022-08-01"/>
         </fieldset>`);
