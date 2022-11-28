@@ -415,30 +415,35 @@
   else {
     $registration_detail=json_decode(get("registration_requests","*","id=".$regid[0]['id'],true),true);
     $generated_form = '<form id="msform">
-  <h4> Please show the code below during your entry</h4>
+    <h1>'.strtoupper($eventdetail[0]["name"]).'</h1>
+    <h3>2022</h3>
+    <br>
+  <h3 style="font-family: Arial"> ENTRY CODE</h3>
   <div id="qrcode">
     </div>
     
+  <div style="font-family: Arial">
   <h2>Ticket Number: '.strtoupper(base_convert((string)((int)$eventdetail[0]["ticket_offset"]+(int)$cid),10,36)).'</h2>
-  <h3>Thank you for registering to the event!</h3>
+
   <br>
   <hr>
-  <h4>Venue: '.$eventdetail[0]["name"].' '.$eventdetail[0]["address"].'</h4>
+  <h4>Venue: '.$eventdetail[0]["address"].'</h4>
   <h4>From: '.explode(" ",$eventdetail[0]["start_datetime"])[0].' Time '.explode(" ",$eventdetail[0]["start_datetime"])[1].'</h4>
   <h4>Till: '.explode(" ",$eventdetail[0]["end_datetime"])[0].' Time '.explode(" ",$eventdetail[0]["end_datetime"])[1].'</h4>
   '.(($registration_detail[0]["other_cids"]=="")?'':'<h4>Together With:<br> <i><span id="dependent_list"></span></i></h4>').'
     <br>
+  </div>
 </form>';
 
     //print_r($registration_detail);
 
     $generatescript = 'var qrcode = new QRCode("qrcode", {
-      title: "ENTRY CODE",
-      titleFont: "bold 20px Arial",
-      titleColor: "#000000",
-      titleBackgroundColor: "#ffffff",
-      titleHeight: 100,
-      titleTop: 30, 
+      // title: "ENTRY CODE",
+      // titleFont: "bold 20px Arial",
+      // titleColor: "#000000",
+      // titleBackgroundColor: "#ffffff",
+      // titleHeight: 100,
+      // titleTop: 30, 
     
       subTitle: "",
       subTitleFont: "12px Arial",

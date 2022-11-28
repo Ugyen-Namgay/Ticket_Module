@@ -144,12 +144,12 @@ else if (isset($_POST["eventmanagement"])) {
     }
     else {
         if ($data->uploadedfiles=="") {
-            echo update("events","name,country,address,start_datetime,end_datetime,capacity,ticket_offset",$data->name.",".$data->country.",".$data->address.",".$data->startdate." ".$data->starttime.",".$data->enddate." ".$data->endtime.",".$data->capacity.",".$data->ticket_offset,"id='$data->eventid'");
+            echo update("events","name,country,address,start_datetime,end_datetime,capacity,ticket_offset",$data->name.",".$data->country.",".$data->address.",".$data->startdate." ".$data->starttime.",".$data->enddate." ".$data->endtime.",".$data->capacity.",".$data->ticket_offset,"id=$data->eventid");
         }
         else {
             insert("images","bin,format","$data->uploadedfiles,png");
             $image_id = json_decode(get("images","id","bin='$data->uploadedfiles'",true),true)[0]["id"];
-            echo update("events","name,country,address,image_id,start_datetime,end_datetime,capacity,ticket_offset",$data->name.",".$data->country.",".$data->address.",".$image_id.",".$data->startdate." ".$data->starttime.",".$data->enddate." ".$data->endtime.",".$data->capacity.",".$data->ticket_offset,"id='$data->eventid'");
+            echo update("events","name,country,address,image_id,start_datetime,end_datetime,capacity,ticket_offset",$data->name.",".$data->country.",".$data->address.",".$image_id.",".$data->startdate." ".$data->starttime.",".$data->enddate." ".$data->endtime.",".$data->capacity.",".$data->ticket_offset,"id=$data->eventid");
         }
         
     }

@@ -18,14 +18,16 @@
     <link rel="shortcut icon" href="<?php echo $settings["app"]["homebase"]."/".$settings["app"]["logo"]?>" />
   </head>
   <style>
-    @import url('https://fonts.googleapis.com/css?family=Inconsolata');
-    @import url("https://fonts.googleapis.com/css?family=Quicksand&display=swap");
+@font-face {
+      font-family: "bhutanfont";
+      src: url("/resources/custom_font.woff") format("woff");
+     }
 
 html, body, #drawboard {
   height: 100%;
   width: 100%;
   overflow: hidden;
-  font-family: 'Inconsolata';
+  font-family: 'bhutanfont';
   /*background-image: url("<?php echo $settings["app"]["homebase"]."/"?>images/punakha.jpg")*/
   background-color: #fcba03;
   display: flex;
@@ -262,6 +264,8 @@ animation: neon 1s ease-in-out infinite alternate; */
   <canvas class="confetti" id="confetti"></canvas>
 
 <div class="sign">
+    <h1 style="text-align:center; font-size: xxx-large;">NATIONAL DAY<br>2022<br><div style="font-size: 0.5em;">Mock 1</div></h1>
+    
   <span id="winnerannouncement"></span></div>
 <!-- <div class="alert warning-alert Winners">
     <h3 id="winnertitle">Winners</h3>
@@ -290,20 +294,27 @@ animation: neon 1s ease-in-out infinite alternate; */
 <script src="<?php echo $settings["app"]["homebase"].'/js/confetti.js'?>"></script>
 
 <script>
-      function alertify(message) {
-        var alert = new tingle.modal({
-            closeMethods: [],
-            footer: true
-        });
-        alert.setContent(`<label>`+message+`</label>`);
-        alert.addFooterBtn('OK', 'tingle-btn tingle-btn--primary tingle-btn--pull-right', function () {
-            alert.close();
-        });
-        alert.open();
-    }
+audio_slotmachine = new Audio("/resources/slotmachine.wav");
+audio_finalslot = new Audio("/resources/finalslot.wav");
+audio_tada = new Audio("/resources/tada.mp3");
+audio_firecracker = new Audio("/resources/firecracker.mp3");
+
+function alertify(message) {
+    var alert = new tingle.modal({
+        closeMethods: [],
+        footer: true
+    });
+    alert.setContent(`<label>`+message+`</label>`);
+    alert.addFooterBtn('OK', 'tingle-btn tingle-btn--primary tingle-btn--pull-right', function () {
+        alert.close();
+    });
+    alert.open();
+}
   slots=[];
   globalcounter = 0;
+
   function drawit(n) {
+    audio_slotmachine.play();
     $("#drawboard").html("");
     //https://100px.net/docs/slot.html
     drawboard = document.querySelector("#drawboard");
@@ -333,7 +344,7 @@ animation: neon 1s ease-in-out infinite alternate; */
           { padding: '10px', background: '#fff', borderRadius: '5px'  }
         ],
         slots: [
-          { order: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], direction: direction, speed:(15+i) }
+          { order: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], direction: direction, speed:(5+(digits.length-i)) }
         ],
         prizes: [
           { fonts: [{ text: '0', top: '15%' }] },
@@ -372,7 +383,7 @@ animation: neon 1s ease-in-out infinite alternate; */
       function waveflow() {
         for (i=0; i<digits.length; i++) {
             $("#d"+i).effect( "bounce", {times:1}, 100+(waveintensity*i )); 
-            // $("#d"+i).effect( "highlight", {times:2}, 100+(wavydelay*i )); 
+            //$("#d"+i).effect( "highlight", {times:2}, 100+(waveintensity*i )); 
             setTimeout(changeslotcolor(i),100+(waveintensity*i ));
           }
       }
@@ -385,13 +396,27 @@ animation: neon 1s ease-in-out infinite alternate; */
           cumulative = timetostop;
           console.log(cumulative,i);
           setTimeout(function(){
+            if (digits.length-globalcounter<4) {
+                audio_slotmachine.currentTime="17";
+            }
+            else {
+                audio_slotmachine.currentTime="3";
+            }
+            
+            audio_finalslot.pause();
+            audio_finalslot.currentTime="0";
+            audio_finalslot.play();
             slots[globalcounter].stop(parseInt(digits[globalcounter]));
             $("#d"+globalcounter).effect( "bounce", {times:5}, 200); 
             globalcounter++;
             if (globalcounter==digits.length) {
               setTimeout(function(){
+                audio_slotmachine.pause();
+                audio_finalslot.play();
+                audio_tada.play();
                 waveflow();
                 initConfetti();
+                setTimeout(function(){audio_firecracker.play();},1000);
                 render();
               },4000);
             }

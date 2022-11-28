@@ -367,7 +367,6 @@ var get_cid_info = function(cid) {
     var rejecttune = document.createElement('audio');
     accepttune.setAttribute('src','<?php echo $settings["app"]["homebase"].'/resources/accept.wav'?>');
     rejecttune.setAttribute('src','<?php echo $settings["app"]["homebase"].'/resources/reject.wav'?>');
-
     function reloadstatus(a) {
         $("#statusbar").removeClass("regpending");
         $("#statusbar").removeClass("regallowed");

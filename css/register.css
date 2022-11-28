@@ -55,13 +55,13 @@
      margin-bottom: 10px;
      width: 100%;
      box-sizing: border-box;
-     font-family: bhutanfont;
+     font-family: Arial, Helvetica, sans-serif;
      color: #2C3E50;
      font-size: 13px;
      }
      #msform label, .modal-field label {
        margin-bottom: 10px;
-       font-family: bhutanfont;
+       font-family: Arial, Helvetica, sans-serif;
        color: #31363A;
        font-size: 13px;
        text-align: left;

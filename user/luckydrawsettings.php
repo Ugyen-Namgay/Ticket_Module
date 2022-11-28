@@ -300,18 +300,22 @@ animation: neon 1s ease-in-out infinite alternate; */
 <script src="<?php echo $settings["app"]["homebase"].'/js/confetti.js'?>"></script>
 
 <script>
-    
-      function alertify(message) {
-        var alert = new tingle.modal({
-            closeMethods: [],
-            footer: true
-        });
-        alert.setContent(`<label>`+message+`</label>`);
-        alert.addFooterBtn('OK', 'tingle-btn tingle-btn--primary tingle-btn--pull-right', function () {
-            alert.close();
-        });
-        alert.open();
-    }
+audio_slotmachine = new Audio("/resources/slotmachine.wav");
+audio_finalslot = new Audio("/resources/finalslot.wav");
+audio_tada = new Audio("/resources/tada.mp3");
+audio_firecracker = new Audio("/resources/firecracker.mp3");
+
+function alertify(message) {
+    var alert = new tingle.modal({
+        closeMethods: [],
+        footer: true
+    });
+    alert.setContent(`<label>`+message+`</label>`);
+    alert.addFooterBtn('OK', 'tingle-btn tingle-btn--primary tingle-btn--pull-right', function () {
+        alert.close();
+    });
+    alert.open();
+}
   slots=[];
   globalcounter = 0;
   drawing = false;
@@ -345,7 +349,7 @@ animation: neon 1s ease-in-out infinite alternate; */
           { padding: '10px', background: '#fff', borderRadius: '5px'  }
         ],
         slots: [
-          { order: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], direction: direction, speed:(15+i) }
+          { order: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], direction: direction, speed:(5+(digits.length-i)) }
         ],
         prizes: [
           { fonts: [{ text: '0', top: '15%' }] },
@@ -397,14 +401,28 @@ animation: neon 1s ease-in-out infinite alternate; */
           cumulative = timetostop;
           console.log(cumulative,i);
           setTimeout(function(){
+            if (digits.length-globalcounter<4) {
+                audio_slotmachine.currentTime="17";
+            }
+            else {
+                audio_slotmachine.currentTime="3";
+            }
+            
+            audio_finalslot.pause();
+            audio_finalslot.currentTime="0";
+            audio_finalslot.play();
             slots[globalcounter].stop(parseInt(digits[globalcounter]));
             $("#d"+globalcounter).effect( "bounce", {times:5}, 200); 
             globalcounter++;
             if (globalcounter==digits.length) {
               setTimeout(function(){
+                audio_slotmachine.pause();
+                audio_finalslot.play();
+                audio_tada.play();
                 waveflow();
                 completed();
                 initConfetti();
+                setTimeout(function(){audio_firecracker.play();},1000);
                 render();
               },4000);
             }
