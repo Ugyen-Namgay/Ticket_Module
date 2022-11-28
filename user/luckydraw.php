@@ -1,10 +1,9 @@
 
 <?php
-	
 	require_once "utils/sqldb.php";
 	$name=isonline();
 	if (!$name) {
-		Redirect("/login",true);
+		Redirect("/",true);
 		exit();
 	}
 ?>
