@@ -735,6 +735,7 @@ $("#check_before_submit").click(function(){
           $('#dependent_middlename').prop("disabled",false);
           $('#dependent_lastname').prop("disabled",false);
           $('#dependent_dob').prop("disabled",false);
+          $('#dependent_gender').prop("disabled",false);
         }
         else {
           $("#dependent_cid").val("");
@@ -754,7 +755,7 @@ $("#check_before_submit").click(function(){
             modalButtonOnly.open();
         });
         //modalButtonOnly.setContent(document.querySelector('.tingle-demo-force-close').innerHTML);
-        modalButtonOnly.setContent(`  <fieldset class="modal-field" style="padding: 0px; box-shadow: none">
+        modalButtonOnly.setContent(`<fieldset class="modal-field" style="padding: 0px; box-shadow: none">
           <h2>Please put your dependent information here</h2>
           <br><div id="dependent_error" style="position: fixed; top: 15px; color: crimson;"></div><br><hr><br>
           <div class="form-check form-switch" style="display:flex;justify-content: flex-start;width: 100%;">

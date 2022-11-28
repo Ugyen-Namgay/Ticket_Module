@@ -220,6 +220,7 @@ else {
           $('#dependent_middlename').prop("disabled",false);
           $('#dependent_lastname').prop("disabled",false);
           $('#dependent_dob').prop("disabled",false);
+          $('#dependent_gender').prop("disabled",false);
         }
         else {
           $("#dependent_cid").val("");
@@ -276,7 +277,7 @@ else {
             "eventid":"<?php echo $eventid;?>",
             "admincid":"<?php echo $admincid;?>",
             "command": "adddependent",
-            "value" : [f,m,l,d,c],
+            "value" : [f,m,l,d,c,g],
             "identity": "<?php echo $cid?>"
             }
             $.post("<?php echo $settings["app"]["homebase"].'/submit'?>",data,function(data){
