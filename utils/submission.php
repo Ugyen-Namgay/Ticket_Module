@@ -10,7 +10,7 @@ if (isset($_POST["request"]) && $_POST["request"]=="cidinfo") {
             $imageid=getphoto($cid);
             clear_cache("citizens","*","cid='$cid'");    
             insert("citizens","cid,dob,first_name,middle_name,last_name,phonenumber,image_id,dzongkhag,gender","$cid,$user_detail->dob,$user_detail->first_name,$user_detail->middle_name,$user_detail->last_name,$user_detail->phone,$imageid,$user_detail->dzongkhag,$user_detail->gender");
-            echo '{"error":false,"first_name":"'.$user_detail->first_name.'","middle_name":"'.$user_detail->middle_name.'","last_name":"'.$user_detail->last_name.'","dob":"'.$user_detail->dob.'"}';
+            echo '{"error":false,"first_name":"'.$user_detail->first_name.'","middle_name":"'.$user_detail->middle_name.'","last_name":"'.$user_detail->last_name.'","dob":"'.$user_detail->dob.'","gender":"'.$user_detail->gender.'"}';
         }
         else {
             echo '{"error":true,"msg":"Please enter the details manually: No details could be found for this CID"}';
