@@ -1,11 +1,11 @@
      /*custom font*/
-     @import url(https://fonts.googleapis.com/css?family=bhutanfont);
-     /*basic reset*/
-
      @font-face {
       font-family: "bhutanfont";
       src: url("/resources/custom_font.woff") format("woff");
      }
+     /*basic reset*/
+
+  
      * {margin: 0; padding: 0;}
  
      html {

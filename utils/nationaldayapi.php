@@ -1,10 +1,9 @@
 <?php
-
 if (isset($_POST["winners"])) {
-    $url = "https://api.bhutanapp.bt/v1.0.1/nationalday/lucky-draw/winners/";
+    $urls = "https://api.bhutanapp.bt/v1.0.1/nationalday/lucky-draw/winners/";
 }
 else if (isset($_POST["select_winner"])) {
-    $url = "https://api.bhutanapp.bt/v1.0.1/nationalday/lucky-draw/select_winner/";
+    $urls = "https://api.bhutanapp.bt/v1.0.1/nationalday/lucky-draw/select_winner/";
 }
 
 $opts = array('http' =>
@@ -24,7 +23,7 @@ array(
 //var_dump(openssl_get_cert_locations());
 try {
     $context = stream_context_create($opts);
-    $result = @file_get_contents($url, false, $context);
+    $result = @file_get_contents($urls, false, $context);
     echo $result;
 
     if (!$result) {

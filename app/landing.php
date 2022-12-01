@@ -1,6 +1,6 @@
 <?php
-	
 	require_once "utils/sqldb.php";
+
   if (isset($_POST["logout"])) {
     $_SESSION = array();
     session_regenerate_id();
