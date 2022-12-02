@@ -13,6 +13,8 @@ $router->get('submit', 'utils/submission');
 $router->get('register', 'user/register');
 $router->get('check', 'user/admin');
 $router->get('login','user/login');
+$router->get('dashboard','app/dashboard');
+
 
 $router->get('error-401','errorpage/error-401');
 $router->get('error-404','errorpage/error-404');

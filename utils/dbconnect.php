@@ -160,7 +160,7 @@ DEFINE ('DB_NAME', $settings["db"]["database"]);
 
 try {
     $conn = new mysqli(DB_HOST,DB_USER,DB_PSWD);
-    $conn->multi_query($prerequisite);
+    //$conn->multi_query($prerequisite);
 
 }
 catch (exception $e) {
