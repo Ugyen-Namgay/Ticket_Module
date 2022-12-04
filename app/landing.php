@@ -33,7 +33,7 @@ if (isset($_POST["email"]) && isset($_POST["password"])) {
 		Redirect("home",True);
 	}
 	else {
-		client_detail($_POST["email"]);
+		//client_detail($_POST["email"]);
 		$alert="OH NOOO!!!<br>Looks like you credentials are incorrect. Please try again.";
 	}
 }

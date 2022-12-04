@@ -339,6 +339,7 @@ rejecttune.setAttribute('src','<?php echo $settings["app"]["homebase"].'/resourc
           </select>
           <input type="date" id="dependent_dob" placeholder="Date of Birth" max="2022-08-01"/>
         </fieldset>`);
+        modalButtonOnly.setFooterContent("");
         modalButtonOnly.addFooterBtn('Add', 'tingle-btn tingle-btn--primary tingle-btn--pull-right', function () {
           c=$("#dependent_cid").val();
           f=$('#dependent_firstname').val();
@@ -419,6 +420,7 @@ function get_cid_info(cid) {
       $('#dependent_gender').prop("disabled",false);
       if (d.error!==false) {
         alertify(d.msg);
+        $('#dependent_cid').val(cid);
         if (d.cleardata) {
           $('#dependent_cid').val('');
         }

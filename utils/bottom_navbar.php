@@ -25,6 +25,12 @@
                     <span class="menu-title">Manage Questions</span>
                   </a>
               </li> -->
+              <li class="nav-item <?php echo (strpos($_SERVER["REQUEST_URI"],"/eventluckydrawsettings")!==false)?"active":""?>">
+                  <a href="/eventluckydrawsettings" target="_blank" class="nav-link">
+                    <i class="mdi mdi-star mdi-spin"></i>
+                    <span class="menu-title">Lucky Draw</span>
+                  </a>
+              </li>
               <li class="nav-item <?php echo (strpos($_SERVER["REQUEST_URI"],"/events")!==false)?"active":""?>">
                   <a href="/events" class="nav-link">
                     <i class="mdi mdi-timetable menu-icon"></i>

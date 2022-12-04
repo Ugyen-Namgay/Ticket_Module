@@ -854,6 +854,7 @@ var get_cid_info = function(cid) {
       $('#dependent_gender').prop("disabled",false);
       if (d.error!==false) {
         alertify(d.msg);
+        $('#dependent_cid').val(cid);
         if (d.cleardata) {
           $('#dependent_cid').val('');
         }
