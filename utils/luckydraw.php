@@ -18,11 +18,17 @@ if (isset($_POST["winners"])) {
 }
 else if (isset($_POST["select_winner"])) {
     while (True) {
-        $randomwinner = json_decode(get("registration_requests","cid","event_id=$eventid AND is_allowed=1 ORDER BY RAND() LIMIT 1"),true);
+        $randomwinner = json_decode(get("registration_requests","cid,other_cids","event_id=$eventid AND is_allowed=1 ORDER BY RAND() LIMIT 1"),true);
         if (empty($randomwinner)) {
             break;
         }
-        $randomwinner_cid = $randomwinner[0]["cid"];
+        $randomwinner_cids[] = $randomwinner[0]["cid"];
+        foreach (explode(";",ltrim($randomwinner[0]["other_cids"],";")) as $c) {
+            $randomwinner_cids[] = $c;
+        }
+
+        $randomwinner_cid = $randomwinner_cids[array_rand($randomwinner_cids)];
+
         if (get("luckydraw","cid","event_id=$eventid AND is_winner=1 AND cid='$randomwinner_cid'")=="[]") {
             break;
         }
@@ -34,6 +40,6 @@ else if (isset($_POST["select_winner"])) {
     }
     $eventdetail = json_decode(get("events","*","id=$eventid",true),true);
     $ticket = strtoupper(base_convert((string)((int)$eventdetail[0]["ticket_offset"]+(int)$randomwinner_cid),10,36));
-    echo insert("luckdraw","ticket,cid,event_id,is_winner","$ticket,$cid,$eventid,1");
+    echo insert("luckydraw","ticket,cid,event_id,is_winner","$ticket,$randomwinner_cid,$eventid,1");
     exit();
 }

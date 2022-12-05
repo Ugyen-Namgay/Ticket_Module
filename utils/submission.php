@@ -74,7 +74,7 @@ else if (isset($_POST["request"]) && isset($_POST["cid"])) {
                     $dependentid.=$is_there_dependent[0]["cid"].";";
                 }
                 else {
-                    if (strlen($dependent[4])=="11") {
+                    if (strlen($dependent[4])==11 && (substr($dependent[4],0,1)=="1" || substr($dependent[4],0,1)=="3")) {
                         clear_cache("citizens","*","cid='".$dependent[4]."'");  
                         //$dependent_user_detail = json_decode(api_get_phone_detail($dependent[4]))->data;
                         $dependent_imageid=getphoto($dependent[4]);
@@ -191,7 +191,7 @@ else if (isset($_POST["adminupdate"]) && isset($_POST["admincid"])) {
             $dependentid.=$is_there_dependent[0]["cid"].";";
         }
         else {
-            if (strlen($value[4])=="11") {
+            if (strlen($value[4])==11  && (substr($value[4],0,1)=="1" || substr($value[4],0,1)=="3")) {
                 clear_cache("citizens","*","cid='".$is_there_dependent[0]["cid"]."'"); 
                 //$dependent_user_detail = json_decode(api_get_phone_detail($is_there_dependent[0]["cid"]))->data;
                 $dependent_imageid=getphoto($is_there_dependent[0]["cid"]);

@@ -352,7 +352,7 @@ function alertify(message) {
           { padding: '10px', background: '#fff', borderRadius: '5px'  }
         ],
         slots: [
-          { order: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], direction: direction, speed:(5+(digits.length-i)) }
+          { order: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35], direction: direction, speed:(5+(digits.length-i)) }
         ],
         prizes: [
           { fonts: [{ text: '0', top: '15%' }] },
@@ -364,7 +364,33 @@ function alertify(message) {
           { fonts: [{ text: '6', top: '15%' }] },
           { fonts: [{ text: '7', top: '15%' }] },
           { fonts: [{ text: '8', top: '15%' }] },
-          { fonts: [{ text: '9', top: '15%' }] }
+          { fonts: [{ text: '9', top: '15%' }] },
+          { fonts: [{ text: 'A', top: '15%' }] },
+          { fonts: [{ text: 'B', top: '15%' }] },
+          { fonts: [{ text: 'C', top: '15%' }] },
+          { fonts: [{ text: 'D', top: '15%' }] },
+          { fonts: [{ text: 'E', top: '15%' }] },
+          { fonts: [{ text: 'F', top: '15%' }] },
+          { fonts: [{ text: 'G', top: '15%' }] },
+          { fonts: [{ text: 'H', top: '15%' }] },
+          { fonts: [{ text: 'I', top: '15%' }] },
+          { fonts: [{ text: 'J', top: '15%' }] },
+          { fonts: [{ text: 'K', top: '15%' }] },
+          { fonts: [{ text: 'L', top: '15%' }] },
+          { fonts: [{ text: 'M', top: '15%' }] },
+          { fonts: [{ text: 'N', top: '15%' }] },
+          { fonts: [{ text: 'O', top: '15%' }] },
+          { fonts: [{ text: 'P', top: '15%' }] },
+          { fonts: [{ text: 'Q', top: '15%' }] },
+          { fonts: [{ text: 'R', top: '15%' }] },
+          { fonts: [{ text: 'S', top: '15%' }] },
+          { fonts: [{ text: 'T', top: '15%' }] },
+          { fonts: [{ text: 'U', top: '15%' }] },
+          { fonts: [{ text: 'V', top: '15%' }] },
+          { fonts: [{ text: 'W', top: '15%' }] },
+          { fonts: [{ text: 'X', top: '15%' }] },
+          { fonts: [{ text: 'Y', top: '15%' }] },
+          { fonts: [{ text: 'Z', top: '15%' }] }
         ],
         defaultStyle: {
           borderRadius: Infinity,
@@ -395,7 +421,8 @@ function alertify(message) {
             setTimeout(changeslotcolor(i),100+(waveintensity*i ));
           }
       }
-
+      stack = ["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
+      
       setTimeout(function(){
         cumulative=0;
         for (i=0; i<digits.length; i++) {
@@ -414,7 +441,7 @@ function alertify(message) {
             audio_finalslot.pause();
             audio_finalslot.currentTime="0";
             audio_finalslot.play();
-            slots[globalcounter].stop(parseInt(digits[globalcounter]));
+            slots[globalcounter].stop(stack.indexOf(digits[globalcounter].toString()));
             $("#d"+globalcounter).effect( "bounce", {times:5}, 200); 
             globalcounter++;
             if (globalcounter==digits.length) {
@@ -457,7 +484,7 @@ function alertify(message) {
             thewinner = d.filter(x => !winners.includes(x));
             winners = d;
             console.log(thewinner);
-            drawit(parseInt(thewinner));
+            drawit((thewinner));
         });
     },3000);
  </script>

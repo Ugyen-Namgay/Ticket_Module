@@ -91,7 +91,7 @@
     $generated_form = '<form id="msform">
     
     <h2>Registration for <b>'.$eventdetail[0]["name"].' '.$eventdetail[0]["address"].'</b></h2>
-    <br>
+    <br> 
     <!-- progressbar -->
     <ul id="progressbar">
       <li class="active">Personal Details</li>
@@ -520,8 +520,10 @@ var dependent_list=[];
     }
     else {
       table = '';
+      //strtoupper(base_convert((string)((int)$eventdetail[0]["ticket_offset"]+(int)$cid),10,36))
+      var offset = <?php echo $eventdetail[0]["ticket_offset"]?>;
       for (i=0; i<dependent_list.length; i++) {
-        table+=' '+dependent_list[i][0]+' '+(dependent_list[i][1]==""?'':dependent_list[i][1]+' ')+dependent_list[i][2]+',';
+        table+=' '+dependent_list[i][0]+' '+(dependent_list[i][1]==""?'':dependent_list[i][1]+' ')+dependent_list[i][2]+' (TICKET: '+(offset+parseInt(dependent_list[i][4])).toString(36).toUpperCase()+' ) <br>';
       }
       table=table.substring(0,table.length-1);
     }
@@ -733,8 +735,11 @@ $("#check_before_submit").click(function(){
     
     var toggleminor = function() {
         if ($("#minortoggle").prop("checked")==true) {
-          r = (Math.random() + 1).toString(36).substring(7);
-          $("#dependent_cid").val("minor_"+r+"_"+"<?php echo $cid?>");
+          r = Math.floor(Math.random()*1000000)+60000000000+parseInt('<?php echo $cid?>');
+          $("#dependent_cid").val(r);
+
+          //r = (Math.random() + 1).toString(36).substring(7);
+          //$("#dependent_cid").val("minor_"+r+"_"+"<?php echo $cid?>");
           $("#dependent_cid").prop("type","hidden");
           $('#dependent_firstname').prop("disabled",false);
           $('#dependent_middlename').prop("disabled",false);

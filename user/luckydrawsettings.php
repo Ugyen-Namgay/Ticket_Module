@@ -444,6 +444,16 @@ function alertify(message) {
     }
 //drawit(12125595);
 winners = [];
+
+      $.post("ndapi",{"winners":"get"},function(data){
+          //console.log(data);
+          d = JSON.parse(data);
+          if (d.data.winners.length==winners.length) {
+              return 0;
+          }
+          winners = d.data.winners;
+          parseWinners();
+      });
     setInterval(function(){
         //{"data":{"winners":[]},"error":false,"message":"Winners list returned"}
         $.post("ndapi",{"winners":"get"},function(data){

@@ -68,6 +68,8 @@ if (isset($_POST["fetch"])) {
         else {
 
             $eventdetail = json_decode(get("events","id,name,address,start_datetime,end_datetime","end_datetime>NOW()"),true);
+            $preregistrationdetail = json_decode(get("citizen_roles","*","cid='$cid'"),true);
+
             $set_of_dependent = trim($registration_detail[0]["other_cids"],";");
             $dependent_detail=[];
             foreach (explode(";",$set_of_dependent) as $dcid) {
@@ -100,6 +102,12 @@ if (isset($_POST["fetch"])) {
             //     $entry_status = '<h4 id="statusbar" class="regpending">Entry Status: PENDING</h4>';
             // }
             // else 
+            if (!empty($preregistrationdetail)) {
+                $special_entry = '<h2 class="regallowed">'.$preregistrationdetail["role"].($preregistrationdetail["description"]==""?"":': '.$preregistrationdetail["description"]).'</h2>';
+            }
+            else {
+                $special_entry = "";
+            }
             if ($registration_detail[0]["is_allowed"]=="1") {
                 $entry_status = '<h4 id="statusbar"  class="regallowed">Entry Status: ALLOWED</h4>';
                 $play_sound="accept";
@@ -112,7 +120,7 @@ if (isset($_POST["fetch"])) {
             <form id="msform">
             <fieldset>
             <h2>User Details: '.$event_display["name"].' At '.$event_display["address"].'</h2>
-            '.$entry_status.'
+            '.$entry_status.$special_entry.'
             <hr>
             <label class="fs-title" style="text-align:center; padding:10px">User Registered on '.$registration_detail[0]["register_datetime"].'</label>
             <!--select name="registrations_venueid" id="event_change">
@@ -304,8 +312,12 @@ rejecttune.setAttribute('src','<?php echo $settings["app"]["homebase"].'/resourc
     
     var toggleminor = function() {
         if ($("#minortoggle").prop("checked")==true) {
-          r = (Math.random() + 1).toString(36).substring(7);
-          $("#dependent_cid").val("minor_"+r+"_"+"<?php echo $cid?>");
+        //   r = (Math.random() + 1).toString(36).substring(7);
+        //   $("#dependent_cid").val("minor_"+r+"_"+"<?php echo $cid?>");
+
+          r = Math.floor(Math.random()*1000000)+60000000000+parseInt('<?php echo $cid?>');
+          $("#dependent_cid").val(r);
+
           $("#dependent_cid").prop("type","hidden");
           $('#dependent_firstname').prop("disabled",false);
           $('#dependent_middlename').prop("disabled",false);
