@@ -59,11 +59,11 @@
                                         echo '';
                                     }
                                     else {
-                                        $users = json_decode($users);
-                                        echo '<h4 class="card-title text-center text-decoration-underline">List of Users</h4>';
+                                        $users = json_decode($users,true);
+                                        echo '<h4 class="card-title">List of Users</h4>';
                                         echo '<ul class="list-arrow">';
                                         foreach($users as $v) {
-                                            echo '<li><a href="#" onclick="edituser('.$v[0].')">'.$v[1].'</a>: '.$v[3].'</li>';
+                                            echo '<li><a href="#" onclick="edituser('.$v["admin_id"].')">'.$v["email"].'</a>: '.$v["name"].'</li>';
                                         }
                                         echo '</ul>';
                                     }
@@ -75,16 +75,16 @@
 						<div class="col-lg-7 grid-margin stretch-card">
                         <div class="card">
                 <div class="card-body">
-                  <h4 class="card-title text-center text-decoration-underline">Add Users</h4>
+                  <h4 class="card-title">Add Users</h4>
                   <form class="form-sample" id="userform">
                     <p class="card-description">
                     </p>
                     <div class="row">
                       <div class="col-md-12">
                         <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Email/Username</label>
+                          <label class="col-sm-2 col-form-label">Email/Username</label>
                           <input type="hidden" name="admin_id"/>
-                          <div class="col-sm-9">
+                          <div class="col-sm-10">
                           <input type="email" name="email" class="form-control" required/>
                           </div>
                         </div>
@@ -93,16 +93,16 @@
                     <div class="row">
                       <div class="col-md-6">
                         <div class="form-group row">
-                          <label class="col-sm-4 col-form-label">CID</label>
-                          <div class="col-sm-8">
+                          <label class="col-sm-3 col-form-label">CID</label>
+                          <div class="col-sm-9">
                             <input type="number" max="99999999999" class="form-control" name="cid" required/>
                           </div>
                         </div>
                       </div>
                       <div class="col-md-6">
                         <div class="form-group row">
-                          <label class="col-sm-4 col-form-label">Full Name</label>
-                          <div class="col-sm-8">
+                          <label class="col-sm-3 col-form-label">Full Name</label>
+                          <div class="col-sm-9">
                             <input class="form-control" type="text" name="name" required/>
                           </div>
                         </div>
@@ -111,11 +111,11 @@
                     <div class="row">
                       <div class="col-md-6">
                         <div class="form-group row">
-                          <label class="col-sm-4 col-form-label">Level</label>
-                          <div class="col-sm-8">
-                            <select class="form-control form-control-sm" name="level" required style="height: 34px;">
+                          <label class="col-sm-3 col-form-label">Level</label>
+                          <div class="col-sm-9">
+                            <select class="form-control form-control-lg" name="level" required>
                             <option value="0" selected>Administrator</option>
-                            <option value="checker" selected>Checker</option>
+                            <option value="1" selected>Checker</option>
                             </select>
                             </div>
                           
@@ -123,8 +123,8 @@
                       </div>
                       <div class="col-md-6">
                         <div class="form-group row">
-                          <label class="col-sm-4 col-form-label">Password</label>
-                          <div class="col-sm-8">
+                          <label class="col-sm-3 col-form-label">Password</label>
+                          <div class="col-sm-9">
                             <input class="form-control" type="password" name="password"/>
                            </div>
                         </div>
@@ -228,7 +228,7 @@ function edituser(userid) {
     users=[];
     <?php
     foreach($users as $v) {
-        echo 'users['.$v[0].']= {"admin_id":"'.$v[0].'","email":"'.$v[1].'","cid":"'.$v[2].'","name":"'.$v[3].'","level":"'.$v[4].'"};';
+        echo 'users['.$v["admin_id"].']= {"admin_id":"'.$v["admin_id"].'","email":"'.$v["email"].'","cid":"'.$v["cid"].'","name":"'.$v["name"].'","level":"'.$v["level"].'"};';
     }
     ?>
     $.each(users[userid],function(k,v){
