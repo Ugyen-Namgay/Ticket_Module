@@ -133,6 +133,7 @@
 	}
     </script> -->
 
+	<!-- line chart -->
 	<script type="text/javascript">
 		// google.charts.load('current', {'packages':['bar']});
       google.charts.load("current", {packages:["corechart"]});
@@ -192,6 +193,11 @@
         };
 		var chart = new google.charts.Bar(document.getElementById('columnchart_material'));
         chart.draw(data, google.charts.Bar.convertOptions(options));
+		// document.getElementById('year').onchange = selectYear() {
+        //    options['vAxis']['value'] = this.value;
+        //    chart.draw(data, options);
+		//    chart.draw(data, google.charts.Bar.convertOptions(options));
+        //  };
 	}
     </script>
 
@@ -565,7 +571,7 @@
 		$('#year').change(function(){
 			var year = $(this).val();
 		});
-		setTimeout(selectYear,300);
+		setTimeout(selectYear,400);
 	});
 </script>
 
