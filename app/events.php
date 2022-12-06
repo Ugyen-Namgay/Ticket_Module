@@ -64,16 +64,16 @@
                                         echo '<h4 class="card-title">There are no events added so far.</h4>';
                                     }
                                     else {
-                                        $venues = json_decode($venues,true);
+                                        $venues = json_decode($venues);
                                         $pageURL = 'http';
                                         if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != "off") {$pageURL .= "s";}
                                         $pageURL .= "://";
-                                        echo '<h4 class="card-title">List of all events.</h4>';
+                                        echo '<h4 class="card-title text-center text-decoration-underline">List of all events</h4>';
                                         echo '<ul class="list-arrow">';
                                         foreach($venues as $v) {
-                                            echo '<li><a href="#" onclick="editevent('.$v["id"].')">'.$v["name"].'</a>: '.$v["address"].', '.$v["country"].' FROM '.$v["start_datetime"].' TILL '.$v["end_datetime"].' (ID: '.$v["id"].')<br> Capacity: '.$v["capacity"];
-                                            echo '<br/><a target="_blank" href="'.$pageURL.$_SERVER["SERVER_NAME"].'/register/'.$v["id"].'/?cid=11512005551">Registration Link Format </a>: '.$pageURL.$_SERVER["SERVER_NAME"].'/register/'.$v["id"].'/?cid={CITIZEN-ID}';
-                                            echo '<br/><a target="_blank"  href="'.$pageURL.$_SERVER["SERVER_NAME"].'/check/'.$v["id"].'/11512005551?cid=00000000000"> Checker Link Format </a>: '.$pageURL.$_SERVER["SERVER_NAME"].'/check/'.$v["id"].'/{CITIZEN-CID}?cid={ADMIN-CID}';
+                                            echo '<li><a href="#" onclick="editevent('.$v[0].')">'.$v[1].'</a>: '.$v[3].', '.$v[4].' FROM '.$v[5].' TILL '.$v[6].' (ID: '.$v[0].')<br> Capacity: '.$v[7];
+                                            echo '<br/><a target="_blank" href="'.$pageURL.$_SERVER["SERVER_NAME"].'/register/'.$v[0].'/?cid=11512005551">Registration Link Format </a>: '.$pageURL.$_SERVER["SERVER_NAME"].'/register/'.$v[0].'/?cid={CITIZEN-ID}';
+                                            echo '<br/><a target="_blank"  href="'.$pageURL.$_SERVER["SERVER_NAME"].'/check/'.$v[0].'/11512005551?cid=00000000000"> Checker Link Format </a>: '.$pageURL.$_SERVER["SERVER_NAME"].'/check/'.$v[0].'/{CITIZEN-CID}?cid={ADMIN-CID}';
                                             echo '<br/>';
                                         }
                                         echo '</ul>';
@@ -86,7 +86,7 @@
 						<div class="col-lg-7 grid-margin stretch-card">
                         <div class="card">
                 <div class="card-body">
-                  <h4 class="card-title">Add Events</h4>
+                  <h4 class="card-title text-center text-decoration-underline">Add Events</h4>
                   <form class="form-sample" id="eventform">
                     <p class="card-description">
                     </p>
@@ -96,15 +96,15 @@
                           <label class="col-sm-4 col-form-label">Event Name</label>
                           <div class="col-sm-8">
                             <input type="hidden" name="eventid" value="">
-                            <input type="text" class="form-control" name="name" required>
+                            <input type="text" class="form-control form-control-lg" name="name" required style="height: 34px;">
                           </div>
                         </div>
                       </div>
                       <div class="col-md-6">
                         <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Country</label>
-                          <div class="col-sm-9">
-                          <select name="country" class="form-control form-control-lg" required> 
+                          <label class="col-sm-4 col-form-label">Country</label>
+                          <div class="col-sm-8">
+                          <select name="country" class="form-control form-control-lg" required style="height: 34px;"> 
                                 <option value="Afghanistan">Afghanistan</option> 
                                 <option value="Albania">Albania</option> 
                                 <option value="Algeria">Algeria</option> 
@@ -352,27 +352,27 @@
                     <div class="row">
                       <div class="col-md-6">
                         <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Address</label>
-                          <div class="col-sm-9">
-                            <input type="text" class="form-control" name="address" required/>
+                          <label class="col-sm-4 col-form-label">Address</label>
+                          <div class="col-sm-8">
+                            <input type="text" class="form-control form-control-lg" name="address" required style="height: 34px;"/>
                           </div>
                         </div>
                       </div>
                       <div class="col-md-6">
                         <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Capacity</label>
-                          <div class="col-sm-9">
-                            <input class="form-control" type="number" name="capacity" required/>
+                          <label class="col-sm-4 col-form-label">Capacity</label>
+                          <div class="col-sm-8">
+                            <input class="form-control form-control-lg" type="number" name="capacity" required style="height: 34px;"/>
                           </div>
                         </div>
                       </div>
                       
                       <div class="row">
-                      <div class="col-md-6">
+                      <div class="col-md-7">
                         <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Ticket Offset</label>
-                          <div class="col-sm-9">
-                            <input type="number" min="100000" value="100000" class="form-control" name="ticket_offset" required/>
+                          <label class="col-sm-4 col-form-label">Ticket Offset</label>
+                          <div class="col-sm-8">
+                            <input type="number" min="100000" value="100000" class="form-control form-control-lg" name="ticket_offset" required style="height: 34px;"/>
                           </div>
                         </div>
                       </div>
@@ -380,27 +380,27 @@
                       
                     </div>
                     <div class="row">
-                      <div class="col-md-6">
+                      <div class="col-md-8">
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label">Start</label>
-                          <div class="col-sm-5">
-                            <input class="form-control" type="date" name="startdate" required/>
+                          <div class="col-sm-4">
+                            <input class="form-control form-control-sm" type="date" name="startdate" required style="height: 34px;"/>
                           </div>
                           <div class="col-sm-4">
-                            <input class="form-control" type="time" name="starttime" required/>
+                            <input class="form-control form-control-sm" type="time" name="starttime" style="height: 34px;" required/>
                           </div>
                           
                         </div>
                       </div>
-                      <div class="col-md-6">
+                      <div class="col-md-8">
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label">End</label>
-                          <div class="col-sm-5">
-                            <input class="form-control" type="date" name="enddate" required/>
+                          <div class="col-sm-4">
+                            <input class="form-control form-control-sm" type="date" name="enddate" required style="height: 34px;"/>
                             
                           </div>
                           <div class="col-sm-4">
-                          <input class="form-control" type="time" name="endtime" required/>
+                          <input class="form-control form-control-sm" type="time" name="endtime" style="height: 34px;" required/>
                           </div>
                         </div>
                       </div>
@@ -554,7 +554,7 @@ function editevent(id) {
     else {
       //id,name,image_id,address,country,start_datetime,end_datetime,capacity,ticket_offset
       foreach($venues as $v) {
-        echo 'event['.$v["id"].']= {"eventid":"'.$v["id"].'","name":"'.$v["name"].'","address":"'.$v["address"].'","country":"'.$v["country"].'","startdate":"'.explode(" ",$v["start_datetime"])[0].'","enddate":"'.explode(" ",$v["end_datetime"])[0].'","starttime":"'.explode(" ",$v["start_datetime"])[1].'","endtime":"'.explode(" ",$v["end_datetime"])[1].'","capacity":"'.$v["capacity"].'","ticket_offset":"'.$v["ticket_offset"].'"};';
+        echo 'event['.$v[0].']= {"eventid":"'.$v[0].'","name":"'.$v[1].'","address":"'.$v[3].'","country":"'.$v[4].'","startdate":"'.explode(" ",$v[5])[0].'","enddate":"'.explode(" ",$v[6])[0].'","starttime":"'.explode(" ",$v[5])[1].'","endtime":"'.explode(" ",$v[6])[1].'","capacity":"'.$v[7].'","ticket_offset":"'.$v[8].'"};';
       }
     }
     

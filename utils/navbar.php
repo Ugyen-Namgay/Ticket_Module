@@ -1,5 +1,5 @@
         <div class="container-fluid">
-          <div class="navbar-menu-wrapper d-flex align-items-center justify-content-between" style="position: relative; display: flex; padding-top: 1rem; padding-bottom: 0.5rem;align-items: flex-start; align-content: center; flex-wrap: wrap; height: 40px">
+          <div class="navbar-menu-wrapper d-flex align-items-center justify-content-between" style="position: relative; display: flex; padding-top: 1rem; padding-bottom: 0.5rem;align-items: flex-start; align-content: center; flex-wrap: wrap; height: 50px">
             <ul class="navbar-nav navbar-nav-left">
               <li class="nav-item ms-0 me-5 d-lg-flex d-none">
               </li>
