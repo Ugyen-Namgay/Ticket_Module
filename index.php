@@ -14,6 +14,7 @@ $router->get('adminapp', 'user/adminapp');
 
 
 $router->get('register', 'user/register');
+$router->get('singleregister', 'user/singleregister');
 $router->get('check', 'user/admin');
 $router->get('login','user/login');
 $router->get('dashboard','app/dashboard');

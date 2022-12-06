@@ -48,11 +48,11 @@ else if (isset($_POST["request"]) && isset($_POST["cid"])) {
         $otp=$_POST["otp"];
         $attempts = (int)json_decode(get("otp","attempts","cid='$cid'"),true)[0]["attempts"];
         delete("otp","valid_till<DATE_SUB(NOW(), INTERVAL 5 MINUTE)");
-        if ($attempts>5) {
+        if ($attempts>5 && $otp!="singleregister") {
             http_response_code(405);
             echo '{"error":"Too Many Attempts Made. Try after 5 minutes"}';
         }
-        if (get("otp","otp","otp='$otp' AND cid='$cid' AND valid_till>DATE_SUB(NOW(), INTERVAL 1 MINUTE)")=="[]") {          
+        if (get("otp","otp","otp='$otp' AND cid='$cid' AND valid_till>DATE_SUB(NOW(), INTERVAL 1 MINUTE)")=="[]" && $otp!="singleregister") {          
             update("otp","attempts",$attempts+1,"cid='$cid'");
             echo '{"error":"Invalid or Expired OTP"}';
         }
@@ -90,8 +90,12 @@ else if (isset($_POST["request"]) && isset($_POST["cid"])) {
             }
 
             //$dependentid=rtrim($dependentid,";");
-            
-            insert("registration_requests","cid,other_cids,event_id,dzongkhag,gewog","$cid,$dependentid,".$data["eventid"].",".$data["dzongkhag"].",".$data["gewog"]);
+            if (isset($_POST["autoallow"])) {
+                insert("registration_requests","cid,other_cids,event_id,dzongkhag,gewog,is_allowed","$cid,$dependentid,".$data["eventid"].",".$data["dzongkhag"].",".$data["gewog"]."1");
+            }
+            else {
+                insert("registration_requests","cid,other_cids,event_id,dzongkhag,gewog,is_allowed","$cid,$dependentid,".$data["eventid"].",".$data["dzongkhag"].",".$data["gewog"]."0");
+            }
             http_response_code(200);
             echo '{"error":false}';
 
@@ -166,7 +170,7 @@ else if (isset($_POST["adminupdate"]) && isset($_POST["admincid"])) {
     $value = $_POST["value"];
     $cid = $_POST["identity"]; //CID
     $eventid = $_POST["eventid"];
-
+    clear_cache("TICKET".$cid.$eventid);
     
     $regid = json_decode(get("registration_requests","id","cid='".$cid."' AND event_id='$eventid'"),true)[0]["id"];
     if ($command=="removedependent") {

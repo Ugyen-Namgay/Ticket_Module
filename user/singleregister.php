@@ -10,6 +10,7 @@
     foreach($args as $arg) {
       if (strstr($arg,"?cid=")) {
         $cid = explode("?cid=",$arg)[1];
+        break;
       }  
     }
   }
@@ -18,11 +19,13 @@
     exit();
   }
 
+  $cache_ticket = false;
   $is_there_cached_ticket = get_cache("TICKET".$cid.$eventid);
   if ($is_there_cached_ticket) {
     echo $is_there_cached_ticket;
     exit();
   }
+  
   //client_detail($cid);
   //URL: domain.com/check/[VENUEID]/[CITIZENID]?cid=[SCANNERID]
   
@@ -97,12 +100,6 @@
     <h2>Registration for <b>'.$eventdetail[0]["name"].' '.$eventdetail[0]["address"].'</b></h2>
     <br> 
     <!-- progressbar -->
-    <ul id="progressbar">
-      <li class="active">Personal Details</li>
-      <li>dependent Details</li>
-      <li>Confirm and Submit</li>
-      <li>Validate</li>
-    </ul>
     <!-- fieldsets -->
     <fieldset>
       <h2 class="fs-title">Please Enter your Details</h2>
@@ -359,39 +356,9 @@
 </div>
 
       <div class="buttons">
-          <input type="button" name="next" class="next action-button" value="Next" />
+          <input type="button" name="next" class="action-button" id="check_before_submit" value="Register" />
       </div>
     </fieldset>
-    <fieldset>
-      <h2 class="fs-title">dependent Details</h2>
-      <h3 class="fs-subtitle">Are you bringing any dependent without CID (Minor) or without BhutanApp (Elders)? If so, add by clicking the button below.</h3>
-
-      <div id="dependent_list">
-      </div>
-      <input type="button" class = "action-button dependentdetail" value="Add +" />
-      <div class="buttons">
-          <input type="button" name="previous" class="previous action-button" value="Previous" />
-          <input type="button" name="next" class="next action-button" value="Next" />
-      </div>
-    </fieldset>
-    <fieldset>
-      <h2 class="fs-title">Do you want to submit your registration?</h2>
-      <h3 class="fs-subtitle">Please note that you will not be allowed to change the information once submitted. Please check once and reconfirm the details.</h3>
-      <div class="buttons">
-          <input type="button" name="previous" class="previous action-button" value="Previous" />
-          <input type="button" name="submit" class="action-button" id="check_before_submit" value="Submit" />
-          <input type="hidden" class="next send_otp" id="proceed_further">
-      </div>
-    </fieldset>
-    <fieldset>
-    <h2 class="fs-title">Please enter the OTP you received on your phone below</h2>
-    <h3 class="fs-subtitle"></h3>
-    <input type="number" name="otp" id="otpvalue" min="1" max="999999">
-    <button type="button" style="width:100%" class="send_otp" id="otpbutton" disabled=true>Resend OTP</button>
-    <div class="buttons">
-        <input type="button" name="verify" class="verify action-button" id="otpverify" value="Verify" />
-    </div>
-  </fieldset>
   </form>';
 
   $generatescript ='
@@ -418,25 +385,70 @@
   }
   else {
     $registration_detail=json_decode(get("registration_requests","*","id=".$regid[0]['id'],true),true);
+    $date=date_create($eventdetail[0]["end_datetime"]);
     $cache_ticket = true;
+    $ticket = strtoupper(base_convert((string)((int)$eventdetail[0]["ticket_offset"]+(int)$cid),10,36));
     $generated_form = '<form id="msform">
-    <h1>'.strtoupper($eventdetail[0]["name"]).'</h1>
-    <h3>2022</h3>
+    <!--h1>'.strtoupper($eventdetail[0]["name"]).'</h1>
+    <h3>2022</h3-->
     <br>
-  <h3 style="font-family: Arial"> ENTRY CODE</h3>
-  <div id="qrcode">
+    <link href="'.$settings["app"]["homebase"].'/css/raffleticket.css" rel="stylesheet">
+    <div class="ticket">
+    <div class="left">
+      <div class="ticket-info">
+        <p class="date">
+          <span>'.date_format($date,"F").'</span>
+          <span>'.date_format($date,"Y").'</span>
+          <span class="june-29">'.date_format($date,"dS").'</span>
+        </p>
+        <div class="show-name">
+          <h4 style="color: #000">TICKET</h4>
+          <h2 style="text-shadow: 0 1px 0px black;">#'.$ticket.'</h2>
+        </div>
+        <div class="time">
+          <!--p>8:00 PM <span>TO</span> 11:00 PM</p-->
+        </div>
+        <p class="location"><span>'.($eventdetail[0]["address"]).'</span>
+          <span class="separator"></span><span>'.strtoupper($eventdetail[0]["country"]).'</span>
+        </p>
+      </div>
     </div>
-    
+    <div class="right">
+      <p class="admit-one">
+        <span>115</span>
+        <span>NATIONAL</span>
+        <span>DAY</span>
+      </p>
+      <div class="right-info-container">
+        <div class="show-name">
+          <h1>'.($eventdetail[0]["name"]).'</h1>
+        </div>
+        <!--div class="time">
+          <p>8:00 PM <span>TO</span> 11:00 PM</p>
+          <p>DOORS <span>@</span> 7:00 PM</p>
+        </div-->
+        <div class="qrcode" id="qrcode">
+        </div>
+        <p class="ticket-number">
+          #'.$ticket.'
+        </p>
+      </div>
+    </div>
+  </div>
+  <h3 style="font-family: Arial"></h3>
+  <div id="qrcode.ifneeded">
+    </div>
+  
   <div style="font-family: Arial">
-  <h2>Ticket Number: '.strtoupper(base_convert((string)((int)$eventdetail[0]["ticket_offset"]+(int)$cid),10,36)).'</h2>
+  <!--h2>Ticket Number: '.$ticket.'</h2-->
 
   <br>
   <hr>
-  <h4>Venue: '.$eventdetail[0]["address"].'</h4>
+  <!--h4>Venue: '.$eventdetail[0]["address"].'</h4>
   <h4>From: '.explode(" ",$eventdetail[0]["start_datetime"])[0].' Time '.explode(" ",$eventdetail[0]["start_datetime"])[1].'</h4>
   <h4>Till: '.explode(" ",$eventdetail[0]["end_datetime"])[0].' Time '.explode(" ",$eventdetail[0]["end_datetime"])[1].'</h4>
   '.(($registration_detail[0]["other_cids"]=="")?'':'<h4>Together With:<br> <i><span id="dependent_list"></span></i></h4>').'
-    <br>
+    <br-->
   </div>
 </form>';
 
@@ -456,10 +468,10 @@
       subTitleTop: 50,
       
       text: "'.strtoupper(base_convert((string)((int)$eventdetail[0]["ticket_offset"]+(int)$cid),10,36)).'",
-      width: 300,
-      height:300,
+      width: 80,
+      height:80,
     
-      quietZone: 35,
+      quietZone: 0,
       quietZoneColor: "#fff",
       autoColor: false, // Automatic color adjustment(for data block)
       autoColorDark: "rgba(0, 0, 0, .6)", // Automatic color: dark CSS color
@@ -469,6 +481,7 @@
       ';
   }
 ?>
+
 <?php
 ob_end_clean();
 ob_start();
@@ -514,388 +527,31 @@ function alertify(message) {
       alert.open();
   }
 
-var dependent_list=[];
-  
-    
-  function parse_dependent() {
-    if (<?php echo isset($generatescript)?"false":"true";?>) {
-    table = '<table class="dependent" style="width:90%">';
-    for (i=0; i<dependent_list.length; i++) {
-      table+='<tr><td>'+(i+1)+'</td><td>'+dependent_list[i][0]+' '+(dependent_list[i][1]==""?'':dependent_list[i][1]+' ')+dependent_list[i][2]+'</td><td>Date of Birth: '+dependent_list[i][3]+'</td><td>Gender: '+dependent_list[i][4]+'</td>';
-      table+='<td><button type="button" onclick="remove_dependent('+i+')" class="closebutton">X</button></td>';
-      table+='</tr>';  
-      }
-      table+='</table>';
-    }
-    else {
-      table = '';
-      //strtoupper(base_convert((string)((int)$eventdetail[0]["ticket_offset"]+(int)$cid),10,36))
-      var offset = <?php echo $eventdetail[0]["ticket_offset"]?>;
-      for (i=0; i<dependent_list.length; i++) {
-        table+=' '+dependent_list[i][0]+' '+(dependent_list[i][1]==""?'':dependent_list[i][1]+' ')+dependent_list[i][2]+' (TICKET: '+(offset+parseInt(dependent_list[i][4])).toString(36).toUpperCase()+' ) <br>';
-      }
-      table=table.substring(0,table.length-1);
-    }
-    $("#dependent_list").html(table);
-  }
-
-      
-  function remove_dependent(index) {
-    var confirmation = new tingle.modal({
-          closeMethods: ['overlay','escape'],
-          footer: true
-      });
-      confirmation.setContent(`  <div class="" style="padding: 0px; box-shadow: none">
-        <h2>Are you sure?</h2>
-      </div>`);
-      confirmation.addFooterBtn("Yes","action-button tingle-btn--pull-right",function(){
-        dependent_list.splice(index,1);
-        parse_dependent();
-        confirmation.close();
-      });
-
-      confirmation.addFooterBtn("No","action-button tingle-btn--pull-right",function(){
-        confirmation.close();
-      });
-
-      confirmation.open();
-    
-  }
-
- 
-
-
-      <?php
-      if (!empty($registration_detail)) {
-        $set_of_dependent = trim($registration_detail[0]["other_cids"],";");
-        $dependent_detail=[];
-        foreach (explode(";",$set_of_dependent) as $dcid) {
-          $dependent_detail = array_merge($dependent_detail,json_decode(get("citizens","*","cid='$dcid'",true),true));
-          $dependent_detail = array_merge($dependent_detail,json_decode(get("minor","*","cid='$dcid'",true),true));
-        }   
-        $i=0;
-        foreach ($dependent_detail as $dependent) {
-          echo "dependent_list[$i]=(['".$dependent["first_name"]."','".$dependent["middle_name"]."','".$dependent["last_name"]."','".$dependent["dob"]."','".$dependent["cid"]."','".$dependent["gender"]."']);";
-          $i++;
-        }
-      }
-    
-    ?>
-
-parse_dependent();
-
-
-var seconds=0;
-function send_otp() {
-  $("#otpvalue").val("");
-  $("#otpverify").val("Please wait 5s");
-  $("#otpverify").prop("disabled",true);
-  setTimeout(function(){$("#otpverify").prop("disabled",false); $("#otpverify").val("Verify")},5000);
-  seconds=60;
-  $("#otpbutton").prop("disabled",true);
-  $.post("<?php echo $settings["app"]["homebase"].'/submit'?>",{"request":"otp","cid":"<?php echo $cid;?>"},function(data){
-      console.log("");
-      // d=JSON.parse(data);
-      // if (d.error===false) {
-      //   console.log("success");
-      // }
-      // else {
-      //   console.log(d.error);
-      // }
-  });
-  var x = setInterval(function() {
-    seconds--;
-    $("#otpbutton").html("Request another OTP in "+seconds+"s");
-    if (seconds==0) {
-      clearInterval(x);
-      $("#otpbutton").prop("disabled",false);
-      $("#otpbutton").html("Request another OTP");
-    }
-  },1000);
-}
-
-$("#otpverify").click(function() {
-
-
-  enteredotp = $("#otpvalue").val();
-  if (enteredotp.length!=6) {
-    alertify("Otp should be 6 digits. Please enter the correct value");
-    return false;
-  }
-
-  const array = $("#msform").serializeArray(); // Encodes the set of form elements as an array of names and values.
-  const json = {"dependent": JSON.stringify(dependent_list)};
-  $.each(array, function () {
-    json[this.name] = this.value || "";
-  });
-
-  $.post("<?php echo $settings["app"]["homebase"].'/submit'?>",{"data":json, "request":"validate","otp":enteredotp,"cid":"<?php echo $cid;?>"},function(data){
-      d=JSON.parse(data);
-      if (d.error!==false) {
-        $("#otpverify").val(d.error+" Wait 10s");
-        $("#otpverify").prop("disabled",true);
-        setTimeout(function(){$("#otpverify").prop("disabled",false); $("#otpverify").val("Verify")},10000);
-      }
-      else {
-        location.reload();
-      }
-  })
-});
-
-
-
 $("#check_before_submit").click(function(){
   if ($("select[name='gewog']").val()=="" || $("select[name='dzongkhag']").val()=="" || $("select[name='gewog']").val()==null || $("select[name='dzongkhag']").val()==null) {
     alertify("You have not entered your current address properly. Please check and try again.");
   }
   else {
-    $("#proceed_further").click();
-  }
-});
+    enteredotp = "singleregister";
 
-
-
-
-    //jQuery time
-    var current_fs, next_fs, previous_fs; //fieldsets
-    var left, opacity, scale; //fieldset properties which we will animate
-    var animating; //flag to prevent quick multi-click glitches
-
-
-    
-    $(".next").click(function(){
-      if(animating) return false;
-      animating = true;
-      
-      current_fs = $(this).parent().parent();
-      next_fs = $(this).parent().parent().next();
-      
-      //activate next step on progressbar using the index of next_fs
-      $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
-      
-      //show the next fieldset
-      next_fs.show(); 
-      //hide the current fieldset with style
-      current_fs.animate({opacity: 0}, {
-        step: function(now, mx) {
-          //as the opacity of current_fs reduces to 0 - stored in "now"
-          //1. scale current_fs down to 80%
-          scale = 1 - (1 - now) * 0.2;
-          //2. bring next_fs from the right(50%)
-          left = (now * 50)+"%";
-          //3. increase opacity of next_fs to 1 as it moves in
-          opacity = 1 - now;
-          current_fs.css({
-            'transform': 'scale('+scale+')',
-            'position': 'absolute'
-          });
-          next_fs.css({'left': left, 'opacity': opacity});
-        }, 
-        duration: 800, 
-        complete: function(){
-          current_fs.hide();
-          animating = false;
-        }, 
-        //this comes from the custom easing plugin
-        easing: 'easeInOutBack'
-      });
+    const array = $("#msform").serializeArray(); // Encodes the set of form elements as an array of names and values.
+    dependent_list=[];
+    const json = {"dependent": JSON.stringify(dependent_list)};
+    $.each(array, function () {
+      json[this.name] = this.value || "";
     });
-    
-    $(".previous").click(function(){
-      if(animating) return false;
-      animating = true;
-      
-      current_fs = $(this).parent().parent();
-      previous_fs = $(this).parent().parent().prev();
-      
-      //de-activate current step on progressbar
-      $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("active");
-      
-      //show the previous fieldset
-      previous_fs.show(); 
-      //hide the current fieldset with style
-      current_fs.animate({opacity: 0}, {
-        step: function(now, mx) {
-          //as the opacity of current_fs reduces to 0 - stored in "now"
-          //1. scale previous_fs from 80% to 100%
-          scale = 0.8 + (1 - now) * 0.2;
-          //2. take current_fs to the right(50%) - from 0%
-          left = ((1-now) * 50)+"%";
-          //3. increase opacity of previous_fs to 1 as it moves in
-          opacity = 1 - now;
-          current_fs.css({'left': left});
-          previous_fs.css({'transform': 'scale('+scale+')', 'opacity': opacity});
-        }, 
-        duration: 800, 
-        complete: function(){
-          current_fs.hide();
-          animating = false;
-        }, 
-        //this comes from the custom easing plugin
-        easing: 'easeInOutBack'
-      });
-    });
-    
-        $(".submit").click(function(){
-          return false;
-        })
-    
-        $(".occupations").select2();
-    
-    var toggleminor = function() {
-        if ($("#minortoggle").prop("checked")==true) {
-          r = Math.floor(Math.random()*1000000)+60000000000+parseInt('<?php echo $cid?>');
-          $("#dependent_cid").val(r);
 
-          //r = (Math.random() + 1).toString(36).substring(7);
-          //$("#dependent_cid").val("minor_"+r+"_"+"<?php echo $cid?>");
-          $("#dependent_cid").prop("type","hidden");
-          $('#dependent_firstname').prop("disabled",false);
-          $('#dependent_middlename').prop("disabled",false);
-          $('#dependent_lastname').prop("disabled",false);
-          $('#dependent_dob').prop("disabled",false);
-          $('#dependent_gender').prop("disabled",false);
+    $.post("<?php echo $settings["app"]["homebase"].'/submit'?>",{"data":json, "autoallow":"1", "request":"validate","otp":enteredotp,"cid":"<?php echo $cid;?>"},function(data){
+        d=JSON.parse(data);
+        if (d.error!==false) {
+         alertify(d.error);
         }
         else {
-          $("#dependent_cid").val("");
-          $("#dependent_cid").prop("type","text");
+          location.reload();
         }
-    }
-        
-    
-        var btn5 = document.querySelector('.dependentdetail');
-        if (btn5) {
-          var modalButtonOnly = new tingle.modal({
-            closeMethods: [],
-            footer: true,
-            stickyFooter: true
-        });
-    btn5.addEventListener('click', function () {
-            modalButtonOnly.open();
-        });
-        //modalButtonOnly.setContent(document.querySelector('.tingle-demo-force-close').innerHTML);
-        modalButtonOnly.setContent(`<fieldset class="modal-field" style="padding: 0px; box-shadow: none">
-          <h2>Please put your dependent information here</h2>
-          <br><div id="dependent_error" style="position: fixed; top: 15px; color: crimson;"></div><br><hr><br>
-          <div class="form-check form-switch" style="display:flex;justify-content: flex-start;width: 100%;">
-              <input class="form-check-input" type="checkbox" style="float:left;width:60px; height:20px; " id="minortoggle" onchange="toggleminor()">
-              <label class="form-check-label" style="padding-left:20px;" for="autoformat"><strong style="font-size:14px"><span id="autoformattext">Minor &nbsp&nbsp</span></strong></label>
-          </div>
-          <input type="text" id="dependent_cid" placeholder="CID" onchange="get_cid_info(this.value)" />
-          <input type="text" id="dependent_firstname" placeholder="First Name" />
-          <input type="text" id="dependent_middlename" placeholder="Middle Name" />
-          <input type="text" id="dependent_lastname" placeholder="Last Name" />
-          <select id="dependent_gender" required>
-            <option value="" disabled>Gender</option>
-            <option value="M">Male</option>
-            <option value="F">Female</option>
-          </select>
-          <input type="date" id="dependent_dob" placeholder="Date of Birth" max="2022-08-01"/>
-        </fieldset>`);
-        modalButtonOnly.addFooterBtn('Add', 'tingle-btn tingle-btn--primary tingle-btn--pull-right', function () {
-          c=$("#dependent_cid").val();
-          f=$('#dependent_firstname').val();
-          m=$('#dependent_middlename').val();
-          l=$('#dependent_lastname').val();
-          d=$('#dependent_dob').val();
-          g=$('#dependent_gender').val();
-          if (f=='' || d=='') {
-            
-            $("#dependent_error").html("First name and Date of Birth is mandatory");
-            $("#dependent_error").show(100);
-            (f=='')?$('#dependent_firstname').focus():$('#dependent_dob').focus();
-            setTimeout(()=>{$("#dependent_error").slideUp(500)},2000);
-            return false;
-          }
-          dependent_list.push([f,m,l,d,c,g]);
-          parse_dependent();
-          $("#dependent_cid").val('');
-          $('#dependent_firstname').val('');
-          $('#dependent_middlename').val('');
-          $('#dependent_lastname').val('');
-          $('#dependent_dob').val('');
-          $('#dependent_gender').val('');
-          $("#minortoggle").prop("checked",false);
-          toggleminor();
-            modalButtonOnly.close();
-        });
-
-        modalButtonOnly.addFooterBtn('Cancel', 'tingle-btn tingle-btn--default tingle-btn--pull-right', function () {
-          $('#dependent_firstname').val('');
-          $('#dependent_middlename').val('');
-          $('#dependent_lastname').val('');
-          $('#dependent_dob').val('');
-          $('#dependent_gender').val('');
-          $("#minortoggle").prop("checked",false);
-          toggleminor();
-            modalButtonOnly.close();
-        });
-        }
- 
-
-    
-$(".send_otp").click(function() {
-  if (seconds>0) {
-    return false;
-  }
-  send_otp();
-});
-
-$("#otpvalue").keyup(function(){
-  if ($(this).val().length > 6) {
-    $(this).val($(this).val().slice(0,6)); 
-  }
-});
-
-var get_cid_info = function(cid) {
-  toggleminor();
-  if (cid=="<?php echo $cid?>") {
-    alertify("You cannot add your own CID again");
-    $('#dependent_firstname').prop("disabled",true);
-    $('#dependent_middlename').prop("disabled",true);
-    $('#dependent_lastname').prop("disabled",true);
-    $('#dependent_dob').prop("disabled",true);
-    $('#dependent_gender').prop("disabled",true);
-    return 0;
-  }
-  if (cid.length==11) {
-    $.post("<?php echo $settings["app"]["homebase"].'/submit'?>",{"findcid":cid, "request":"cidinfo"},function(data){
-      d=JSON.parse(data);
-      $('#dependent_firstname').prop("disabled",false);
-      $('#dependent_middlename').prop("disabled",false);
-      $('#dependent_lastname').prop("disabled",false);
-      $('#dependent_dob').prop("disabled",false);
-      $('#dependent_gender').prop("disabled",false);
-      if (d.error!==false) {
-        alertify(d.msg);
-        $('#dependent_cid').val(cid);
-        if (d.cleardata) {
-          $('#dependent_cid').val('');
-        }
-        $('#dependent_gender').val('');
-        $('#dependent_firstname').val('');
-        $('#dependent_middlename').val('');
-        $('#dependent_lastname').val('');
-        $('#dependent_dob').val('');
-      }
-      else {
-        $('#dependent_firstname').val(d.first_name);
-        $('#dependent_cid').val(cid);
-        $('#dependent_gender').val(d.gender);
-        $('#dependent_middlename').val(d.middle_name);
-        $('#dependent_lastname').val(d.last_name);
-        $('#dependent_dob').val(d.dob);
-        $('#dependent_firstname').prop("disabled",true);
-        $('#dependent_middlename').prop("disabled",true);
-        $('#dependent_lastname').prop("disabled",true);
-        $('#dependent_dob').prop("disabled",true);
-        $('#dependent_gender').prop("disabled",true);
-      }
     });
   }
-  
-}
-
+});
 
 
 

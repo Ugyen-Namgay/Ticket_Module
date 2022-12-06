@@ -71,8 +71,9 @@
                                         echo '<h4 class="card-title">List of all events.</h4>';
                                         echo '<ul class="list-arrow">';
                                         foreach($venues as $v) {
-                                            echo '<li><a href="#" onclick="editevent('.$v["id"].')">'.$v["name"].'</a>: '.$v["address"].', '.$v["country"].' FROM '.$v["start_datetime"].' TILL '.$v["end_datetime"].' (ID: '.$v["id"].')<br> Capacity: '.$v["capacity"];
+                                            echo '<li><h3><a href="#" onclick="editevent('.$v["id"].')">'.$v["name"].'</a></h3>: '.$v["address"].', '.$v["country"].' FROM '.$v["start_datetime"].' TILL '.$v["end_datetime"].' (ID: '.$v["id"].')<br> Capacity: '.$v["capacity"];
                                             echo '<br/><a target="_blank" href="'.$pageURL.$_SERVER["SERVER_NAME"].'/register/'.$v["id"].'/?cid=11512005551">Registration Link Format </a>: '.$pageURL.$_SERVER["SERVER_NAME"].'/register/'.$v["id"].'/?cid={CITIZEN-ID}';
+                                            echo '<br/><a target="_blank" href="'.$pageURL.$_SERVER["SERVER_NAME"].'/singleregister/'.$v["id"].'/?cid=11512005551">Single Auto allowed registration Link Format </a>: '.$pageURL.$_SERVER["SERVER_NAME"].'/singleregister/'.$v["id"].'/?cid={CITIZEN-ID}';
                                             echo '<br/><a target="_blank"  href="'.$pageURL.$_SERVER["SERVER_NAME"].'/check/'.$v["id"].'/11512005551?cid=00000000000"> Checker Link Format </a>: '.$pageURL.$_SERVER["SERVER_NAME"].'/check/'.$v["id"].'/{CITIZEN-CID}?cid={ADMIN-CID}';
                                             echo '<br/>';
                                         }
