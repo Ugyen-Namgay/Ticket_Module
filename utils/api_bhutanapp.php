@@ -38,14 +38,13 @@ function api_get_token_for_phone($cid,$password) {
     }
 
 function api_get_phone_detail($cid) {
+    $cacheddata = get_cache("APIDETAIL".$cid);
+    if ($cacheddata) {
+        return $cacheddata;
+    }
     $settings = parse_ini_file("settings/config.ini", true);
     $url = $settings["bhutanapp"]["new_user_detail_url"];
-    $token = file_exists("apitoken")?file_get_contents("apitoken"):"";
-    if ($token=="") {
-        $token = api_get_token_for_phone($settings["bhutanapp"]["cid"],$settings["bhutanapp"]["password"]);
-        file_put_contents("apitoken",$token);
-        
-    }
+    $token = api_get_token_for_phone($settings["bhutanapp"]["cid"],$settings["bhutanapp"]["password"]);
 
     $data = '{
         "cid":"'.$cid.'"
@@ -71,13 +70,17 @@ function api_get_phone_detail($cid) {
     try {
         $context = stream_context_create($opts);
         $result = @file_get_contents($url, false, $context);
+        //echo $result;
 
         if (!$result) {
-            echo "BAD REQUEST";
+            set_cache("APIDETAIL".$cid,false,10);
+            return false;
         }
+        set_cache("APIDETAIL".$cid,$result,0);
         return $result;
         }
             catch(Exception $e) {
+                set_cache("APIDETAIL".$cid,false,10);
                 return false;
             }
 
@@ -86,11 +89,7 @@ function api_get_phone_detail($cid) {
 function send_sms($phone,$message) {
     $settings = parse_ini_file("settings/config.ini", true);
     $url = $settings["sms"]["url"];
-    $token = file_exists("apitoken")?file_get_contents("apitoken"):"";
-    if ($token=="") {
-        $token = api_get_token_for_phone($settings["bhutanapp"]["cid"],$settings["bhutanapp"]["password"]);
-        file_put_contents("apitoken",$token);
-    }
+    $token = api_get_token_for_phone($settings["bhutanapp"]["cid"],$settings["bhutanapp"]["password"]);
 
     $data = '{
         "phone":"'.$phone.'",
@@ -139,17 +138,26 @@ function generateOTP($n=6) {
 
 function get_country() {
     $remote_ip=getVisIPAddr();
+    if (get_cache($remote_ip)) {
+        return get_cache($remote_ip);
+    }
     $ipdat = @json_decode(file_get_contents(
       "http://www.geoplugin.net/json.gp?ip=" . $remote_ip));
+    set_cache($remote_ip,str_replace(",","-",$ipdat->geoplugin_countryName));
     return str_replace(",","-",$ipdat->geoplugin_countryName);
   }
 
 function getphoto($cid) {
+    $cachedphoto = get_cache("PHOTO".$cid);
+    if ($cachedphoto) {
+        return $cachedphoto;
+    }
     $settings = parse_ini_file("settings/config.ini", true);
-    $url = $settings["censusimage"]["url"];
+    $url = $settings["censusimage"]["local_url"];
     $token = $settings["censusimage"]["token"];
     $composedurl = $url."cid=".$cid."&token=".$token."";
     $image=file_get_contents($composedurl);
+
     if ($image=="") {
         return "1";// Default image
     }
@@ -190,13 +198,15 @@ function getphoto($cid) {
         imagedestroy($im);
         $size=strlen($temp);
         //return $theme_image_enc_little;
-        $previd = json_decode(get("images","id","bin='$theme_image_enc_little'"));
+        $previd = json_decode(get("images","id","bin='$theme_image_enc_little'"),true);
         if (sizeof($previd)==0) {
             insert("images","bin,format","$theme_image_enc_little,png");
-            return json_decode(get("images","id","bin='$theme_image_enc_little'"))[0][0];
+            set_cache("PHOTO".$cid,json_decode(get("images","id","bin='$theme_image_enc_little'"),true)[0]["id"],0);
+            return json_decode(get("images","id","bin='$theme_image_enc_little'"),true)[0]["id"];
         }
         else {
-            return $previd[0][0];
+            set_cache("PHOTO".$cid,$previd[0]["id"],0);
+            return $previd[0]["id"];
         }
     }
 

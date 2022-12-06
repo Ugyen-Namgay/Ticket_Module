@@ -59,11 +59,11 @@
                                         echo '';
                                     }
                                     else {
-                                        $users = json_decode($users);
+                                        $users = json_decode($users,true);
                                         echo '<h4 class="card-title">List of Users</h4>';
                                         echo '<ul class="list-arrow">';
                                         foreach($users as $v) {
-                                            echo '<li><a href="#" onclick="edituser('.$v[0].')">'.$v[1].'</a>: '.$v[3].'</li>';
+                                            echo '<li><a href="#" onclick="edituser('.$v["admin_id"].')">'.$v["email"].'</a>: '.$v["name"].'</li>';
                                         }
                                         echo '</ul>';
                                     }
@@ -115,7 +115,7 @@
                           <div class="col-sm-9">
                             <select class="form-control form-control-lg" name="level" required>
                             <option value="0" selected>Administrator</option>
-                            <option value="checker" selected>Checker</option>
+                            <option value="1" selected>Checker</option>
                             </select>
                             </div>
                           
@@ -228,7 +228,7 @@ function edituser(userid) {
     users=[];
     <?php
     foreach($users as $v) {
-        echo 'users['.$v[0].']= {"admin_id":"'.$v[0].'","email":"'.$v[1].'","cid":"'.$v[2].'","name":"'.$v[3].'","level":"'.$v[4].'"};';
+        echo 'users['.$v["admin_id"].']= {"admin_id":"'.$v["admin_id"].'","email":"'.$v["email"].'","cid":"'.$v["cid"].'","name":"'.$v["name"].'","level":"'.$v["level"].'"};';
     }
     ?>
     $.each(users[userid],function(k,v){

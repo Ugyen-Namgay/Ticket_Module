@@ -26,8 +26,8 @@
 	require_once "utils/sqldb.php";
 	$name=isonline();
 	if (!$name) {
-		#Redirect("/",true);
-		#exit();
+		Redirect("/",true);
+		exit();
 	}
 ?>
 
@@ -582,4 +582,53 @@
 	<!-- <script type="text/javascript" src="//cdn.datatables.net/plug-ins/a5734b29083/integration/bootstrap/3/dataTables.bootstrap.js"></script> -->
 	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/alertify.js/0.3.11/alertify.min.js"></script>
+  <script>
+
+  </script>
+  <script type="text/javascript">
+			jQuery(document).ready(function(){
+				$("#stored_keys").dataTable({
+					"bFilter":true,
+					"bSort":true,
+					"dom": '<"top"ilf>rt<"bottom"p><"clear">'
+				});
+			});
+
+			function deleteKey(id) {
+				alertify.confirm("Are you sure?", function (e) {
+					if (e) {
+						
+						$.post("/home",{"delete":"1","key":id},function(k){
+							if (k=="OK") {
+								window.location.href = "/";
+							}
+							else {
+								alertify.confirm("Could not delete the Key");
+							}
+						});
+					} else {
+					// user clicked "cancel"
+					}
+				});
+
+			}
+
+			function flush(){
+				alertify.confirm("Are you sure?", function (e) {
+					if (e) {
+						
+						$.post("/home",{"flush":"1"},function(k){
+							if (k=="OK") {
+								window.location.href = "/";
+							}
+							else {
+								alertify.confirm("Could not clear the caches");
+							}
+						});
+					} else {
+					// user clicked "cancel"
+					}
+				});
+			}
+		</script>
 </html>

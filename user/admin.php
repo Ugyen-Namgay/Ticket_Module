@@ -1,7 +1,6 @@
 <?php
 include_once "utils/api_bhutanapp.php";
 //URL: domain.com/check/[VENUEID]/[CITIZENID]?cid=[SCANNERID]
-
 $play_sound="reject";//USED LATER.
 $eventid = $args[0];
 // if (strpos($args[1],"?cid=")===false) {
@@ -10,9 +9,165 @@ $eventid = $args[0];
 // }
 // else {
     $admincid = explode("?cid=",$args[sizeof($args)-1])[1];
-    $cid = explode("?cid=",$args[sizeof($args)-1])[0];
+    $ticket = explode("?cid=",$args[sizeof($args)-1])[0];
+    $offset = json_decode(get("events","*","id=$eventid",true),true)[0]["ticket_offset"];
+    $cid = (string)((int)base_convert($ticket,36,10)-(int)$offset);
+    //$ticket = strtoupper(base_convert((string)((int)$eventdetail[0][6]+(int)$cid),10,36))
+    
 // }
-if(get("admin_user","admin_id","cid='$admincid'")=="[]") { // CHECK PERMISSION OF WHO IS ACCESSING THE PAGE
+$admin_id = json_decode(get("admin_user","admin_id","cid='$admincid'",true),true);
+
+if (isset($_POST["fetch"])) {
+    $play_sound="reject";
+    $regid_get = json_decode(get("registration_requests","id","cid='".$cid."' AND event_id='$eventid'"),true);
+    if (empty($regid_get)) {
+        $data_form = '
+        <form id="msform">
+    
+        <h2>USER WITH CID: '.$cid.' NOT FOUND IN THE EVENT</h2>
+        <br>
+        <i>Registration ID not found for this CID for the event</i>
+        
+        </form>';
+    
+    }
+    else {
+        $regid = $regid_get[0]["id"];
+        $registration_detail=json_decode(get("registration_requests","*","id=$regid",true),true);
+        if(sizeof($registration_detail)==0) {
+            $user_detail = json_decode(api_get_phone_detail($cid))->data;
+            $error = json_decode(api_get_phone_detail($cid))->error;
+            $message = json_decode(api_get_phone_detail($cid))->message;
+            if ($error) {
+                $data_form = '
+                <form id="msform">
+
+                <h2>USER WITH CID: '.$cid.' NOT FOUND IN THE APP</h2>
+                
+                </form>';
+            }
+            else {
+                
+                $base64photo = json_decode(get("images","bin","id='".getphoto($cid)."'",true),true)[0]["bin"];
+                $data_form = '
+                <form id="msform">
+                <h2>REGISTRATION FOR CID: '.$cid.' NOT FOUND</h2>
+                <img src="data:image/png;base64,'.$base64photo.'" style="padding:20px; height: 20vh"/>
+                <hr>
+                <h4>First Name: '.$user_detail->first_name.'</h4>
+                <h4>Middle Name: '.$user_detail->middle_name.'</h4>
+                <h4>Last Name: '.$user_detail->last_name.'</h4>
+                <h4>Date of Birth: '.$user_detail->dob.'</h4>
+                <h4>Phone: '.$user_detail->phone.'</h4>
+                
+                </form>';
+            }
+
+
+        }
+        else {
+
+            $eventdetail = json_decode(get("events","id,name,address,start_datetime,end_datetime","end_datetime>NOW()"),true);
+            $preregistrationdetail = json_decode(get("citizen_roles","*","cid='$cid'"),true);
+
+            $set_of_dependent = trim($registration_detail[0]["other_cids"],";");
+            $dependent_detail=[];
+            foreach (explode(";",$set_of_dependent) as $dcid) {
+            $dependent_detail = array_merge($dependent_detail,json_decode(get("citizens","*","cid='$dcid'",true),true));
+            $dependent_detail = array_merge($dependent_detail,json_decode(get("minor","*","cid='$dcid'",true),true));
+            //   $dependent_detail[] = json_decode(get("citizens","*","cid='$dcid'",true),true);
+            //   $dependent_detail[] = json_decode(get("minor","*","cid='$dcid'",true),true);        
+            }
+            $person_detail = json_decode(get("citizens","*","cid='$cid'",true),true);
+            $base64photo = json_decode(get("images","bin","id='".$person_detail[0]["image_id"]."'",true),true)[0]["bin"];
+
+
+            $event_options = '';
+            foreach($eventdetail as $event) {
+                if ($event["id"]==$registration_detail[0]["event_id"]) {
+                    $event_options.='<option selected value="'.$event["id"].'">'.$event["name"].' - '.$event["address"].'</option>';
+                }
+                else {
+                    $event_options.='<option value="'.$event["id"].'">'.$event["name"].' - '.$event["address"].'</option>';
+                }
+                
+            }
+
+            $dependent_list = '';
+            foreach($dependent_detail as $dependent) {
+                $dependent_list.='<li class="dependent_list_items"><span>'.$dependent["first_name"]." ".($dependent["middle_name"]==""?"":$dependent["middle_name"]).' '.$dependent["last_name"]."</span><span> DOB: ".$dependent["dob"]."</span><span> Gender: ".$dependent["gender"].'<span><button type="button" onclick="discard_dependent(\''.$dependent["cid"].'\',\''.$cid.'\')" class="closebutton">X</button></li>';
+            }
+            
+            // if ($registration_detail[0]["is_allowed"]=="0") {
+            //     $entry_status = '<h4 id="statusbar" class="regpending">Entry Status: PENDING</h4>';
+            // }
+            // else 
+            if (!empty($preregistrationdetail)) {
+                $special_entry = '<h2 class="regallowed">'.$preregistrationdetail["role"].($preregistrationdetail["description"]==""?"":': '.$preregistrationdetail["description"]).'</h2>';
+            }
+            else {
+                $special_entry = "";
+            }
+            if ($registration_detail[0]["is_allowed"]=="1") {
+                $entry_status = '<h4 id="statusbar"  class="regallowed">Entry Status: ALLOWED</h4>';
+                $play_sound="accept";
+            }
+            else {
+                $entry_status = '<h4 id="statusbar" class="regnotallowed">Entry Status: NOT ALLOWED</h4>';
+            }
+            $event_display =json_decode(get("events","*","id=".$registration_detail[0]["event_id"],true),true)[0];
+            $data_form = '
+            <form id="msform">
+            <fieldset>
+            <h2>User Details: '.$event_display["name"].' At '.$event_display["address"].'</h2>
+            '.$entry_status.$special_entry.'
+            <hr>
+            <label class="fs-title" style="text-align:center; padding:10px">User Registered on '.$registration_detail[0]["register_datetime"].'</label>
+            <!--select name="registrations_venueid" id="event_change">
+            '.$event_options.'
+            </select-->
+            <table border=0 style="width:100%">
+            <tr><td>
+            <img src="data:image/png;base64, '.$base64photo.'" style="padding:20px; height: 20vh"/>
+            
+            
+            </td><td>
+            <label>First Name</label>
+            <input type="text" name="citizen_firstname" value="'.$person_detail[0]["first_name"].'" disabled>
+            <label>Middle Name</label>
+            <input type="text" name="citizen_middlename" value="'.$person_detail[0]["middle_name"].'" disabled>
+            <label>Last Name</label>
+            <input type="text" name="citizen_lastname" value="'.$person_detail[0]["last_name"].'" disabled>
+            
+
+            </td></tr>
+            </table>
+            
+
+
+            <h3 style="text-align:center; padding:10px">Dependents</h3>
+            <ol id="dependentlist" style="width:90%">
+                '.$dependent_list.'
+            </ol>
+            <button type="button" class="dependentdetail action-button" onclick=add_dependent("'.$cid.'") style="background: burlywood; width: 80%;">Add Dependent</button>
+            <hr/>
+
+            <div class="buttons" style="margin-top: 20px; position:relative; top:0px">
+            <button type="button" class="action-button" onclick=reject("'.$cid.'")>Disallow</button>
+            <button type="button" class="action-button" onclick=accept("'.$cid.'") style="background-color: #1eb683">Allow</button>
+            </div>
+            </fieldset>
+            </form>
+            ';
+        }
+
+    }
+    echo json_encode([$data_form,$play_sound]);
+    exit();
+}
+
+
+if(empty($admin_id)) { // CHECK PERMISSION OF WHO IS ACCESSING THE PAGE
     http_response_code(405);
     $data_form = '
     <form id="msform">
@@ -22,129 +177,17 @@ if(get("admin_user","admin_id","cid='$admincid'")=="[]") { // CHECK PERMISSION O
   <h4></h4>
     </form>';
 }
-else if ($cid && strlen($cid)==11) {
-    $registration_detail=json_decode(get("registration_requests","id,withdrawn,other_cids,event_id,register_datetime,is_allowed","cid='".$cid."' AND event_id='$eventid'"));
-    if(sizeof($registration_detail)==0) {
-        $user_detail = json_decode(api_get_phone_detail($cid))->data;
-        $error = json_decode(api_get_phone_detail($cid))->error;
-        $message = json_decode(api_get_phone_detail($cid))->message;
-        if ($error) {
-            $data_form = '
-            <form id="msform">
-
-            <h2>USER WITH CID: '.$cid.' NOT FOUND IN THE APP</h2>
-            
-            </form>';
-        }
-        else {
-            $base64photo = json_decode(get("images","bin","id='".getphoto($cid)."'"))[0][0];
-            $data_form = '
-            <form id="msform">
-            <h2>REGISTRATION FOR CID: '.$cid.' NOT FOUND</h2>
-            <img src="data:image/png;base64, '.$base64photo.'" style="padding:20px; height: 20vh"/>
-            <hr>
-            <h4>First Name: '.$user_detail->first_name.'</h4>
-            <h4>Middle Name: '.$user_detail->middle_name.'</h4>
-            <h4>Last Name: '.$user_detail->last_name.'</h4>
-            <h4>Date of Birth: '.$user_detail->dob.'</h4>
-            <h4>Phone: '.$user_detail->phone.'</h4>
-            
-            </form>';
-        }
-
-
-    }
-    else {
-
-        $eventdetail = json_decode(get("events","id,address,start_datetime,end_datetime","end_datetime>NOW()"));
-        $set_of_dependents = trim(str_replace(";",",",$registration_detail[0][2]),",");
-        $dependent_detail = json_decode(get("citizens","cid,first_name,middle_name,last_name,dob","FIND_IN_SET(cid,'".$set_of_dependents."')>0"));
-        $dependent_detail = array_merge($dependent_detail,json_decode(get("minor","cid,first_name,middle_name,last_name,dob","FIND_IN_SET(cid,'".$set_of_dependents."')>0")));
-        $person_detail = json_decode(get("citizens","dob,first_name,middle_name,last_name,phonenumber,image_id","cid='$cid'"));
-        $base64photo = json_decode(get("images","bin","id='".$person_detail[0][5]."'"))[0][0];
-
-
-
-        $event_options = '';
-        foreach($eventdetail as $event) {
-            if ($event[0]==$registration_detail[0][3]) {
-                $event_options.='<option selected value="'.$event[0].'">'.$event[1].' - '.$event[2].'</option>';
-            }
-            else {
-                $event_options.='<option value="'.$event[0].'">'.$event[1].' - '.$event[2].'</option>';
-            }
-            
-        }
-
-        $dependent_list = '';
-        foreach($dependent_detail as $dependent) {
-            $dependent_list.='<li class="dependent_list_items"><span>'.$dependent[1]." ".($dependent[2]==""?"":$dependent[2]).' '.$dependent[3]."</span><span> DOB: ".$dependent[4].'</span><button type="button" onclick="discard_dependent(\''.$dependent[0].'\')" class="closebutton">X</button></li>';
-        }
-
-        $play_sound="reject";
-        if ($registration_detail[0][5]=="0") {
-            $entry_status = '<h4 id="statusbar" class="regpending">Entry Status: PENDING</h4>';
-        }
-        else if ($registration_detail[0][5]=="1") {
-            $entry_status = '<h4 id="statusbar"  class="regallowed">Entry Status: ALLOWED</h4>';
-            $play_sound="accept";
-        }
-        else {
-            $entry_status = '<h4 id="statusbar" class="regnotallowed">Entry Status: NOT ALLOWED</h4>';
-        }
-        
-        $event_display =json_decode(get("events","name,address","id=".$registration_detail[0][3]))[0];
-        $data_form = '
-        <form id="msform">
-        <fieldset>
-        <h2>User Details: '.$event_display[0].' At '.$event_display[1].'</h2>
-        '.$entry_status.'
-        <hr>
-        <label class="fs-title" style="text-align:center; padding:10px">User Registered on '.$registration_detail[0][4].'</label>
-        <!--select name="registrations_venueid" id="event_change">
-        '.$event_options.'
-        </select-->
-        <table border=0 style="width:100%">
-        <tr><td>
-        <img src="data:image/png;base64, '.$base64photo.'" style="padding:20px; height: 20vh"/>
-        
-
-        </td><td>
-        <label>First Name</label>
-        <input type="text" name="citizen_firstname" value="'.$person_detail[0][1].'" disabled>
-        <label>Middle Name</label>
-        <input type="text" name="citizen_middlename" value="'.$person_detail[0][2].'" disabled>
-        <label>Last Name</label>
-        <input type="text" name="citizen_lastname" value="'.$person_detail[0][3].'" disabled>
-        
-
-        </td></tr>
-        </table>
-        
-
-
-        <h3 style="text-align:center; padding:10px">Dependents</h3>
-        <ol id="dependentlist" style="width:90%">
-            '.$dependent_list.'
-        </ol>
-        <button type="button" class="dependentdetail action-button" style="background: burlywood; width: 80%;">Add Dependent</button>
-        <hr/>
-
-        <div class="buttons" style="margin-top: 20px; position:relative; top:0px">
-        <button type="button" class="action-button" id="reject">Disallow</button>
-        <button type="button" class="action-button" id="accept" style="background-color: #1eb683">Allow</button>
-        </div>
-        </fieldset>
-        </form>
-        ';
-
-    }
-}
 else {
+    $event_detail=json_decode(get("events","*","id=$eventid",true),true);
     $data_form = '
     <form id="msform">
-  <h2>Admin Panel</h2>
-  <h4>Please Scan the QR Code of the user from top corner button</h4>
+  <h1>'.$event_detail[0]["name"].'</h1>
+  <h3>Security Check</h3>
+  <br><br><h3>Scan QR</h3><br>
+  <center>
+    <div id="loadingMessage">Unable to access video stream (please make sure you have a camera enabled and allowed)</div>
+    <canvas id="canvas" hidden></canvas>
+</center>
   <h4></h4>
   <h4></h4>
     </form>';
@@ -167,37 +210,128 @@ else {
 <link rel="shortcut icon" href="<?php echo $settings["app"]["homebase"].'/'.$settings["app"]["logo"]?>" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 </head>
+<style>
+    #canvas {
+        border-style: solid;
+        border-color: #ff9933;
+        border-width: 10px;
+        border-radius: 10px;
+    }
+    .nopadding * {
+        box-sizing: content-box;
+    }
+    .nopadding, .nopadding .tingle-modal-box .tingle-modal-box__content {
+        padding: 0 !important;
+    }
+    .nopadding .tingle-modal-box {
+        background: transparent;
+    }
+    .nopadding .tingle-modal-box__footer {
+        background: transparent;
+        display: flex;
+        justify-content: center;
+    }
+    .nopadding .tingle-modal-box__footer button {
+        width: 50%;
+    }
+    #msform {
+        margin:0px;
+    }
+    .ontop {
+        z-index: 9000;
+    }
+    </style>
 <body> 	
     <?php echo $data_form;?>
 </body>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+<script src="<?php echo $settings["app"]["homebase"].'/js/jquery.min.js'?>"></script>
+<script src="<?php echo $settings["app"]["homebase"].'/js/jquery.easing.min.js'?>"></script>
 <script src="<?php echo $settings["app"]["homebase"].'/js/select2.min.js'?>"></script>
 <script src="<?php echo $settings["app"]["homebase"].'/js/tingle.min.js'?>"></script>
+<script src="<?php echo $settings["app"]["homebase"].'/js/jsQR.js'?>"></script>
 <script>
-    function alertify(message) {
-        var alert = new tingle.modal({
-            closeMethods: [],
-            footer: true
-        });
-        alert.setContent(`<label>`+message+`</label>`);
-        alert.addFooterBtn('OK', 'tingle-btn tingle-btn--primary tingle-btn--pull-right', function () {
-            alert.close();
-        });
-        alert.open();
-    }
-    
 
-    var btn5 = document.querySelector('.dependentdetail');
-        if (btn5) {
-          var modalButtonOnly = new tingle.modal({
+var alert = new tingle.modal({ //This definied first
+            closeMethods: [],
+            cssClass: ['ontop'],
+            footer: true
+});
+alert.addFooterBtn('OK', 'tingle-btn tingle-btn--primary tingle-btn--pull-right', function () {
+    alert.close();
+});
+
+var controlbox = new tingle.modal({ //This definied second. The first and second element has been used so the position matters.
+            closeMethods: [],
+            cssClass: ['nopadding'],
+            footer: true
+});
+controlbox.addFooterBtn('OK', 'tingle-btn tingle-btn--primary', function () {
+    controlbox.close();
+    scancamera();
+});
+
+var modalButtonOnly = new tingle.modal({
             closeMethods: [],
             footer: true,
             stickyFooter: true
-        });
-    btn5.addEventListener('click', function () {
-            modalButtonOnly.open();
-        });
+});
+
+var workingticket = "";
+var accepttune = document.createElement('audio');
+var rejecttune = document.createElement('audio');
+accepttune.setAttribute('src','<?php echo $settings["app"]["homebase"].'/resources/accept.wav'?>');
+rejecttune.setAttribute('src','<?php echo $settings["app"]["homebase"].'/resources/reject.wav'?>');
+
+    function alertify(message) {    
+        alert.setContent(``+message+``);
+        alert.open();
+    }
+
+
+    function showcitizenpass(doc) {
+        controlbox.setContent(doc);
+        $("#msform").css("margin","none");
+        //controlbox.open();
+
+    }
+
+    function getcitizenpass(ticket) {
+        controlbox.open();
+        workingticket = ticket;
+        $.post("/check/<?php echo $eventid?>/"+ticket+"?cid=<?php echo $admincid?>",{"fetch":true},function(data){
+            d = JSON.parse(data);
+            showcitizenpass(d[0]);
+            if (d[1]=="accept") {
+                accepttune.play();
+            }
+            else {
+                rejecttune.play();
+            }
+        })
+    }
+    
+    var toggleminor = function() {
+        if ($("#minortoggle").prop("checked")==true) {
+        //   r = (Math.random() + 1).toString(36).substring(7);
+        //   $("#dependent_cid").val("minor_"+r+"_"+"<?php echo $cid?>");
+
+          r = Math.floor(Math.random()*1000000)+60000000000+parseInt('<?php echo $cid?>');
+          $("#dependent_cid").val(r);
+
+          $("#dependent_cid").prop("type","hidden");
+          $('#dependent_firstname').prop("disabled",false);
+          $('#dependent_middlename').prop("disabled",false);
+          $('#dependent_lastname').prop("disabled",false);
+          $('#dependent_dob').prop("disabled",false);
+          $('#dependent_gender').prop("disabled",false);
+        }
+        else {
+          $("#dependent_cid").val("");
+          $("#dependent_cid").prop("type","text");
+        }
+    }
+
+    function add_dependent(cid) {
         //modalButtonOnly.setContent(document.querySelector('.tingle-demo-force-close').innerHTML);
         modalButtonOnly.setContent(`  <fieldset class="modal-field" style="padding: 0px; box-shadow: none">
           <h2>Please put your dependent information here</h2>
@@ -210,14 +344,21 @@ else {
           <input type="text" id="dependent_firstname" placeholder="First Name" />
           <input type="text" id="dependent_middlename" placeholder="Middle Name" />
           <input type="text" id="dependent_lastname" placeholder="Last Name" />
+          <select id="dependent_gender" required>
+            <option value="" disabled>Gender</option>
+            <option value="M">Male</option>
+            <option value="F">Female</option>
+          </select>
           <input type="date" id="dependent_dob" placeholder="Date of Birth" max="2022-08-01"/>
         </fieldset>`);
+        modalButtonOnly.setFooterContent("");
         modalButtonOnly.addFooterBtn('Add', 'tingle-btn tingle-btn--primary tingle-btn--pull-right', function () {
           c=$("#dependent_cid").val();
           f=$('#dependent_firstname').val();
           m=$('#dependent_middlename').val();
           l=$('#dependent_lastname').val();
           d=$('#dependent_dob').val();
+          g=$('#dependent_gender').val();
           if (f=='' || d=='') {
             
             $("#dependent_error").html("First name and Date of Birth is mandatory");
@@ -231,8 +372,8 @@ else {
             "eventid":"<?php echo $eventid;?>",
             "admincid":"<?php echo $admincid;?>",
             "command": "adddependent",
-            "value" : [f,m,l,d,c],
-            "identity": "<?php echo $cid?>"
+            "value" : [f,m,l,d,c,g],
+            "identity": cid
             }
             $.post("<?php echo $settings["app"]["homebase"].'/submit'?>",data,function(data){
                 d=JSON.parse(data);
@@ -240,7 +381,7 @@ else {
                     alertify(d.error);
                 }
                 else {
-                    location.reload();
+                    getcitizenpass(workingticket);
                 }
             });
             
@@ -249,6 +390,9 @@ else {
           $('#dependent_middlename').val('');
           $('#dependent_lastname').val('');
           $('#dependent_dob').val('');
+          $('#dependent_gender').val('');
+          $("#minortoggle").prop("checked",false);
+          toggleminor();
             modalButtonOnly.close();
         });
 
@@ -257,70 +401,64 @@ else {
           $('#dependent_middlename').val('');
           $('#dependent_lastname').val('');
           $('#dependent_dob').val('');
+          $('#dependent_gender').val('');
+          $("#minortoggle").prop("checked",false);
+          toggleminor();
             modalButtonOnly.close();
         });
-        }
- 
-    var toggleminor = function() {
-        if ($("#minortoggle").prop("checked")==true) {
-          r = (Math.random() + 1).toString(36).substring(7);
-          $("#dependent_cid").val("minor_"+r+"_"+"<?php echo $cid?>");
-          $("#dependent_cid").prop("type","hidden");
-          $('#dependent_firstname').prop("disabled",false);
-          $('#dependent_middlename').prop("disabled",false);
-          $('#dependent_lastname').prop("disabled",false);
-          $('#dependent_dob').prop("disabled",false);
-        }
-        else {
-          $("#dependent_cid").val("");
-          $("#dependent_cid").prop("type","text");
-        }
+        modalButtonOnly.open();
     }
+ 
     
-
-    var get_cid_info = function(cid) {
+    
+function get_cid_info(cid) {
+  toggleminor();
   if (cid=="<?php echo $cid?>") {
     alertify("You cannot add your own CID again");
     $('#dependent_firstname').prop("disabled",true);
     $('#dependent_middlename').prop("disabled",true);
     $('#dependent_lastname').prop("disabled",true);
     $('#dependent_dob').prop("disabled",true);
+    $('#dependent_gender').prop("disabled",true);
     return 0;
   }
   if (cid.length==11) {
     $.post("<?php echo $settings["app"]["homebase"].'/submit'?>",{"findcid":cid, "request":"cidinfo"},function(data){
       d=JSON.parse(data);
       $('#dependent_firstname').prop("disabled",false);
-          $('#dependent_middlename').prop("disabled",false);
-          $('#dependent_lastname').prop("disabled",false);
-          $('#dependent_dob').prop("disabled",false);
+      $('#dependent_middlename').prop("disabled",false);
+      $('#dependent_lastname').prop("disabled",false);
+      $('#dependent_dob').prop("disabled",false);
+      $('#dependent_gender').prop("disabled",false);
       if (d.error!==false) {
-        alertify("Please enter the details manually",d.msg);
+        alertify(d.msg);
+        $('#dependent_cid').val(cid);
+        if (d.cleardata) {
+          $('#dependent_cid').val('');
+        }
+        $('#dependent_gender').val('');
         $('#dependent_firstname').val('');
-          $('#dependent_middlename').val('');
-          $('#dependent_lastname').val('');
-          $('#dependent_dob').val('');
+        $('#dependent_middlename').val('');
+        $('#dependent_lastname').val('');
+        $('#dependent_dob').val('');
       }
       else {
         $('#dependent_firstname').val(d.first_name);
-          $('#dependent_middlename').val(d.middle_name);
-          $('#dependent_lastname').val(d.last_name);
-          $('#dependent_dob').val(d.dob);
-          $('#dependent_firstname').prop("disabled",true);
-          $('#dependent_middlename').prop("disabled",true);
-          $('#dependent_lastname').prop("disabled",true);
-          $('#dependent_dob').prop("disabled",true);
+        $('#dependent_cid').val(cid);
+        $('#dependent_gender').val(d.gender);
+        $('#dependent_middlename').val(d.middle_name);
+        $('#dependent_lastname').val(d.last_name);
+        $('#dependent_dob').val(d.dob);
+        $('#dependent_firstname').prop("disabled",true);
+        $('#dependent_middlename').prop("disabled",true);
+        $('#dependent_lastname').prop("disabled",true);
+        $('#dependent_dob').prop("disabled",true);
+        $('#dependent_gender').prop("disabled",true);
       }
     });
   }
   
 }
-
-
-    var accepttune = document.createElement('audio');
-    var rejecttune = document.createElement('audio');
-    accepttune.setAttribute('src','<?php echo $settings["app"]["homebase"].'/resources/accept.wav'?>');
-    rejecttune.setAttribute('src','<?php echo $settings["app"]["homebase"].'/resources/reject.wav'?>');
 
     function reloadstatus(a) {
         $("#statusbar").removeClass("regpending");
@@ -330,19 +468,19 @@ else {
             $("#statusbar").html("Entry Status: ALLOWED");
         }    
         else {
-            $("#statusbar").html("Entry Status: NOW ALLOWED");
+            $("#statusbar").html("Entry Status: NOT ALLOWED");
         }
         $("#statusbar").addClass(a);
     }
 
-    $("#accept").click(function(){
+    function accept(cid){
         data = {
             "adminupdate":"adminupdate",
             "eventid":"<?php echo $eventid;?>",
             "admincid":"<?php echo $admincid;?>",
             "command": "approval",
             "value" : "accept",
-            "identity": "<?php echo $cid?>"
+            "identity": cid
             }
         $.post("<?php echo $settings["app"]["homebase"].'/submit'?>",data,function(data){
                 d = JSON.parse(data);
@@ -359,15 +497,15 @@ else {
                 }                   
         });
         
-    });
-    $("#reject").click(function(){
+    }
+    function reject(cid){
         data = {
             "adminupdate":"adminupdate",
             "eventid":"<?php echo $eventid;?>",
             "admincid":"<?php echo $admincid;?>",
             "command": "approval",
             "value" : "reject",
-            "identity": "<?php echo $cid?>"
+            "identity": cid
             }
         $.post("<?php echo $settings["app"]["homebase"].'/submit'?>",data,function(data){
                 d = JSON.parse(data);
@@ -384,7 +522,7 @@ else {
                 }                   
         });
         
-    });
+    }
 
     $("#event_change").change(function(){
         data = {
@@ -410,16 +548,14 @@ else {
         
     });
 
-    
-
-    function discard_dependent(id) {
+    function discard_dependent(id,cid) {
         data = {
             "adminupdate":"adminupdate",
             "eventid":"<?php echo $eventid;?>",
             "admincid":"<?php echo $admincid;?>",
             "command": "removedependent",
             "value" : id,
-            "identity": "<?php echo $cid?>"
+            "identity": cid
         }
         $.post("<?php echo $settings["app"]["homebase"].'/submit'?>",data,function(data){
             d=JSON.parse(data);
@@ -427,11 +563,125 @@ else {
                     alertify(d.error);
                 }
                 else {
-                    location.reload();
+                    getcitizenpass(workingticket);
                 }
         });
     }
 
+    function scancamera() {
+        if ('mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices) {
+            console.log("Media Permission Exists");
+        }
+        else {
+            console.log("No Media permission");
+            
+            return 0;
+        }
+          var video = document.createElement("video");
+              var canvasElement = document.getElementById("canvas");
+              var canvas = canvasElement.getContext("2d");
+              var loadingMessage = document.getElementById("loadingMessage");
+              var currentStream;
+              var currentFacingMode="environment";
+
+              function stopMediaTracks(currentStream) {
+                  currentStream.getTracks().forEach(track => {
+                      track.stop();
+                  });
+              }
+
+                  function drawLine(begin, end, color) {
+                      canvas.beginPath();
+                      canvas.moveTo(begin.x, begin.y);
+                      canvas.lineTo(end.x, end.y);
+                      canvas.lineWidth = 2;
+                      canvas.strokeStyle = color;
+                      canvas.stroke();
+                  }
+                  
+                  navigator.mediaDevices.getUserMedia({ video: { facingMode: currentFacingMode } }).then(function(stream) {
+                      currentStream = stream;
+                      video.srcObject = stream;
+                      video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
+                      video.play();
+                      intervalrun = setInterval(function() { // If I don't do this, there is no way to stop
+                          if ($(".nopadding").css("display")=='none') { //call only if moodle is open
+                              requestAnimationFrame(tick);
+                          }                   
+                          else {
+                              video.pause();
+                              video.currentTime = 0;
+                              stopMediaTracks(currentStream);
+                              clearInterval(intervalrun);
+                          }
+                      },100);
+                  });
+
+                  //var expression = "";
+                  //var patt = new RegExp(expression);
+                  //patt = new RegExp("");
+
+                  loadingMessage.innerText = "⌛ Loading video...";
+                   //ratio of the video
+                  height_of_canvas = window.screen.height/2;
+                  //width_of_canvas = window.screen.availWidth-50;
+                  
+
+                  async function tick() {
+                      
+                      if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                          loadingMessage.hidden = true;
+                          canvasElement.hidden = false;
+                          
+                          // canvasElement.height = video.videoHeight*0.5;
+                          // canvasElement.width = video.videoWidth*0.5;
+
+                          ratio_of_video = video.videoWidth/video.videoHeight;
+
+                          canvasElement.width = height_of_canvas*ratio_of_video;
+                          canvasElement.height = height_of_canvas;
+                          
+                          patt = /^([\w\-]{7})$/;
+                          canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+                            canvas.font = "30px Arial";
+                            canvas.fillStyle = "red";
+                            canvas.textAlign = "center";
+                            canvas.settings = ["willReadFrequently"];
+                          var imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+                          var code = jsQR(imageData.data, imageData.width, imageData.height, {
+                          inversionAttempts: "dontInvert",
+                          });
+                          if (code) {
+                              if (patt.test(code.data)) {
+                                //if (code.data) {
+                                  
+                                  drawLine(code.location.topLeftCorner, code.location.topRightCorner, "#ff9933");
+                                  drawLine(code.location.topRightCorner, code.location.bottomRightCorner, "#ffcc33");
+                                  drawLine(code.location.bottomRightCorner, code.location.bottomLeftCorner, "#ffcc33");
+                                  drawLine(code.location.bottomLeftCorner, code.location.topLeftCorner, "#ff9933");
+                                  //$("#alertboxclose").click();
+                                  //scan_completed(code.data); // this is called multiple times as the frames are scanned
+                                  console.log(code.data);
+                                  getcitizenpass(code.data);
+                                                                              
+
+                              }
+                              else {
+                                var offx = (code.location.topLeftCorner.x+code.location.topRightCorner.x)/2;
+                                var offy = code.location.topLeftCorner.y-(code.location.topLeftCorner.y-code.location.bottomLeftCorner.y)/2;
+                                canvas.fillText("Invalid",offx,offy);
+                                  drawLine(code.location.topLeftCorner, code.location.topRightCorner, "#FF3B58");
+                                  drawLine(code.location.topRightCorner, code.location.bottomRightCorner, "#FF3B58");
+                                  drawLine(code.location.bottomRightCorner, code.location.bottomLeftCorner, "#FF3B58");
+                                  drawLine(code.location.bottomLeftCorner, code.location.topLeftCorner, "#FF3B58");
+                              }
+                          }
+                  }  
+
+              }
+
+}
+scancamera();
     </script>
     <!-- <embed src='<?php echo $settings["app"]["homebase"].'/resources/'.$play_sound.'.wav'?>' hidden=true autostart=true loop=false> -->
-</html>
+    </html>

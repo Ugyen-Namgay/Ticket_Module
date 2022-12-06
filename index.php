@@ -9,12 +9,23 @@ $router->get('users', 'app/users');
 $router->get('events', 'app/events');
 $router->get('submit', 'utils/submission');
 
+$router->get('test', 'utils/cachemodule');
+$router->get('adminapp', 'user/adminapp');
+
 
 $router->get('register', 'user/register');
 $router->get('check', 'user/admin');
 $router->get('login','user/login');
 $router->get('dashboard','app/dashboard');
 
+
+$router->get('luckydraw', 'user/luckydraw');
+$router->get('luckydrawsettings', 'user/luckydrawsettings');
+$router->get('ndapi', 'utils/nationaldayapi');
+
+$router->get('luckydrawevent','utils/luckydraw');
+$router->get('eventluckydraw','user/eventluckydraw');
+$router->get('eventluckydrawsettings','user/eventluckydrawsettings');
 
 $router->get('error-401','errorpage/error-401');
 $router->get('error-404','errorpage/error-404');

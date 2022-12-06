@@ -8,8 +8,52 @@ function raise_error($message) {
 function success() {
     return '{"error":false}';
 }
-function get($table,$col="*",$condition="1") {
-    $conn = new mysqli(DB_HOST,DB_USER,DB_PSWD,DB_NAME);
+
+
+global $cache;
+global $conn;
+$conn = new mysqli(DB_HOST,DB_USER,DB_PSWD,DB_NAME);
+$cache= new Memcached('persistent');
+if( !count($cache->getServerList()))
+{
+    $cache->setOption(Memcached::OPT_LIBKETAMA_COMPATIBLE, true);
+    $cache->setOption(Memcached::OPT_TCP_NODELAY, true);
+    $cache->setOption(Memcached::OPT_SERVER_FAILURE_LIMIT, 500);
+    $cache->setOption(Memcached::OPT_COMPRESSION, false);
+    $cache->addServer('127.0.0.1',11211);
+}
+
+function get_cache($key) {
+    //echo "CACHED: $key<BR>";
+    global $cache;
+    $cachedata = $cache->get(crc32($key));
+    if ($cachedata) {
+        return $cachedata;
+    }
+    else {
+        return false;
+    }
+}
+
+function clear_cache($key) {
+    //echo "CLEARING: $key<BR>";
+    global $cache;
+    //echo "BEFORE CACHED: ".(string)$cache->get(crc32($key))."<BR>";
+    $cache->delete(crc32($key));
+    //echo "AFTER CACHED: ".(string)$cache->get(crc32($key))."<BR>";
+}
+
+function set_cache($key,$data,$duration=600) {
+    global $cache;
+    $cache->set(crc32($key),$data,$duration);
+}
+
+function get($table,$col="*",$condition="1",$cached = false) {
+    global $conn;
+    $cacheresult = get_cache($table.$col.$condition);
+    if ($cacheresult && $cached) {
+        return $cacheresult;
+    }
     if ($col=="")
         $col="*";
     
@@ -17,15 +61,20 @@ function get($table,$col="*",$condition="1") {
     $r=$conn->query("SELECT $col FROM $table WHERE $condition;");
     //echo "SELECT $col FROM $table WHERE $condition;";
     if (!empty($r) && $r->num_rows>0) {
-        return json_encode($conn->query("SELECT $col FROM $table WHERE $condition;")->fetch_all());
+        $returnvalue = json_encode($conn->query("SELECT $col FROM $table WHERE $condition;")->fetch_all(MYSQLI_ASSOC));
+        if ($cached) {
+            set_cache($table.$col.$condition,$returnvalue);
+        }
+        return $returnvalue;
     }
     return "[]";
     //$conn->close();
 }
 
 function update($table,$col,$val,$condition) {
-    $conn = new mysqli(DB_HOST,DB_USER,DB_PSWD,DB_NAME);
-    //global $conn;
+    global $conn;
+    clear_cache($table.$col.$condition);
+    clear_cache($table."*".$condition);
     $col=explode(",",$col);
     $val=explode(",",$val);
     if (count($col)!==count($val)) {
@@ -49,8 +98,7 @@ function update($table,$col,$val,$condition) {
 }
 
 function insert($table,$col,$val) {
-    $conn = new mysqli(DB_HOST,DB_USER,DB_PSWD,DB_NAME);
-    //global $conn;
+    global $conn;
     $col=explode(",",str_replace("`","-",str_replace("'","",str_replace('"','',$col))));
     $val=explode(",",str_replace("`","-",str_replace("'","",str_replace('"','',$val))));
 
@@ -81,7 +129,8 @@ function insert($table,$col,$val) {
 }
 
 function delete($table,$condition) {
-    $conn = new mysqli(DB_HOST,DB_USER,DB_PSWD,DB_NAME);
+    global $conn;
+    clear_cache($table."*".$condition);
 
     if (!$conn->query("DELETE FROM $table WHERE $condition;")) {
         return raise_error("Could not Delete");
@@ -97,13 +146,13 @@ function isonline() {
     if (!session_id()) {
         return False;
     }
-    $user = json_decode(get("admin_user","email,name","session_id='".session_id()."'"));
+    $user = json_decode(get("admin_user","email,name","session_id='".session_id()."'"),true);
     //exit();
-    if (empty($user) || count($user[0])==0) {
+    if (empty($user) || count($user)==0) {
         return False;
     }
 
-    return $user[0][1];
+    return $user[0]["name"];
 }
 
 

@@ -1,7 +1,11 @@
      /*custom font*/
-     @import url(https://fonts.googleapis.com/css?family=Montserrat);
-
+     @font-face {
+      font-family: "bhutanfont";
+      src: url("/resources/custom_font.woff") format("woff");
+     }
      /*basic reset*/
+
+  
      * {margin: 0; padding: 0;}
  
      html {
@@ -13,7 +17,7 @@
      }
  
      body {
-     font-family: montserrat, arial, verdana;
+      font-family: "bhutanfont"
      }
      /*form styles*/
      #msform {
@@ -26,7 +30,7 @@
      background: white;
      border: 0 none;
      border-radius: 3px;
-     box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.4);
+     box-shadow: 0 0 15px 1px #31363A;
      padding: 20px 30px;
      box-sizing: border-box;
      width: 80%;
@@ -44,21 +48,21 @@
      display: none;
      }
      /*inputs*/
-     #msform input,#msform select, #msform textarea, .modal-field input, .modal-field textarea {
+     #msform input,#msform select, #msform textarea, .modal-field input, .modal-field textarea, .modal-field select {
      padding: 15px;
      border: 1px solid #ccc;
      border-radius: 3px;
      margin-bottom: 10px;
      width: 100%;
      box-sizing: border-box;
-     font-family: montserrat;
+     font-family: Arial, Helvetica, sans-serif;
      color: #2C3E50;
      font-size: 13px;
      }
      #msform label, .modal-field label {
        margin-bottom: 10px;
-       font-family: montserrat;
-       color: #2C3E50;
+       font-family: Arial, Helvetica, sans-serif;
+       color: #31363A;
        font-size: 13px;
        text-align: left;
        width: 100%;
@@ -67,7 +71,7 @@
      /*buttons*/
      #msform .action-button, .action-button {
      width: 40%;
-     background: #ff541c;
+     background: #ff9933;
      font-weight: bold;
      color: white;
      border: 0 none;
@@ -83,13 +87,13 @@
      .fs-title {
      font-size: 15px;
      text-transform: uppercase;
-     color: #2C3E50;
+     color: #31363A;
      margin-bottom: 10px;
      }
      .fs-subtitle {
      font-weight: normal;
      font-size: 13px;
-     color: #666;
+     color: #31363A;
      margin-bottom: 20px;
      }
      /*progressbar*/
@@ -138,7 +142,7 @@
      /*marking active/completed steps green*/
      /*The number of the step and the connector before it = green*/
      #progressbar li.active:before,  #progressbar li.active:after{
-     background: #ff541c;
+     background: #ff9933;
      color: white;
      }
  
@@ -220,7 +224,7 @@
          display: flex;
          align-items: center;
          justify-content: center;
-         border: 3px solid #434945;
+         border: 3px solid #31363A;
      }
      .dependent_list_items {
          padding:10px;

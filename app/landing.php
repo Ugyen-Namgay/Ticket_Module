@@ -1,6 +1,6 @@
 <?php
-	
 	require_once "utils/sqldb.php";
+
   if (isset($_POST["logout"])) {
     $_SESSION = array();
     session_regenerate_id();
@@ -22,18 +22,18 @@ require_once "utils/sqldb.php";
 $alert="This is a closed page permitted to only authorized user. Any suspected attempts to login will be captured and reported by the system.";
 
 if (isset($_POST["email"]) && isset($_POST["password"])) {
-	$valid = json_decode(get("admin_user","admin_id","password=MD5('".$_POST["password"]."') AND  email='".$_POST["email"]."'"));
+	$valid = json_decode(get("admin_user","admin_id","password=MD5('".$_POST["password"]."') AND  email='".$_POST["email"]."'"),true);
 	//echo $valid;
 	if (!empty($valid) && count($valid[0])>0) {
 		$alert="Thank you. Please while we redirect you to your page.";
-		update("admin_user","session_id",session_id(),"admin_id=".$valid[0][0]."");
+		update("admin_user","session_id",session_id(),"admin_id=".$valid[0]["admin_id"]."");
 		//Redirect("post",true);
 		//echo "LOGIN SUCCESS";
 		//client_detail($_POST["email"],False);
 		Redirect("home",True);
 	}
 	else {
-		client_detail($_POST["email"]);
+		//client_detail($_POST["email"]);
 		$alert="OH NOOO!!!<br>Looks like you credentials are incorrect. Please try again.";
 	}
 }
