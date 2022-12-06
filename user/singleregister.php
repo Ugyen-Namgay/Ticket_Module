@@ -20,6 +20,7 @@
   }
 
   $cache_ticket = false;
+  //clear_cache("TICKET".$cid.$eventid);
   $is_there_cached_ticket = get_cache("TICKET".$cid.$eventid);
   if ($is_there_cached_ticket) {
     echo $is_there_cached_ticket;
@@ -548,6 +549,7 @@ $("#check_before_submit").click(function(){
         }
         else {
           location.reload();
+          //console.log(data);
         }
     });
   }

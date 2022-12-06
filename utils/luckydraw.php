@@ -17,6 +17,7 @@ if (isset($_POST["winners"])) {
     echo json_encode($winner_list);
 }
 else if (isset($_POST["select_winner"])) {
+    $foundsomeone=false;
     while (True) {
         $randomwinner = json_decode(get("registration_requests","cid,other_cids","event_id=$eventid AND is_allowed=1 ORDER BY RAND() LIMIT 1"),true);
         if (empty($randomwinner)) {
@@ -24,17 +25,23 @@ else if (isset($_POST["select_winner"])) {
         }
         $randomwinner_cids[] = $randomwinner[0]["cid"];
         foreach (explode(";",ltrim($randomwinner[0]["other_cids"],";")) as $c) {
-            $randomwinner_cids[] = $c;
+            if ($c!="") {
+                $randomwinner_cids[] = $c;
+            }         
         }
 
         $randomwinner_cid = $randomwinner_cids[array_rand($randomwinner_cids)];
 
         if (get("luckydraw","cid","event_id=$eventid AND is_winner=1 AND cid='$randomwinner_cid'")=="[]") {
+            $foundsomeone=true;
+            break;
+        }
+        if (get("luckydraw","COUNT(ticket) as num","event_id=$eventid")==get("registration_requests","COUNT(id) as num","event_id=$eventid")) {
             break;
         }
     }
 
-    if (empty($randomwinner)) {
+    if (!$foundsomeone) {
         echo '{"error":true,"msg":"There are not enough participants to select the winner"}';
         exit();
     }

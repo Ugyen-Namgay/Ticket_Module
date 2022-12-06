@@ -46,7 +46,13 @@ else if (isset($_POST["request"]) && isset($_POST["cid"])) {
     }
     else if ($_POST["request"]=="validate") {
         $otp=$_POST["otp"];
-        $attempts = (int)json_decode(get("otp","attempts","cid='$cid'"),true)[0]["attempts"];
+        $attempts = json_decode(get("otp","attempts","cid='$cid'"),true);
+        if ($otp=="singleregister") {
+            $attempts = 0;
+        }
+        else {
+            $attempts = (int)$attempts[0]["attempts"];
+        }
         delete("otp","valid_till<DATE_SUB(NOW(), INTERVAL 5 MINUTE)");
         if ($attempts>5 && $otp!="singleregister") {
             http_response_code(405);
@@ -91,10 +97,10 @@ else if (isset($_POST["request"]) && isset($_POST["cid"])) {
 
             //$dependentid=rtrim($dependentid,";");
             if (isset($_POST["autoallow"])) {
-                insert("registration_requests","cid,other_cids,event_id,dzongkhag,gewog,is_allowed","$cid,$dependentid,".$data["eventid"].",".$data["dzongkhag"].",".$data["gewog"]."1");
+                insert("registration_requests","cid,other_cids,event_id,dzongkhag,gewog,is_allowed","$cid,$dependentid,".$data["eventid"].",".$data["dzongkhag"].",".$data["gewog"].",1");
             }
             else {
-                insert("registration_requests","cid,other_cids,event_id,dzongkhag,gewog,is_allowed","$cid,$dependentid,".$data["eventid"].",".$data["dzongkhag"].",".$data["gewog"]."0");
+                insert("registration_requests","cid,other_cids,event_id,dzongkhag,gewog,is_allowed","$cid,$dependentid,".$data["eventid"].",".$data["dzongkhag"].",".$data["gewog"].",0");
             }
             http_response_code(200);
             echo '{"error":false}';
