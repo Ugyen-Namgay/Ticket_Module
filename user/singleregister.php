@@ -54,7 +54,8 @@
   //var_dump($eventdetail);
   //$capacity = (int)$eventdetail[0]["capacity"];
   $total_registered = (int)json_decode(get("registration_requests","COUNT(id) as num","event_id=$eventid"),true)[0]["num"];
-  $accessingfrom=get_country();
+  //$accessingfrom=get_country();
+  $acessingfrom="Bhutan";
   $regid = json_decode(get("registration_requests","id","cid='".$cid."' AND event_id='$eventid'"),true);
   if ($total_registered>=$capacity) {
     $generated_form = '<form id="msform">
