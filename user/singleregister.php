@@ -125,7 +125,7 @@
     $user_detail = json_decode(api_get_phone_detail($cid))->data;
     $generated_form = '<form id="msform">
     
-    <h2>Registration for <b>'.$eventdetail[0]["name"].' '.$eventdetail[0]["address"].'</b></h2>
+    <h2><b>'.$eventdetail[0]["name"].' '.$eventdetail[0]["address"].'</b></h2>
     <br> 
     <!-- progressbar -->
     <!-- fieldsets -->
