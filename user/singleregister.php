@@ -592,6 +592,7 @@ $("#check_before_submit").click(function(){
   </script>
 </html>
 <?php
+$conn->close();
 $html = ob_get_contents();
 if ($cache_ticket) {
   set_cache("TICKET".$cid.$eventid,$html,0);
