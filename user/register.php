@@ -39,11 +39,17 @@
   }
   $settings = parse_ini_file("settings/config.ini", true);
   $eventdetail = json_decode(get("events","*","id=$eventid",true),true);
+  $timeexpired=false;
   if (time()>strtotime($eventdetail[0]["end_datetime"])) { // END OF TIME
     $eventdetail=[];
+    $timeexpired=true;
+    $capacity = 10000000;
+  }
+  else {
+    $capacity = (int)$eventdetail[0]["capacity"];
   }
   //var_dump($eventdetail);
-  $capacity = (int)$eventdetail[0]["capacity"];
+  //$capacity = (int)$eventdetail[0]["capacity"];
   $total_registered = (int)json_decode(get("registration_requests","COUNT(id) as num","event_id=$eventid"),true)[0]["num"];
   $accessingfrom=get_country();
   $regid = json_decode(get("registration_requests","id","cid='".$cid."' AND event_id='$eventid'"),true);
@@ -56,6 +62,17 @@
     <h2 class="fs-subtitle"></h2>
     </fieldset>
     </form>';
+  }
+  else if ($timeexpired) {
+    $temp = json_decode(get("venues","address,location,end","id=$eventid"),true);
+    $generated_form = '<form id="msform">
+    <fieldset>
+    <img src="'.$settings["app"]["homebase"].'/images/too_late.png" height="200px" alt="A bit too late">
+    <br>
+    <h1 class="fs-title">We are sorry</h1>
+    <h2 class="fs-subtitle">The regsitration for <b>'.$temp[0][0].' '.$temp[0][1].'</b> closed on '.$temp[0][2].'</h2>
+    </fieldset>
+    </form>'; 
   }
 
   else if ($eventdetail[0]["country"]!=$accessingfrom && false) {
