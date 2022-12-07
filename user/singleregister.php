@@ -394,7 +394,7 @@
     <h3>2022</h3-->
     <br>
     <link href="'.$settings["app"]["homebase"].'/css/raffleticket.css" rel="stylesheet">
-    <div class="ticket">
+    <div class="ticket" style="max-width: 100vw;">
     <div class="left">
       <div class="ticket-info">
         <p class="date">
