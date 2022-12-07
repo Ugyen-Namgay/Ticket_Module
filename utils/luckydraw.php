@@ -36,7 +36,7 @@ else if (isset($_POST["select_winner"])) {
             $foundsomeone=true;
             break;
         }
-        if (get("luckydraw","COUNT(ticket) as num","event_id=$eventid")==get("registration_requests","LENGTH(other_cids)-LENGTH(REPLACE(other_cids,';',''))+1 as num","event_id=$eventid")) {
+        if (get("luckydraw","COUNT(ticket) as num","event_id=$eventid")==get("registration_requests","(LENGTH(other_cids)-LENGTH(REPLACE(other_cids,';',''))+1) as num","event_id=$eventid")) {
             break;
         }
     }
