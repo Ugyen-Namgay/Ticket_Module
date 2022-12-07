@@ -6,7 +6,7 @@ include_once "utils/visitorlog.php";  //client_detail(identity,is_it_temp?=true)
 
     
 function api_get_token_for_phone($cid,$password) {
-    return "de6521af5df1f15d1e41c4bdb8e4f7eeb159d768"; //TEMP
+    //return "de6521af5df1f15d1e41c4bdb8e4f7eeb159d768"; //TEMP
     $settings = parse_ini_file("settings/config.ini", true);
     $url = $settings["bhutanapp"]["new_login_url"]; 
     $data = '{
