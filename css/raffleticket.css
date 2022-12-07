@@ -10,9 +10,12 @@ html {
 	display: grid;
 	font-size: 14px;
 	letter-spacing: 0.1em;
+    align-content: space-between;
+    justify-content: center;
 }
 
 .ticket {
+    scale: 0.7;
 	margin: auto;
 	display: flex;
 	background: white;
