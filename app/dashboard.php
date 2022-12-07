@@ -9,13 +9,13 @@
             $result = $conn -> query("SELECT COUNT(*) AS event_Count FROM events WHERE YEAR(start_datetime) = '$year' ");
             $data['event_Count'] = $result -> fetch_assoc();
 
-            $result = $conn -> query("SELECT IFNULL(SUM(LENGTH(other_cids) - LENGTH(REPLACE(other_cids, ';', ''))), 0) AS registered_User FROM registration_requests WHERE YEAR(register_datetime) = '$year' ");
+            $result = $conn -> query("SELECT IFNULL(SUM(LENGTH(other_cids) - LENGTH(REPLACE(other_cids, ';', ''))+ 1), 0) AS registered_User FROM registration_requests WHERE YEAR(register_datetime) = '$year' ");
             $data['registered_User'] = $result -> fetch_assoc();
 
             $result = $conn -> query("SELECT IFNULL(COUNT(DISTINCT(dzongkhag)), 0) as dzongkhag_Count FROM registration_requests WHERE is_allowed = '1' AND YEAR(register_datetime)='$year'");
             $data['dzongkhag_Count'] = $result -> fetch_assoc();
             
-            $result = $conn -> query("SELECT IFNULL(SUM(LENGTH(other_cids) - LENGTH(REPLACE(other_cids, ';', ''))), 0) AS event_Participants FROM registration_requests WHERE YEAR(register_datetime) = '$year' AND is_allowed = '1' ");
+            $result = $conn -> query("SELECT IFNULL(SUM(LENGTH(other_cids) - LENGTH(REPLACE(other_cids, ';', ''))+ 1), 0) AS event_Participants FROM registration_requests WHERE YEAR(register_datetime) = '$year' AND is_allowed = '1' ");
             $data['event_Participants'] = $result -> fetch_assoc();
             
             echo json_encode($data);
@@ -41,7 +41,7 @@
         }
         
         if (isset($_POST["chartType"]) && $_POST["chartType"] == "DonutChart") {
-            $result = $conn -> query("SELECT dzongkhag, SUM(LENGTH(other_cids) - LENGTH(REPLACE(other_cids, ';', ''))) AS dzongkhag_count FROM registration_requests WHERE YEAR(register_datetime) = '$year' AND is_allowed='1' GROUP BY dzongkhag; ");
+            $result = $conn -> query("SELECT dzongkhag, SUM(LENGTH(other_cids) - LENGTH(REPLACE(other_cids, ';', ''))+ 1) AS dzongkhag_count FROM registration_requests WHERE YEAR(register_datetime) = '$year' AND is_allowed='1' GROUP BY dzongkhag; ");
             if ($result -> num_rows > 0) {
                 $arr = array(
                     "Dzongkhag",
