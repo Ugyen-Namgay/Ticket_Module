@@ -142,7 +142,7 @@
       <input type="date" name="dob" value="'.$user_detail->dob.'" disabled />
       <label>Your Current Address</label>
       <div id="currentlocation" style="width:100%; display: inline-flex">
-    <select class="form-control form-select" id="dzongkhag" name="dzongkhag" required style="background-color: aliceblue;">
+    <select class="form-control form-select" id="dzongkhag" name="dzongkhag" required style="background-color: aliceblue; color: #010101;">
         <option value="" disabled="" selected="">Dzongkhag</option>
         <option value="Abroad">Abroad</option>
         <option value="Bumthang">Bumthang</option>
@@ -168,7 +168,7 @@
         <option value="WangduePhodrang">Wangdue Phodrang</option>
         <option value="Zhemgang">Zhemgang</option>
     </select>
-    <select class="form-control form-select" id="gewog" name="gewog" required style="background-color: aliceblue;">
+    <select class="form-control form-select" id="gewog" name="gewog" required style="background-color: aliceblue; color: #010101;">
         <option value="" disabled="" selected="" style="display: none;">Gewog</option>
         <option value="Abroad" class="Abroad" style="display: none;">Abroad</option>
         <option value="Chumey" class="Bumthang" style="display: none;">Chumey</option>
