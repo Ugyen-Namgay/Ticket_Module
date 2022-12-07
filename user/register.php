@@ -23,6 +23,7 @@
     echo $is_there_cached_ticket;
     exit();
   }
+  $cache_ticket = false;
   //client_detail($cid);
   //URL: domain.com/check/[VENUEID]/[CITIZENID]?cid=[SCANNERID]
   
