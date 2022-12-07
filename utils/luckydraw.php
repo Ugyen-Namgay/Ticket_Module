@@ -18,7 +18,13 @@ if (isset($_POST["winners"])) {
 }
 else if (isset($_POST["select_winner"])) {
     $foundsomeone=false;
+    $counter = 0;
     while (True) {
+        $counter++;
+        $count = (int)json_decode(get("registration_requests","COUNT(id) as num","event_id=$eventid", true),true)[0]["num"];
+        if ($counter>$count) {
+            break;
+        }
         $randomwinner = json_decode(get("registration_requests","cid,other_cids","event_id=$eventid AND is_allowed=1 ORDER BY RAND() LIMIT 1"),true);
         if (empty($randomwinner)) {
             break;
@@ -34,9 +40,6 @@ else if (isset($_POST["select_winner"])) {
 
         if (get("luckydraw","cid","event_id=$eventid AND is_winner=1 AND cid='$randomwinner_cid'")=="[]") {
             $foundsomeone=true;
-            break;
-        }
-        if (get("luckydraw","COUNT(ticket) as num","event_id=$eventid")==get("registration_requests","(LENGTH(other_cids)-LENGTH(REPLACE(other_cids,';',''))+1) as num","event_id=$eventid")) {
             break;
         }
     }
