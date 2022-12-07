@@ -389,12 +389,12 @@
     $date=date_create($eventdetail[0]["end_datetime"]);
     $cache_ticket = true;
     $ticket = strtoupper(base_convert((string)((int)$eventdetail[0]["ticket_offset"]+(int)$cid),10,36));
-    $generated_form = '<form id="msform">
+    $generated_form = '<form id="msform" style="scale: 0.9">
     <!--h1>'.strtoupper($eventdetail[0]["name"]).'</h1>
     <h3>2022</h3-->
     <br>
     <link href="'.$settings["app"]["homebase"].'/css/raffleticket.css" rel="stylesheet">
-    <div class="ticket" style="max-width: 100vw;">
+    <div class="ticket">
     <div class="left">
       <div class="ticket-info">
         <p class="date">
