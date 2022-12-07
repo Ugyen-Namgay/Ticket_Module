@@ -205,7 +205,7 @@ else if (isset($_POST["adminupdate"]) && isset($_POST["admincid"])) {
                 clear_cache("citizens","*","cid='".$is_there_dependent[0]["cid"]."'"); 
                 //$dependent_user_detail = json_decode(api_get_phone_detail($is_there_dependent[0]["cid"]))->data;
                 $dependent_imageid=getphoto($is_there_dependent[0]["cid"]);
-                insert("citizens","cid,dob,first_name,middle_name,last_name,phonenumber,image_id,dzongkhag,gender",$dependent[4].",$dependent[3],$dependent[0],$dependent[1],$dependent[2],".$citizen_detail[0]["phone"].",$dependent_imageid,".$citizen_detail[0]["dzongkhag"].",$dependent[5]");
+                insert("citizens","cid,dob,first_name,middle_name,last_name,phonenumber,image_id,dzongkhag,gender",$value[4].",$value[3],$value[0],$value[1],$value[2],".$citizen_detail[0]["phone"].",$dependent_imageid,".$citizen_detail[0]["dzongkhag"].",$value[5]");
                 //insert("citizens","cid,dob,first_name,middle_name,last_name,phonenumber,image_id,dzongkhag,gender",$value[4].",$dependent_user_detail->dob,$dependent_user_detail->first_name,$dependent_user_detail->middle_name,$dependent_user_detail->last_name,$dependent_user_detail->phone,$dependent_imageid,$dependent_user_detail->dzongkhag,$dependent_user_detail->gender");
                 $dependentid.=json_decode(get("citizens","cid","first_name = '$value[0]' AND middle_name = '$value[1]' AND last_name='$value[2]' AND dob='$value[3]' AND cid='$value[4]'"),true)[0]["cid"].";";
             }

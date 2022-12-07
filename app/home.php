@@ -186,8 +186,7 @@
 		}
         var data = google.visualization.arrayToDataTable(mainData);
         var options = {
-				chart: { title: 'Event Participants Each Year',
-				vAxis: {format: 'decimal',}
+				chart: {title: 'Event Participants Each Year',
 			},
 		  bars: 'horizontal'
         };

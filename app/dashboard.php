@@ -144,7 +144,7 @@
                 }
             }
         }
-       echo '{"Year":['.$year.'],"Males":['.$males.'],"Females":['.$females.'],"Minors":['.$minors.']}';
+       echo '{"Year":["'.$year.'"],"Males":['.$males.'],"Females":['.$females.'],"Minors":['.$minors.']}';
         exit();
     }
 
