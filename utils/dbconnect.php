@@ -131,3 +131,4 @@ if($conn->connect_error) {
     header( 'HTTP/1.0 500 Internal Server Error', TRUE, 500 );
     die( header( 'location: error-500' ) );
 }
+$conn->close();
