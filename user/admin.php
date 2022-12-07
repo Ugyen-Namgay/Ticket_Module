@@ -404,6 +404,8 @@ rejecttune.setAttribute('src','<?php echo $settings["app"]["homebase"].'/resourc
           </select>
           <input type="date" id="dependent_dob" placeholder="Date of Birth" max="2022-08-01"/>
         </fieldset>`);
+        $("#dependent_dob").on("focusout",function(){$("#dependent_dob").attr("type","text")});
+        $("#dependent_dob").on("focus",function(){$("#dependent_dob").attr("type","date")});
         modalButtonOnly.setFooterContent("");
         modalButtonOnly.addFooterBtn('Add', 'tingle-btn tingle-btn--primary tingle-btn--pull-right', function () {
           c=$("#dependent_cid").val();
