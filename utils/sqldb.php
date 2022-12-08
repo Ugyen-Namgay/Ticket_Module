@@ -146,12 +146,17 @@ function isonline() {
     if (!session_id()) {
         return False;
     }
+
+    if (get_cache(session_id())) {
+        return get_cache(session_id());
+    }
     $user = json_decode(get("admin_user","email,name","session_id='".session_id()."'"),true);
     //exit();
     if (empty($user) || count($user)==0) {
         return False;
     }
 
+    set_cache(session_id(),$user[0]["name"],300);
     return $user[0]["name"];
 }
 

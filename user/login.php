@@ -28,6 +28,7 @@ if (isset($_POST["email"]) && isset($_POST["password"])) {
 	}
 }
 else if (isset($_POST["logout"])) {
+	clear_cache(session_id());
 	$_SESSION = array();
 	session_regenerate_id();
 	Redirect("/",True);
