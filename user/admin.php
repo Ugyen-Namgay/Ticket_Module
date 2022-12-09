@@ -48,7 +48,7 @@ if (isset($_POST["fetch"])) {
             }
             else {
                 
-                $base64photo = json_decode(get("images","bin","id='".getphoto($cid)."'",true),true)[0]["bin"];
+                $base64photo = json_decode(get("images","bin","id='".getphoto($cid)."'"),true)[0]["bin"];
                 $data_form = '
                 <form id="msform">
                 <h2>REGISTRATION FOR CID: '.$cid.' NOT FOUND</h2>
@@ -73,12 +73,15 @@ if (isset($_POST["fetch"])) {
             $set_of_dependent = trim($registration_detail[0]["other_cids"],";");
             $dependent_detail=[];
             foreach (explode(";",$set_of_dependent) as $dcid) {
+                if ($dcid=="") {
+                    continue;
+                }
             $dependent_detail = array_merge($dependent_detail,json_decode(get("citizens","*","cid='$dcid'",true),true));
             $dependent_detail = array_merge($dependent_detail,json_decode(get("minor","*","cid='$dcid'",true),true));
             //   $dependent_detail[] = json_decode(get("citizens","*","cid='$dcid'",true),true);
             //   $dependent_detail[] = json_decode(get("minor","*","cid='$dcid'",true),true);        
             }
-            $person_detail = json_decode(get("citizens","*","cid='$cid'",true),true);
+            $person_detail = json_decode(get("citizens","*","cid='$cid'"),true);
             $base64photo = json_decode(get("images","bin","id='".$person_detail[0]["image_id"]."'"),true)[0]["bin"];
 
 
