@@ -10,6 +10,7 @@ $router->get('events', 'app/events');
 $router->get('submit', 'utils/submission');
 
 $router->get('test', 'utils/cachemodule');
+$router->get('plugin', 'utils/cmysql');
 $router->get('adminapp', 'user/adminapp');
 
 
