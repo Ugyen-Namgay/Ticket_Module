@@ -18,13 +18,13 @@ if (isset($_POST["request"]) && $_POST["request"]=="cidinfo") {
         
     }
     else {
-        if (empty(json_decode(get("registration_requests","other_cids","(other_cids LIKE '%$cid%' OR cid='$cid') AND event_id=1"),true))) { // HARD CODED AS EVENT 1
+        // if (empty(json_decode(get("registration_requests","other_cids","(other_cids LIKE '%$cid%' OR cid='$cid') AND event_id=1"),true))) { // HARD CODED AS EVENT 1
             $user_detail = json_decode($details,true)[0];
             echo '{"error":false,"first_name":"'.$user_detail["first_name"].'","middle_name":"'.$user_detail["middle_name"].'","last_name":"'.$user_detail["last_name"].'","dob":"'.$user_detail["dob"].'"}';
-        }
-        else {
-            echo '{"error":true,"msg":"Sorry, The dependent is already registered by others.","cleardata":true}';
-        }
+        // }
+        // else {
+        //     echo '{"error":true,"msg":"Sorry, The dependent is already registered by others.","cleardata":true}';
+        // }
         
     }
 }
