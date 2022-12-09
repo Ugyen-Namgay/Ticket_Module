@@ -33,7 +33,7 @@ if (isset($_POST["fetch"])) {
     }
     else {
         $regid = $regid_get[0]["id"];
-        $registration_detail=json_decode(get("registration_requests","*","id=$regid",true),true);
+        $registration_detail=json_decode(get("registration_requests","*","id=$regid"),true);
         if(sizeof($registration_detail)==0) {
             $user_detail = json_decode(api_get_phone_detail($cid))->data;
             $error = json_decode(api_get_phone_detail($cid))->error;
@@ -79,7 +79,7 @@ if (isset($_POST["fetch"])) {
             //   $dependent_detail[] = json_decode(get("minor","*","cid='$dcid'",true),true);        
             }
             $person_detail = json_decode(get("citizens","*","cid='$cid'",true),true);
-            $base64photo = json_decode(get("images","bin","id='".$person_detail[0]["image_id"]."'",true),true)[0]["bin"];
+            $base64photo = json_decode(get("images","bin","id='".$person_detail[0]["image_id"]."'"),true)[0]["bin"];
 
 
             $event_options = '';
