@@ -135,33 +135,33 @@
 
 	<!-- line chart -->
 	<script type="text/javascript">
-		// google.charts.load('current', {'packages':['bar']});
-      google.charts.load("current", {packages:["corechart"]});
-      //google.charts.setOnLoadCallback();
-	  function plotLineChart(chartdata, title) {
-		parsedData=JSON.parse(chartdata);
+	// 	// google.charts.load('current', {'packages':['bar']});
+    //   google.charts.load("current", {packages:["corechart"]});
+    //   //google.charts.setOnLoadCallback();
+	//   function plotLineChart(chartdata, title) {
+	// 	parsedData=JSON.parse(chartdata);
 		
-		var data = google.visualization.arrayToDataTable(parsedData);
+	// 	var data = google.visualization.arrayToDataTable(parsedData);
         
-        var options = {
-			chart: {
-				title: 'Event Participants',
-				subtitle: 'No. of participants in each events',
+    //     var options = {
+	// 		chart: {
+	// 			title: 'Event Participants',
+	// 			subtitle: 'No. of participants in each events',
 				
 
-			},
-			bars: 'vertical',
-			legend: {position: 'top', maxLines: 3},
-			vAxis: {
-				format: 'decimal',	
-			}
+	// 		},
+	// 		bars: 'vertical',
+	// 		legend: {position: 'top', maxLines: 3},
+	// 		vAxis: {
+	// 			format: 'decimal',	
+	// 		}
 		  
-		};
+	// 	};
 
-        var chart = new google.charts.Bar(document.getElementById('curve_chart'));
+    //     var chart = new google.charts.Bar(document.getElementById('curve_chart'));
 
-        chart.draw(data, google.charts.Bar.convertOptions(options));
-      }
+    //     chart.draw(data, google.charts.Bar.convertOptions(options));
+    //   }
 </script>
 
 	<!-- column chart -->
@@ -502,7 +502,7 @@
 					</div>
 				</div>
 
-				<div class="row">
+				<!-- <div class="row">
 					<div class="col-md-12">
 						<div class="card">
 							<div class="card-body">
@@ -512,7 +512,7 @@
 							</div>
 						</div>
 					</div>
-				</div>
+				</div> -->
 			</div>
     <!-- partial -->
 				<!-- content-wrapper ends -->

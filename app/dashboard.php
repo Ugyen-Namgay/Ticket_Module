@@ -1,10 +1,10 @@
 <?php
-	require_once "utils/dbconnect.php";
+	require_once "utils/sqldb.php";
     //$data=[];
 	$conn = new mysqli(DB_HOST,DB_USER,DB_PSWD,DB_NAME);
     if (isset($_POST['liveupdate'])) {
         $query = "SELECT e.name,
-                        COUNT(r.event_id) AS current_registrations,
+                        IFNULL(SUM(LENGTH(r.other_cids) - LENGTH(REPLACE(r.other_cids, ';', ''))+ 1), 0) AS current_registrations,
                         e.capacity
                 FROM events e
                 LEFT JOIN registration_requests r ON e.id = r.event_id
@@ -102,57 +102,58 @@
     //     exit();
     // }
 
-    if (isset($_POST["chartType"]) && $_POST["chartType"]=="LineChart") {
-        // $males=0;
-        // $females=0;
-        // $minors=0;
-        $result = $conn -> query("SELECT A.name, B.event_id, C.cid, C.gender, D.cid FROM events as A LEFT JOIN registration_requests AS B ON A.id = B.event_id LEFT JOIN citizens as C ON C.cid = B.cid LEFT JOIN minor AS D ON C.cid = D.parent_cid; " );
-        // $year = implode(";", $result -> fetch_assoc("Year"));
-        // if ($result -> num_rows > 0) {
-            $arr = array(
-                "Event Name",
-                "Minor Count",
-                "Male Count",
-                "Female Count"
-            );
-            $array[] = $arr;
-            $row = $result -> fetch_assoc();
-            // while($row = $result -> fetch_assoc()) {  
-                $sub_queryEvent = $conn -> query("SELECT name FROM events");
-                $sub_queryEvent = $sub_queryEvent -> fetch_assoc()["name"];
-                $sub_queryMinor = $conn -> query("SELECT COUNT(cid) FROM minor");
-                $sub_queryMinor = $sub_queryMinor -> fetch_assoc()["COUNT(cid)"];
-                $sub_queryMale = $conn -> query("SELECT COUNT(gender) FROM citizens WHERE gender='M'");
-                $sub_queryMale = $sub_queryMale -> fetch_assoc()["COUNT(gender)"];
-                $sub_queryFemale = $conn -> query("SELECT COUNT(gender) FROM citizens WHERE gender='F'");
-                $sub_queryFemale = $sub_queryFemale -> fetch_assoc()["COUNT(gender)"];
+    // if (isset($_POST["chartType"]) && $_POST["chartType"]=="LineChart") {
+    //     // $males=0;
+    //     // $females=0;
+    //     // $minors=0;
+    //     $result = $conn -> query("SELECT A.name, B.event_id, C.cid, C.gender, D.cid FROM events as A LEFT JOIN registration_requests AS B ON A.id = B.event_id LEFT JOIN citizens as C ON C.cid = B.cid LEFT JOIN minor AS D ON C.cid = D.parent_cid; " );
+    //     // $year = implode(";", $result -> fetch_assoc("Year"));
+    //     // if ($result -> num_rows > 0) {
+    //         $arr = array(
+    //             "Event Name",
+    //             "Minor Count",
+    //             "Male Count",
+    //             "Female Count"
+    //         );
+    //         $array[] = $arr;
+    //         $row = $result -> fetch_assoc();
+    //         // while($row = $result -> fetch_assoc()) {  
+    //             $sub_queryEvent = $conn -> query("SELECT name FROM events");
+    //             $sub_queryEvent = $sub_queryEvent -> fetch_assoc()["name"];
+    //             $sub_queryMinor = $conn -> query("SELECT COUNT(cid) FROM minor");
+    //             $sub_queryMinor = $sub_queryMinor -> fetch_assoc()["COUNT(cid)"];
+    //             $sub_queryMale = $conn -> query("SELECT COUNT(gender) FROM citizens WHERE gender='M'");
+    //             $sub_queryMale = $sub_queryMale -> fetch_assoc()["COUNT(gender)"];
+    //             $sub_queryFemale = $conn -> query("SELECT COUNT(gender) FROM citizens WHERE gender='F'");
+    //             $sub_queryFemale = $sub_queryFemale -> fetch_assoc()["COUNT(gender)"];
                 
                 
-                $arr = array(
-                    $eventName = $sub_queryEvent,
-                    $minorsCount = (int)$sub_queryMinor,
-                    $malesCount = (int)$sub_queryMale,
-                    $femalesCount = (int)$sub_queryFemale,
-                );
-                $array[] = $arr;
-            echo json_encode($array);
-    }
+    //             $arr = array(
+    //                 $eventName = $sub_queryEvent,
+    //                 $minorsCount = (int)$sub_queryMinor,
+    //                 $malesCount = (int)$sub_queryMale,
+    //                 $femalesCount = (int)$sub_queryFemale,
+    //             );
+    //             $array[] = $arr;
+    //         echo json_encode($array);
+    // }
 
     if (isset($_POST["chartType"]) && $_POST["chartType"] == "ColumnChart") {
         $males=0;
         $females=0;
         $minors=0;
-        $result = $conn -> query("SELECT cid,other_cids FROM registration_requests WHERE YEAR(register_datetime) = '$year' ");
-        while ($citizens = $result -> fetch_assoc()) {
+        //$result = $conn -> query("SELECT cid,other_cids FROM registration_requests WHERE YEAR(register_datetime) = '$year'");
+        $result = json_decode(get("registration_requests","cid,other_cids","YEAR(register_datetime)='$year'",true),true);
+        foreach($result as $citizens) {
             $individuals = explode(";",ltrim($citizens["other_cids"],";"));
             $individuals[]=$citizens["cid"];
             foreach($individuals as $cid) {
-                if (strpos($cid,"minor")!==false) {
+                if (substr($cid,0,1)=="7") {
                     $minors++;
                     continue;
                 }
-                $sub_result = $conn ->query("SELECT gender FROM citizens WHERE cid='$cid';");
-                if ($sub_result->num_rows>0 && $sub_result->fetch_assoc()["gender"]=="M") {
+                $sub_result = json_decode(get("citizens","*","cid='$cid'",true),true);
+                if (!empty($sub_result) && $sub_result["gender"]=="M") {
                     $males++;
                 }
                 else {
