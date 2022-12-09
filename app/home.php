@@ -367,10 +367,38 @@
 			grid-template-rows: 1fr;
 			gap: 0px;
 		}
+
+		.card-header {
+			display: flex;
+			align-items: center;
+    		justify-content: space-between;
+			background: white;
+		}
 		
+		.row {
+			margin: 20px;
+		}
+
+		#year {
+			width: 100%;
+			padding: 10px;
+			/* color: black; */
+			font-weight: 900;
+			text-align: center;
+			border-radius: 4px;
+			border: 1px;
+		}
+
+		.selectyear {
+			display: block;
+			text-align: right;
+			font-weight: 900;
+			background: transparent;
+		}
 	</style>
   </head>
   <body>
+
     <div class="container-scroller">
 		<!-- partial:partials/_horizontal-navbar.html -->
     <div class="horizontal-menu">
@@ -382,82 +410,111 @@
       	<?php include("utils/bottom_navbar.php");?>
       </nav>
     </div>
-    <!-- partial -->
-		<div class="container-fluid page-body-wrapper">
-			<div class="main-panel1">
-			<div class="container1">
-
-          <!-- Main for Dashboard -->
-          <main>
-			<div class="dropdown1">
-				<div></div>
-				<div>
-					<select class="form-control form-control-select" id="year" onchange="selectYear()">
-					<!-- <option value="" disabled selected hidden>Select Year</option> -->
-					<?php
-						$conn = new mysqli(DB_HOST,DB_USER,DB_PSWD,DB_NAME);
-						$displayYear = $conn -> query("SELECT DISTINCT EXTRACT(YEAR FROM start_datetime) AS years FROM events ORDER BY start_datetime DESC");
-						while($row = $displayYear -> fetch_assoc()){
-							echo "<option value='". $row['years'] ."'>" .$row['years'] ."</option>";
-						}
-					?>
-            		</select>
-				</div>
-				<div></div>
-			</div>
-
-            <div class="container1">
-              <div>
-				<div>
-					<b>Events</b>
-					<p id="events"></p>
-				</div>
-				<div>
-					<i class="material-icons" style="color:#EFC050">event</i>
-				</div>
-              </div>
-
-              <div>
-				<div>
-                	<b>Registered Individuals</b>
-					<p id="users"></p>
-				</div>
-				<div>
-					<i class="material-icons" style="color:#FA7A35">groups</i>
-				</div>
-              </div>
-
-              <div>
-				<div>
-				<b>Event Participants</b>
-				<p id="participants"></p>
-				</div>
-				<div>
-				<i class="material-icons" style="color:#D65076">people_alt</i>
-				</div>
-              </div>
-
-			  <div>
-				<div>
-				<b>Dzongkhag</b>
-				<p id="dzongkhags"></p>
-				</div>
-				<div>
-				<i class="material-icons" style="color:#00A591">public</i>
-				</div>
-              </div>
-            </div>
-
-            <div class="insights">
-              <div id="piechart_3d"></div>
-			  <div id="columnchart_material"></div>
-			  <div id="curve_chart"></div> 
-			  <div id="donutchart"></div>	
-			</div>
-          </main>
-        </div>
+	<div class="main-panel">
+            <div class="content-wrapper container">
+				<div class="row">
+					<div class="col-md-6">
+						<h5 class="card-header selectyear">Select Year: </h5>
+					</div>
+					<div class="col-md-6">
+						<div>
+							<select class="form-control form-control-select" id="year" onchange="selectYear()">
+							<!-- <option value="" disabled selected hidden>Select Year</option> -->
+							<?php
+								$conn = new mysqli(DB_HOST,DB_USER,DB_PSWD,DB_NAME);
+								$displayYear = $conn -> query("SELECT DISTINCT EXTRACT(YEAR FROM start_datetime) AS years FROM events ORDER BY start_datetime DESC");
+								while($row = $displayYear -> fetch_assoc()){
+									echo "<option value='". $row['years'] ."'>" .$row['years'] ."</option>";
+								}
+							?>
+							</select>
+						</div>
 					</div>
 				</div>
+
+
+				<div class="row">
+					<div class="col-md-3">
+					<div class="card">
+						<h5 class="card-header"><i class="material-icons" style="color:#EFC050">event</i> Events: <span class="card-text" id="events">Loading...</span></h5>
+					</div>
+					</div>
+					<div class="col-md-3">
+					<div class="card">
+						<h5 class="card-header"><i class="material-icons" style="color:#FA7A35">groups</i> Users: <span class="card-text" id="users">Loading...</span></h5>
+					</div>
+					</div>
+					<div class="col-md-3">
+					<div class="card">
+						<h5 class="card-header"><i class="material-icons" style="color:#D65076">people_alt</i> Participants: <span class="card-text" id="participants">Loading...</span></h5>
+					</div>
+					</div>
+					<div class="col-md-3">
+					<div class="card">
+						<h5 class="card-header"><i class="material-icons" style="color:#00A591">public</i> Locations: <span class="card-text" id="dzongkhags">Loading...</span></h5>
+					</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-md-6">
+						<div class="card">
+							<div class="card-body">
+								<div class="insights">
+									<div id="piechart_3d"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="card">
+							<div class="card-body">
+								<div class="insights">
+									<div id="donutchart"></div>	
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+									<div class="insights">
+										<div id="livecapacity"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+				</div>
+
+				<div class="row">
+					<div class="col-md-12">
+						<div class="card">
+							<div class="card-body">
+								<div class="insights">
+									<div id="columnchart_material"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-md-12">
+						<div class="card">
+							<div class="card-body">
+								<div class="insights">
+									<div id="curve_chart"></div> 
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+    <!-- partial -->
 				<!-- content-wrapper ends -->
 				<!-- partial:partials/_footer.html -->
 				<footer class="footer">
@@ -630,4 +687,67 @@
 				});
 			}
 		</script>
+
+<script>
+	//WRITTEN BY PHUNTSHO
+	// Load the Google Charts library
+google.charts.load('current', {'packages':['corechart']});
+
+// Set a callback function to run when the Google Charts library is loaded
+google.charts.setOnLoadCallback(drawLiveUpdate);
+
+// Define the callback function that will create and populate the chart
+function drawLiveUpdate() {
+  // Create the data table
+  var data = new google.visualization.DataTable();
+  data.addColumn('string', 'Event Name');
+  data.addColumn('number', 'Current Registrations');
+  data.addColumn('number', 'Capacity');
+
+  // Query the events and registration_requests tables to get the data for the chart
+  $.post('/dashboard/', {"liveupdate":"1"}, function(livedata) {
+	response = JSON.parse(livedata);
+    var rows = [];
+    response.forEach(function(item) {
+      rows.push([item.name, parseInt(item.current_registrations), parseInt(item.capacity)]);
+    });
+    data.addRows(rows);
+
+    // Set the chart options
+    var options = {
+      title: 'Current Registrations for All Events',
+      hAxis: {title: 'Event Name'},
+      vAxis: {title: 'Current Registrations'},
+      seriesType: 'bars',
+      series: {
+		0: {
+		type: 'bar'
+    	},
+		1: {
+			type: 'bar'
+		}
+	}
+	};
+
+    // Create and draw the chart
+    var chart = new google.visualization.ComboChart(document.getElementById('livecapacity'));
+    chart.draw(data, options);
+  	});
+
+	// Set the chart to refresh every 10 seconds
+	setInterval(function() {
+	$.post('/dashboard/', {"liveupdate":"1"}, function(livedata) {
+		response = JSON.parse(livedata);
+		var rows = [];
+		response.forEach(function(item) {
+		rows.push([item.name, parseInt(item.current_registrations), parseInt(item.capacity)]);
+		});
+		data.addRows(rows);
+		var chart = new google.visualization.ComboChart(document.getElementById('livecapacity'));
+		chart.draw(data, options);
+	});
+	}, 10000);
+}
+
+	</script>
 </html>

@@ -13,6 +13,17 @@ if( !count($cache->getServerList()))
     $cache->addServer('127.0.0.1',11211);
 }
 
+
+// FROM https://stackoverflow.com/questions/22949597/getting-max-values-in-json-array
+function getMax($arr, $prop) {
+    $max=0;
+    for ($i=0 ; $i<count($arr) ; $i++) {
+        if ($max == null || (int)($arr[$i][$prop]) > (int)($max[$prop]))
+            $max = $arr[$i];
+    }
+    return $max;
+}
+
 /* INITIALIZATION */
 $has_cached = $cache->get("tables");
 if (!$has_cached) {
@@ -20,10 +31,10 @@ if (!$has_cached) {
     foreach ($tables as $table) {
         $table_content = $conn->query("SELECT * FROM ".$table["Tables_in_".$settings["db"]["database"]].";")->fetch_all(MYSQLI_ASSOC);
         $cache->set("table_".$table["Tables_in_".$settings["db"]["database"]],json_encode($table_content),0);
-        $sample_record = $conn->query("SELECT * FROM ".$table["Tables_in_".$settings["db"]["database"]]." LIMIT 1")->fetch_all(MYSQLI_ASSOC);
-        $cache->set("table_sample_".$table["Tables_in_".$settings["db"]["database"]],$sample_record,0);
+        //$sample_record = $conn->query("SELECT * FROM ".$table["Tables_in_".$settings["db"]["database"]]." LIMIT 1")->fetch_all(MYSQLI_ASSOC);
+        //$cache->set("table_sample_".$table["Tables_in_".$settings["db"]["database"]],json_encode($sample_record),0);
         $table_description = $conn->query("DESCRIBE ".$table["Tables_in_".$settings["db"]["database"]])->fetch_all(MYSQLI_ASSOC);
-        $cache->set("table_description_".$table["Tables_in_".$settings["db"]["database"]],$table_description,0);
+        $cache->set("table_description_".$table["Tables_in_".$settings["db"]["database"]],json_encode($table_description),0);
     }
     $cache->set("tables","loaded",0);
 }
@@ -33,7 +44,7 @@ function updateRecord($table, $values, $conditions) {
     global $cache, $conn;
 
     // update record in Memcached memory
-    $table_content = json_decode($cache->get("table_".$table), true);
+    $table_content = json_decode($cache->get("table_".$table),true);
     foreach ($table_content as &$record) {
         foreach ($conditions as $key => $value) {
             if ($record[$key] == $value) {
@@ -43,15 +54,7 @@ function updateRecord($table, $values, $conditions) {
             }
         }
     }
-    $cache->set("table_".$table, json_encode($table_content), 0);
-
-    // increment query counter
-    $queryCounter = $cache->get("queryCounter");
-    if (!$queryCounter) {
-        $queryCounter=0;
-    }
-    $queryCounter++;
-    $cache->set("queryCounter", $queryCounter);
+    $cache->replace("table_".$table, json_encode($table_content));
 
     // add query in the cache
     $set_values = "";
@@ -73,7 +76,7 @@ function updateRecord($table, $values, $conditions) {
         $i++;
     }
 
-    $queryCache=get("SQLQ");
+    $queryCache=$cache->get("SQLQ");
     if (!$queryCache) {
         $queryCache=[];
     }
@@ -86,7 +89,7 @@ function deleteRecord($table, $conditions) {
     global $cache, $conn;
 
     // delete record from Memcached memory
-    $table_content = json_decode($cache->get("table_".$table), true);
+    $table_content = json_decode($cache->get("table_".$table),true);
     foreach ($table_content as $index => $record) {
         foreach ($conditions as $key => $value) {
             if ($record[$key] == $value) {
@@ -94,15 +97,7 @@ function deleteRecord($table, $conditions) {
             }
         }
     }
-    $cache->set("table_".$table, json_encode($table_content), 0);
-
-    // increment query counter
-    $queryCounter = $cache->get("queryCounter");
-    if (!$queryCounter) {
-        $queryCounter=0;
-    }
-    $queryCounter++;
-    $cache->set("queryCounter", $queryCounter);
+    $cache->replace("table_".$table, json_encode($table_content));
 
     // add query in the cache
     $where_conditions = "";
@@ -115,7 +110,7 @@ function deleteRecord($table, $conditions) {
         $i++;
     }
 
-    $queryCache=get("SQLQ");
+    $queryCache=$cache->get("SQLQ");
     if (!$queryCache) {
         $queryCache=[];
     }
@@ -128,7 +123,7 @@ function insertRecord($table, $values) {
     global $cache, $conn;
 
     // Use the DESCRIBE statement to get information about the columns in the table
-    $columns = $cache->get("table_description_".$table);
+    $columns = json_decode($cache->get("table_description_".$table),true);
 
     // Create an array to store the names of the columns with default values or auto-incrementing values
     $default_columns = array();
@@ -137,47 +132,61 @@ function insertRecord($table, $values) {
     // Iterate over the columns and add the name of each column with a default value or that is auto-incrementing to the $default_columns array
     foreach ($columns as $column) {
         if ($column["Default"] != null) {
-            $default_columns[] = $column["Field"];
+            if ($column["Default"]=="current_timestamp()") {
+                $default_columns[$column["Field"]] = date("Y-m-d H:i:s", time());
+            }
+            else {
+                $default_columns[$column["Field"]] = $column["Default"];
+            }
+            
         }
         if ($column["Extra"] == "auto_increment") {
             $auto_increment_columns[] = $column["Field"];
         }
+
+        $sample_record[] = $column["Field"];
     }
 
-    // Get the sample record from the cache
-    $sample_record = json_decode($cache->get("table_sample_".$table),true);
-
     // Remove the keys for the columns with default values or that are auto-incrementing from the $sample_record array
-    foreach ($default_columns as $column) {
+    foreach (array_keys($default_columns) as $column) {
         unset($sample_record[$column]);
         //unset($auto_increment_columns[$column]);
     }
 
     // Check if the keys in $values are a subset of the keys in the sample record
-    $invalid_keys = array_diff(array_keys($values), array_keys($sample_record));
+    $invalid_keys = array_diff(array_keys($values), ($sample_record));
     if (!empty($invalid_keys)) {
         // throw an error or return without inserting the record
-        throw new Exception("Invalid keys in values: " . implode(", ", $invalid_keys));
+        throw new Exception("Invalid keys in values: " . implode(", ", $invalid_keys). ". Requires at least ". implode(", ", array_keys($sample_record)));
         return;
     }
 
+
+    $table_content = json_decode($cache->get("table_".$table),true);
+
+
     foreach ($auto_increment_columns as $column) {
-        $max_value = $conn->query("SELECT MAX($column) FROM $table")->fetch_assoc()[$column];
+        //$max_value = $conn->query("SELECT MAX($column) FROM $table")->fetch_assoc()[$column];
+        $max_value = getMax($table_content,$column);
         $values[$column] = $max_value + 1;
+        echo $column." should be now ".($max_value+1)."\n";
     }
+
+    foreach ($default_columns as $column=>$val) {
+        $values[$column] = $val;
+    }
+
+    
 
     // Insert record into Memcached memory
-    $table_content = json_decode($cache->get("table_".$table), true);
+    
     $table_content[] = $values;
-    $cache->set("table_".$table, json_encode($table_content), 0);
+    $cache->replace("table_".$table, json_encode($table_content));
 
-    // increment query counter
-    $queryCounter = $cache->get("queryCounter");
-    if (!$queryCounter) {
-        $queryCounter=0;
-    }
-    $queryCounter++;
-    $cache->set("queryCounter", $queryCounter);
+    // Removing default records
+    // foreach ($default_columns as $column=>$val) {
+    //     unset($values[$column]);
+    // }
 
     // add query in the cache
     $fields = "";
@@ -189,21 +198,21 @@ function insertRecord($table, $values) {
         $fields .= "$field";
         $i++;
     }
-    $values = "";
+    $inputValues = "";
     $i = 0;
     foreach ($values as $field => $new_value) {
         if ($i > 0) {
-            $values .= ", ";
+            $inputValues .= ", ";
         }
-        $values .= "'$new_value'";
+        $inputValues .= "'$new_value'";
         $i++;
     }
 
-    $queryCache=get("SQLQ");
+    $queryCache=$cache->get("SQLQ");
     if (!$queryCache) {
         $queryCache=[];
     }
-    $queryCache[] = "INSERT INTO $table ($fields) VALUES ($values)";
+    $queryCache[] = "INSERT INTO $table ($fields) VALUES ($inputValues)";
     $cache->set("SQLQ",$queryCache,0);
     executeCachedQueries();
     
@@ -212,7 +221,7 @@ function insertRecord($table, $values) {
 function getRecords($table, $conditions = [], $fields = []) {
     global $cache;
 
-    $table_content = json_decode($cache->get("table_".$table), true);
+    $table_content = json_decode($cache->get("table_".$table),true);
     $records = [];
     foreach ($table_content as &$record) {
         $match = true;
@@ -237,23 +246,15 @@ function getRecords($table, $conditions = [], $fields = []) {
 
 function executeCachedQueries() {
     global $cache, $conn;
-
-    // increment query counter
-    $queryCounter = $cache->get("queryCounter");
-    if (!$queryCounter) {
-        $queryCounter=0;
-    }
-    $queryCounter++;
-    $cache->set("queryCounter", $queryCounter);
-
-    // if there are 100 queries, execute them on the database
-    if ($queryCounter >= 100) {
-        $queryCache=get("SQLQ");
-        foreach ($queryCache as $query) {
-            $conn->query($query);
+    if (!$cache->get("queryCounter")) {
+        $queryCache=$cache->get("SQLQ");
+        if ($queryCache) {
+            foreach ($queryCache as $query) {
+                $conn->query($query);
+            }
         }
-        // reset query counter
-        $cache->set("queryCounter", 0);
+        $cache->replace("SQLQ",[]);
+        $cache->set("queryCounter","1",10);
     }
 }
 
@@ -275,5 +276,13 @@ function executeCachedQueries() {
 // example usage
 //updateRecord("users", array("name" => "Jane", "email" => "jane@gmail.com"), array("id" => 1));
 
-insertRecord('admin_user',["cid"=>"11512005551","ticket"=>"TEST","event_id"=>2]);
-print_r(getRecords('luckydraw',["cid"=>"11512005551"]));
+insertRecord('luckydraw',["cid"=>"11512005551","ticket"=>"TEST","event_id"=>2]);
+//print_r(getRecords('luckydraw'));
+//deleteRecord('luckydraw',["cid"=>"11512005551"]);
+
+$t = time();
+print_r(count(getRecords('luckydraw')));
+
+echo "\nTIME TAKEN: ".(time()-$t)."s";
+echo "\n";
+print_r($cache->get("SQLQ"));

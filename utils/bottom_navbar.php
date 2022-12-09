@@ -27,7 +27,7 @@
               </li> -->
               <li class="nav-item <?php echo (strpos($_SERVER["REQUEST_URI"],"/eventluckydrawsettings")!==false)?"active":""?>">
                   <a href="/eventluckydrawsettings" target="_blank" class="nav-link">
-                    <i class="mdi mdi-star mdi-spin"></i>
+                    <i class="mdi mdi-star mdi-spin menu-icon"></i>
                     <span class="menu-title">Lucky Draw</span>
                   </a>
               </li>

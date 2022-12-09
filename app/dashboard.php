@@ -2,7 +2,23 @@
 	require_once "utils/dbconnect.php";
     //$data=[];
 	$conn = new mysqli(DB_HOST,DB_USER,DB_PSWD,DB_NAME);
-    if(isset($_POST['year'])){
+    if (isset($_POST['liveupdate'])) {
+        $query = "SELECT e.name,
+                        COUNT(r.event_id) AS current_registrations,
+                        e.capacity
+                FROM events e
+                LEFT JOIN registration_requests r ON e.id = r.event_id
+                GROUP BY e.name, e.capacity;";
+        $result = $conn->query($query);
+        // Return the data as a JSON array
+        $data = [];
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+        echo json_encode($data);
+        exit();
+    }
+    else if(isset($_POST['year'])){
         $year = $_POST['year'];
 
         if (isset($_POST["dataType"]) && $_POST["dataType"] == "Year"){
