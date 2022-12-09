@@ -585,18 +585,18 @@
 			}
     	});
 
-		$.ajax({
-       		url:"/dashboard",
-			method:"POST",
-			data:{
-				year: document.getElementById("year").value,
-				chartType: "LineChart"
-			},
-			success:function(data)
-			{
-				plotLineChart(data);
-			}
-    	});
+		// $.ajax({
+       	// 	url:"/dashboard",
+		// 	method:"POST",
+		// 	data:{
+		// 		year: document.getElementById("year").value,
+		// 		chartType: "LineChart"
+		// 	},
+		// 	success:function(data)
+		// 	{
+		// 		plotLineChart(data);
+		// 	}
+    	// });
 
 		$.ajax( {
 				url: "/dashboard",
