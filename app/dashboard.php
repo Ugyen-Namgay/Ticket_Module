@@ -22,23 +22,23 @@
         $year = $_POST['year'];
 
         if (isset($_POST["dataType"]) && $_POST["dataType"] == "Year"){
-            //$result = $conn -> query("SELECT COUNT(*) AS event_Count FROM events WHERE YEAR(start_datetime) = '$year' ");
-            //$data['event_Count'] = $result -> fetch_assoc();
+            $result = $conn -> query("SELECT COUNT(*) AS event_Count FROM events WHERE YEAR(start_datetime) = '$year' ");
+            $data['event_Count'] = $result -> fetch_assoc();
 
-            $data['event_Count']=json_decode(get("events","COUNT(*) AS event_Count","YEAR(start_datetime)='$year'",true),true)[0]["event_Count"];
+            //$data['event_Count']=json_decode(get("events","COUNT(*) AS event_Count","YEAR(start_datetime)='$year'",true),true)[0]["event_Count"];
 
-            //$result = $conn -> query("SELECT IFNULL(SUM(LENGTH(other_cids) - LENGTH(REPLACE(other_cids, ';', ''))+ 1), 0) AS registered_User FROM registration_requests WHERE YEAR(register_datetime) = '$year' ");
-            //$data['registered_User'] = $result -> fetch_assoc();
-            $data['registered_User']=json_decode(get("registration_requests","IFNULL(SUM(LENGTH(other_cids) - LENGTH(REPLACE(other_cids, ';', ''))+ 1), 0) AS registered_User","YEAR(start_datetime)='$year'"),true)[0]["registered_User"];
+            $result = $conn -> query("SELECT IFNULL(SUM(LENGTH(other_cids) - LENGTH(REPLACE(other_cids, ';', ''))+ 1), 0) AS registered_User FROM registration_requests WHERE YEAR(register_datetime) = '$year' ");
+            $data['registered_User'] = $result -> fetch_assoc();
+            //$data['registered_User']=json_decode(get("registration_requests","IFNULL(SUM(LENGTH(other_cids) - LENGTH(REPLACE(other_cids, ';', ''))+ 1), 0) AS registered_User","YEAR(start_datetime)='$year'"),true)[0]["registered_User"];
 
 
-            //$result = $conn -> query("SELECT IFNULL(COUNT(DISTINCT(dzongkhag)), 0) as dzongkhag_Count FROM registration_requests WHERE is_allowed = '1' AND YEAR(register_datetime)='$year'");
-            //$data['dzongkhag_Count'] = $result -> fetch_assoc();
-            $data['dzongkhag_Count']=json_decode(get("registration_requests","IFNULL(COUNT(DISTINCT(dzongkhag)), 0) as dzongkhag_Count","YEAR(start_datetime)='$year' AND is_allowed = '1'"),true)[0]["dzongkhag_Count"];
+            $result = $conn -> query("SELECT IFNULL(COUNT(DISTINCT(dzongkhag)), 0) as dzongkhag_Count FROM registration_requests WHERE is_allowed = '1' AND YEAR(register_datetime)='$year'");
+            $data['dzongkhag_Count'] = $result -> fetch_assoc();
+            //$data['dzongkhag_Count']=json_decode(get("registration_requests","IFNULL(COUNT(DISTINCT(dzongkhag)), 0) as dzongkhag_Count","YEAR(start_datetime)='$year' AND is_allowed = '1'"),true)[0]["dzongkhag_Count"];
 
-            //$result = $conn -> query("SELECT IFNULL(SUM(LENGTH(other_cids) - LENGTH(REPLACE(other_cids, ';', ''))+ 1), 0) AS event_Participants FROM registration_requests WHERE YEAR(register_datetime) = '$year' AND is_allowed = '1' ");
-            //$data['event_Participants'] = $result -> fetch_assoc();
-            $data['event_Participants']=json_decode(get("registration_requests","IFNULL(SUM(LENGTH(other_cids) - LENGTH(REPLACE(other_cids, ';', ''))+ 1), 0) AS event_Participants","YEAR(start_datetime)='$year' AND is_allowed = '1'"),true)[0]["event_Participants"];
+            $result = $conn -> query("SELECT IFNULL(SUM(LENGTH(other_cids) - LENGTH(REPLACE(other_cids, ';', ''))+ 1), 0) AS event_Participants FROM registration_requests WHERE YEAR(register_datetime) = '$year' AND is_allowed = '1' ");
+            $data['event_Participants'] = $result -> fetch_assoc();
+            //$data['event_Participants']=json_decode(get("registration_requests","IFNULL(SUM(LENGTH(other_cids) - LENGTH(REPLACE(other_cids, ';', ''))+ 1), 0) AS event_Participants","YEAR(start_datetime)='$year' AND is_allowed = '1'"),true)[0]["event_Participants"];
 
             echo json_encode($data);
         }
