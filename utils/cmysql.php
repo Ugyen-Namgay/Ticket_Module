@@ -27,14 +27,24 @@ function getMax($arr, $prop) {
 /* INITIALIZATION */
 $has_cached = $cache->get("tables");
 if (!$has_cached) {
+    echo "INITIALIZING DATABASE LOADS<BR>";
     $tables = $conn->query("SHOW TABLES;")->fetch_all(MYSQLI_ASSOC);
     foreach ($tables as $table) {
-        $table_content = $conn->query("SELECT * FROM ".$table["Tables_in_".$settings["db"]["database"]].";")->fetch_all(MYSQLI_ASSOC);
-        $cache->set("table_".$table["Tables_in_".$settings["db"]["database"]],json_encode($table_content),0);
+        $tablename = trim($table["Tables_in_".$settings["db"]["database"]]);
+        if ($tablename=="images") {
+            echo "Skipping table: '".$tablename."'<BR>";
+            continue;
+        }
+        echo "Loading table: '".$tablename."'<BR>";
+        $table_content = $conn->query("SELECT * FROM ".$tablename.";")->fetch_all(MYSQLI_ASSOC);
+        //var_dump($table_content);
+        echo count($table_content)." Records Found.<BR>";
+        $cache->set("table_".$tablename,json_encode($table_content),0);
         //$sample_record = $conn->query("SELECT * FROM ".$table["Tables_in_".$settings["db"]["database"]]." LIMIT 1")->fetch_all(MYSQLI_ASSOC);
         //$cache->set("table_sample_".$table["Tables_in_".$settings["db"]["database"]],json_encode($sample_record),0);
-        $table_description = $conn->query("DESCRIBE ".$table["Tables_in_".$settings["db"]["database"]])->fetch_all(MYSQLI_ASSOC);
-        $cache->set("table_description_".$table["Tables_in_".$settings["db"]["database"]],json_encode($table_description),0);
+        $table_description = $conn->query("DESCRIBE ".$tablename)->fetch_all(MYSQLI_ASSOC);
+        $cache->set("table_description_".$tablename,json_encode($table_description),0);
+        echo $tablename." Loaded<BR><HR>";
     }
     $cache->set("tables","loaded",0);
 }
@@ -276,13 +286,5 @@ function executeCachedQueries() {
 // example usage
 //updateRecord("users", array("name" => "Jane", "email" => "jane@gmail.com"), array("id" => 1));
 
-insertRecord('luckydraw',["cid"=>"11512005551","ticket"=>"TEST","event_id"=>2]);
-//print_r(getRecords('luckydraw'));
+//insertRecord('luckydraw',["cid"=>"11512005551","ticket"=>"TEST","event_id"=>2]);
 //deleteRecord('luckydraw',["cid"=>"11512005551"]);
-
-$t = time();
-print_r(count(getRecords('luckydraw')));
-
-echo "\nTIME TAKEN: ".(time()-$t)."s";
-echo "\n";
-print_r($cache->get("SQLQ"));
