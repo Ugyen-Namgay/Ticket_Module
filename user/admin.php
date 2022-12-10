@@ -329,7 +329,7 @@ controlbox.addFooterBtn('OK', 'tingle-btn tingle-btn--primary', function () {
 var modalButtonOnly = new tingle.modal({
             closeMethods: [],
             footer: true,
-            stickyFooter: true
+            stickyFooter: false
 });
 
 var workingticket = "";

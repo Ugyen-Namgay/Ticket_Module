@@ -571,10 +571,16 @@ $("#check_before_submit").click(function(){
     $.each(array, function () {
       json[this.name] = this.value || "";
     });
-
+    var finalMessage = new tingle.modal({
+          closeMethods: [],
+          footer: false
+      });
+    finalMessage.setContent("Thank you for submitting the form. This page will close automatically once we are done processing. It may take a while due to huge traffic. Thank you for bearing with us");
+    finalMessage.open();
     $.post("<?php echo $settings["app"]["homebase"].'/submit'?>",{"data":json, "autoallow":"1", "request":"validate","otp":enteredotp,"cid":"<?php echo $cid;?>"},function(data){
         d=JSON.parse(data);
         if (d.error!==false) {
+         finalMessage.close();
          alertify(d.error);
         }
         else {

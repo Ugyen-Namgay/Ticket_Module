@@ -646,10 +646,16 @@ $("#otpverify").click(function() {
   $.each(array, function () {
     json[this.name] = this.value || "";
   });
-
+  var finalMessage = new tingle.modal({
+          closeMethods: [],
+          footer: false
+      });
+    finalMessage.setContent("We are processing your record. Please wait ...");
+    finalMessage.open();
   $.post("<?php echo $settings["app"]["homebase"].'/submit'?>",{"data":json, "request":"validate","otp":enteredotp,"cid":"<?php echo $cid;?>"},function(data){
       d=JSON.parse(data);
       if (d.error!==false) {
+        finalMessage.close();
         $("#otpverify").val(d.error+" Wait 10s");
         $("#otpverify").prop("disabled",true);
         setTimeout(function(){$("#otpverify").prop("disabled",false); $("#otpverify").val("Verify")},10000);
@@ -786,7 +792,7 @@ $("#check_before_submit").click(function(){
           var modalButtonOnly = new tingle.modal({
             closeMethods: [],
             footer: true,
-            stickyFooter: true
+            stickyFooter: false
         });
     btn5.addEventListener('click', function () {
             modalButtonOnly.open();
