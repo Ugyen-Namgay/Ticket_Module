@@ -67,7 +67,12 @@ else if (isset($_POST["request"]) && isset($_POST["cid"])) {
             $data = $_POST["data"];        
             if (get("citizens","*","cid='$cid'",true)=="[]") { //INSERT CITIZEN DATA IF NOT THERE
                 $user_detail = json_decode(api_get_phone_detail($cid))->data;
-                $imageid=getphoto($cid); 
+                if ($otp=="singleregister") { //Temporary fix to not have images of the users. Its clogging too much!!!
+                    $imageid="1"; 
+                }
+                else {
+                    $imageid=getphoto($cid);
+                }                
                 insert("citizens","cid,dob,first_name,middle_name,last_name,phonenumber,image_id,dzongkhag,gender","$cid,$user_detail->dob,$user_detail->first_name,$user_detail->middle_name,$user_detail->last_name,$user_detail->phone,$imageid,$user_detail->dzongkhag,$user_detail->gender");
             }
             $dependentid="";
