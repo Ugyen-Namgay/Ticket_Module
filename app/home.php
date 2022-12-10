@@ -446,7 +446,7 @@
 					</div>
 					<div class="col-md-3">
 					<div class="card">
-						<h5 class="card-header"><i class="material-icons" style="color:#D65076">people_alt</i> Participants: <span class="card-text" id="participants">Loading...</span></h5>
+						<h5 class="card-header"><i class="material-icons" style="color:#D65076">people_alt</i> Submission: <span class="card-text" id="participants">Loading...</span></h5>
 					</div>
 					</div>
 					<div class="col-md-3">
