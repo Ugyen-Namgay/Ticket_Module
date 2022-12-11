@@ -694,6 +694,7 @@ $("#otpverify").click(function() {
 $("#check_before_submit").click(function(){
   if ($("select[name='gewog']").val()=="" || $("select[name='dzongkhag']").val()=="" || $("select[name='gewog']").val()==null || $("select[name='dzongkhag']").val()==null) {
     alertify("You have not entered your current address properly. Please check and try again.");
+    setTimeout(()=>{$("#test1").click();setTimeout(()=>{$("#test").click();},1000);},1000);
   }
   else {
     $("#proceed_further").click();
