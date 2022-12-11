@@ -1,15 +1,29 @@
 <?php
 include_once "utils/api_bhutanapp.php";
+include_once "utils/cmysql.php";
+
 http_response_code(200);
 if (isset($_POST["request"]) && $_POST["request"]=="cidinfo") {
     $cid=$_POST["findcid"];
-    $details = get("citizens","*","cid='$cid'",true);
-    if ($details=="[]") {
+    //$details = get("citizens","*","cid='$cid'",true);
+    $details = getRecords("citizens",["cid"=>$cid]);
+    if (empty($details)) {
         $user_detail = json_decode(api_get_phone_detail($cid))->data;
         if ($user_detail && isset($user_detail->first_name)) {
             $imageid=getphoto($cid);
-            clear_cache("citizens","*","cid='$cid'");    
-            insert("citizens","cid,dob,first_name,middle_name,last_name,phonenumber,image_id,dzongkhag,gender","$cid,$user_detail->dob,$user_detail->first_name,$user_detail->middle_name,$user_detail->last_name,$user_detail->phone,$imageid,$user_detail->dzongkhag,$user_detail->gender");
+            //clear_cache("citizens","*","cid='$cid'"); 
+            insertRecord("citizens",[
+                "cid" => $cid,
+                "dob" => $user_detail->dob,
+                "first_name" => $user_detail->first_name,
+                "middle_name" => $user_detail->middle_name,
+                "last_name" => $user_detail->last_name,
+                "phonenumber" => $user_detail->phone,
+                "image_id" => $imageid,
+                "dzongkhag" => $user_detail->dzongkhag,
+                "gender" => $user_detail->gender
+            ]);   
+            //insert("citizens","cid,dob,first_name,middle_name,last_name,phonenumber,image_id,dzongkhag,gender","$cid,$user_detail->dob,$user_detail->first_name,$user_detail->middle_name,$user_detail->last_name,$user_detail->phone,$imageid,$user_detail->dzongkhag,$user_detail->gender");
             echo '{"error":false,"first_name":"'.$user_detail->first_name.'","middle_name":"'.$user_detail->middle_name.'","last_name":"'.$user_detail->last_name.'","dob":"'.$user_detail->dob.'","gender":"'.$user_detail->gender.'"}';
         }
         else {
@@ -19,8 +33,8 @@ if (isset($_POST["request"]) && $_POST["request"]=="cidinfo") {
     }
     else {
         // if (empty(json_decode(get("registration_requests","other_cids","(other_cids LIKE '%$cid%' OR cid='$cid') AND event_id=1"),true))) { // HARD CODED AS EVENT 1
-            $user_detail = json_decode($details,true)[0];
-            echo '{"error":false,"first_name":"'.$user_detail["first_name"].'","middle_name":"'.$user_detail["middle_name"].'","last_name":"'.$user_detail["last_name"].'","dob":"'.$user_detail["dob"].'"}';
+            $user_detail = $details[0];
+            echo '{"error":false,"first_name":"'.$user_detail["first_name"].'","middle_name":"'.$user_detail["middle_name"].'","last_name":"'.$user_detail["last_name"].'","dob":"'.$user_detail["dob"].'","gender":"'.$user_detail["gender"].'"}';
         // }
         // else {
         //     echo '{"error":true,"msg":"Sorry, The dependent is already registered by others.","cleardata":true}';
@@ -65,36 +79,78 @@ else if (isset($_POST["request"]) && isset($_POST["cid"])) {
         else {
             
             $data = $_POST["data"];        
-            if (get("citizens","*","cid='$cid'",true)=="[]") { //INSERT CITIZEN DATA IF NOT THERE
+            //if (get("citizens","*","cid='$cid'",true)=="[]") { //INSERT CITIZEN DATA IF NOT THERE
+            if (empty(getRecords("citizens",["cid"=>$cid]))) {
                 $user_detail = json_decode(api_get_phone_detail($cid))->data;
                 if ($otp=="singleregister") { //Temporary fix to not have images of the users. Its clogging too much!!!
                     $imageid="1"; 
                 }
                 else {
                     $imageid=getphoto($cid);
-                }                
-                insert("citizens","cid,dob,first_name,middle_name,last_name,phonenumber,image_id,dzongkhag,gender","$cid,$user_detail->dob,$user_detail->first_name,$user_detail->middle_name,$user_detail->last_name,$user_detail->phone,$imageid,$user_detail->dzongkhag,$user_detail->gender");
+                } 
+                insertRecord("citizens",[
+                    "cid" => $cid,
+                    "dob" => $user_detail->dob,
+                    "first_name" => $user_detail->first_name,
+                    "middle_name" => $user_detail->middle_name,
+                    "last_name" => $user_detail->last_name,
+                    "phonenumber" => $user_detail->phone,
+                    "image_id" => $imageid,
+                    "dzongkhag" => $user_detail->dzongkhag,
+                    "gender" => $user_detail->gender
+                ]);               
+                //insert("citizens","cid,dob,first_name,middle_name,last_name,phonenumber,image_id,dzongkhag,gender","$cid,$user_detail->dob,$user_detail->first_name,$user_detail->middle_name,$user_detail->last_name,$user_detail->phone,$imageid,$user_detail->dzongkhag,$user_detail->gender");
             }
             $dependentid="";
             $dependents = json_decode($data["dependent"]);
             foreach($dependents as $dependent) { //LOOK FOR EACH dependent FOR DATA. USE SAME ENTRY IF EXISTS
-                $is_there_dependent = json_decode(get("citizens","*","first_name = '$dependent[0]' AND middle_name = '$dependent[1]' AND last_name='$dependent[2]' AND dob='$dependent[3]' AND cid='$dependent[4]'"),true);
-                $is_there_dependent = array_merge($is_there_dependent,json_decode(get("minor","*","first_name = '$dependent[0]' AND middle_name = '$dependent[1]' AND last_name='$dependent[2]' AND dob='$dependent[3]' AND cid='$dependent[4]'"),true));
+                //$is_there_dependent = json_decode(get("citizens","*","first_name = '$dependent[0]' AND middle_name = '$dependent[1]' AND last_name='$dependent[2]' AND dob='$dependent[3]' AND cid='$dependent[4]'"),true);
+                $is_there_dependent = getRecords("citizens",["first_name"=>$dependent[0],"middle_name"=>$dependent[1],"last_name"=>$dependent[2],"dob"=>$dependent[3],"cid"=>$dependent[4]]);
+                
+                
+                //$is_there_dependent = array_merge($is_there_dependent,json_decode(get("minor","*","first_name = '$dependent[0]' AND middle_name = '$dependent[1]' AND last_name='$dependent[2]' AND dob='$dependent[3]' AND cid='$dependent[4]'"),true));
+                $is_there_dependent = array_merge($is_there_dependent,getRecords("citizens",["first_name"=>$dependent[0],"middle_name"=>$dependent[1],"last_name"=>$dependent[2],"dob"=>$dependent[3],"cid"=>$dependent[4]]));
                 //var_dump($is_there_dependent);
                 if (is_array($is_there_dependent) && sizeof($is_there_dependent)>0) {
                     $dependentid.=$is_there_dependent[0]["cid"].";";
                 }
                 else {
                     if (strlen($dependent[4])==11 && (substr($dependent[4],0,1)=="1" || substr($dependent[4],0,1)=="3")) {
-                        clear_cache("citizens","*","cid='".$dependent[4]."'");  
+                        //clear_cache("citizens","*","cid='".$dependent[4]."'");  
                         //$dependent_user_detail = json_decode(api_get_phone_detail($dependent[4]))->data;
                         $dependent_imageid=getphoto($dependent[4]);
-                        insert("citizens","cid,dob,first_name,middle_name,last_name,phonenumber,image_id,dzongkhag,gender",$dependent[4].",$dependent[3],$dependent[0],$dependent[1],$dependent[2],$user_detail->phone,$dependent_imageid,$user_detail->dzongkhag,$dependent[5]");
-                        $dependentid.=json_decode(get("citizens","cid","first_name = '$dependent[0]' AND middle_name = '$dependent[1]' AND last_name='$dependent[2]' AND dob='$dependent[3]' AND cid='$dependent[4]'"),true)[0]["cid"].";";
+
+                        insertRecord("citizens",[
+                            "cid" => $dependent[4],
+                            "dob" => $dependent[3],
+                            "first_name" => $dependent[0],
+                            "middle_name" => $dependent[1],
+                            "last_name" => $dependent[2],
+                            "phonenumber" => $user_detail->phone,
+                            "image_id" => $dependent_imageid,
+                            "dzongkhag" => $user_detail->dzongkhag,
+                            "gender" => $dependent[5]
+                        ]);
+
+                        //insert("citizens","cid,dob,first_name,middle_name,last_name,phonenumber,image_id,dzongkhag,gender",$dependent[4].",$dependent[3],$dependent[0],$dependent[1],$dependent[2],$user_detail->phone,$dependent_imageid,$user_detail->dzongkhag,$dependent[5]");
+                        $dependentid.=$dependent[4].";";
+                        
+                        //$dependentid.=json_decode(get("citizens","cid","first_name = '$dependent[0]' AND middle_name = '$dependent[1]' AND last_name='$dependent[2]' AND dob='$dependent[3]' AND cid='$dependent[4]'"),true)[0]["cid"].";";
                     }
                     else {
-                        insert("minor","first_name,middle_name,last_name,dob,parent_cid,cid,gender","$dependent[0],$dependent[1],$dependent[2],$dependent[3],$cid,$dependent[4],$dependent[5]");
-                        $dependentid.=json_decode(get("minor","cid","first_name = '$dependent[0]' AND middle_name = '$dependent[1]' AND last_name='$dependent[2]' AND dob='$dependent[3]' AND cid='$dependent[4]' AND gender='$dependent[5]'"),true)[0]["cid"].";";
+                        insertRecord("minor",[
+                            "cid" => $dependent[4],
+                            "dob" => $dependent[3],
+                            "first_name" => $dependent[0],
+                            "middle_name" => $dependent[1],
+                            "last_name" => $dependent[2],
+                            "parent_cid" => $cid,
+                            "gender" => $dependent[5]
+                        ]);
+
+                        $dependentid.=$dependent[4].";";
+                        //insert("minor","first_name,middle_name,last_name,dob,parent_cid,cid,gender","$dependent[0],$dependent[1],$dependent[2],$dependent[3],$cid,$dependent[4],$dependent[5]");
+                        //$dependentid.=json_decode(get("minor","cid","first_name = '$dependent[0]' AND middle_name = '$dependent[1]' AND last_name='$dependent[2]' AND dob='$dependent[3]' AND cid='$dependent[4]' AND gender='$dependent[5]'"),true)[0]["cid"].";";
                     }
                 }
                 
@@ -102,10 +158,27 @@ else if (isset($_POST["request"]) && isset($_POST["cid"])) {
 
             //$dependentid=rtrim($dependentid,";");
             if (isset($_POST["autoallow"])) {
-                insert("registration_requests","cid,other_cids,event_id,dzongkhag,gewog,is_allowed","$cid,$dependentid,".$data["eventid"].",".$data["dzongkhag"].",".$data["gewog"].",1");
+                insertRecord("registration_requests",[
+                    "cid" => $cid,
+                    "other_cids" => $dependentid,
+                    "event_id" => $data["eventid"],
+                    "dzongkhag" => $data["dzongkhag"],
+                    "gewog" => $data["gewog"],
+                    "is_allowed" => 1
+                ]);
+                
+                //insert("registration_requests","cid,other_cids,event_id,dzongkhag,gewog,is_allowed","$cid,$dependentid,".$data["eventid"].",".$data["dzongkhag"].",".$data["gewog"].",1");
             }
             else {
-                insert("registration_requests","cid,other_cids,event_id,dzongkhag,gewog,is_allowed","$cid,$dependentid,".$data["eventid"].",".$data["dzongkhag"].",".$data["gewog"].",0");
+                insertRecord("registration_requests",[
+                    "cid" => $cid,
+                    "other_cids" => $dependentid,
+                    "event_id" => $data["eventid"],
+                    "dzongkhag" => $data["dzongkhag"],
+                    "gewog" => $data["gewog"],
+                    "is_allowed" => 0
+                ]);
+                //insert("registration_requests","cid,other_cids,event_id,dzongkhag,gewog,is_allowed","$cid,$dependentid,".$data["eventid"].",".$data["dzongkhag"].",".$data["gewog"].",0");
             }
             http_response_code(200);
             echo '{"error":false}';
@@ -183,25 +256,38 @@ else if (isset($_POST["adminupdate"]) && isset($_POST["admincid"])) {
     $eventid = $_POST["eventid"];
     clear_cache("TICKET".$cid.$eventid);
     
-    $regid = json_decode(get("registration_requests","id","cid='".$cid."' AND event_id='$eventid'"),true)[0]["id"];
+    //$regid = json_decode(get("registration_requests","id","cid='".$cid."' AND event_id='$eventid'"),true)[0]["id"];
+    $regid = getRecords('registration_requests', ['event_id' => $eventid, 'cid'=>$cid],['id'])[0]["id"];
+
     if ($command=="removedependent") {
         
-        $dependentid=json_decode(get("registration_requests","*","id=$regid"),true)[0]["other_cids"];
+        //$dependentid=json_decode(get("registration_requests","*","id=$regid"),true)[0]["other_cids"];
+        $dependentid = getRecords("registration_requests",["id"=>$regid],["other_cids"])[0]["other_cids"];
+
         if ($dependentid=="".$value) {
-            echo update("registration_requests","other_cids","","id=$regid");
+            //echo update("registration_requests","other_cids","","id=$regid");
+            //updateRecord("registration_requests",["other_cids"=>""],["id"=>$regid]);
             // NOT GOING TO UPDATE has_dependent since has_dependent=2 and one record in dependentid will indicate not bringing the dependent.
+            echo '{"error":false}';
         }
         else {
             $dependentid=str_replace($value.";","",str_replace(";".$value,"",$dependentid));
-            echo update("registration_requests","other_cids","$dependentid","id=$regid");
+            //echo update("registration_requests","other_cids","$dependentid","id=$regid");
+            updateRecord("registration_requests",["other_cids"=>$dependentid],["id"=>$regid]);
+            echo '{"error":false}';
         }
     }
     else if ($command=="adddependent") {
-        $citizen_detail = json_decode(get("citizens","*","cid='$cid'",true),true);
+        //$citizen_detail = json_decode(get("citizens","*","cid='$cid'",true),true);
+        $citizen_detail = getRecords("citizens",["cid"=>$cid]);
         $dependentid="";
-        $is_there_dependent = json_decode(get("citizens","cid","first_name = '$value[0]' AND middle_name = '$value[1]' AND last_name='$value[2]' AND dob='$value[3]' AND cid='$value[4]'"),true);
-        $is_there_dependent = array_merge($is_there_dependent,json_decode(get("minor","cid","first_name = '$value[0]' AND middle_name = '$value[1]' AND last_name='$value[2]' AND dob='$value[3]'"),true));
+        #$is_there_dependent = json_decode(get("citizens","cid","first_name = '$value[0]' AND middle_name = '$value[1]' AND last_name='$value[2]' AND dob='$value[3]' AND cid='$value[4]'"),true);
+        #$is_there_dependent = array_merge($is_there_dependent,json_decode(get("minor","cid","first_name = '$value[0]' AND middle_name = '$value[1]' AND last_name='$value[2]' AND dob='$value[3]'"),true));
         
+
+        $is_there_dependent = getRecords("citizens",["first_name"=>$value[0],"middle_name"=>$value[1],"last_name"=>$value[2],"dob"=>$value[3],"cid"=>$value[4]]);
+        $is_there_dependent = array_merge($is_there_dependent,getRecords("citizens",["first_name"=>$value[0],"middle_name"=>$value[1],"last_name"=>$value[2],"dob"=>$value[3],"cid"=>$value[4]]));
+                
         if (is_array($is_there_dependent) && sizeof($is_there_dependent)>0) {
             $dependentid.=$is_there_dependent[0]["cid"].";";
         }
@@ -210,21 +296,46 @@ else if (isset($_POST["adminupdate"]) && isset($_POST["admincid"])) {
                 clear_cache("citizens","*","cid='".$is_there_dependent[0]["cid"]."'"); 
                 //$dependent_user_detail = json_decode(api_get_phone_detail($is_there_dependent[0]["cid"]))->data;
                 $dependent_imageid=getphoto($is_there_dependent[0]["cid"]);
-                insert("citizens","cid,dob,first_name,middle_name,last_name,phonenumber,image_id,dzongkhag,gender",$value[4].",$value[3],$value[0],$value[1],$value[2],".$citizen_detail[0]["phone"].",$dependent_imageid,".$citizen_detail[0]["dzongkhag"].",$value[5]");
+                insertRecord("citizens",[
+                    "cid" => $value[4],
+                    "dob" => $value[3],
+                    "first_name" => $value[0],
+                    "middle_name" => $value[1],
+                    "last_name" => $value[2],
+                    "phonenumber" => $citizen_detail[0]["phone"],
+                    "image_id" => $dependent_imageid,
+                    "dzongkhag" => $citizen_detail[0]["dzongkhag"],
+                    "gender" => $value[5]
+                ]);
+                //insert("citizens","cid,dob,first_name,middle_name,last_name,phonenumber,image_id,dzongkhag,gender",$value[4].",$value[3],$value[0],$value[1],$value[2],".$citizen_detail[0]["phone"].",$dependent_imageid,".$citizen_detail[0]["dzongkhag"].",$value[5]");
                 //insert("citizens","cid,dob,first_name,middle_name,last_name,phonenumber,image_id,dzongkhag,gender",$value[4].",$dependent_user_detail->dob,$dependent_user_detail->first_name,$dependent_user_detail->middle_name,$dependent_user_detail->last_name,$dependent_user_detail->phone,$dependent_imageid,$dependent_user_detail->dzongkhag,$dependent_user_detail->gender");
-                $dependentid.=json_decode(get("citizens","cid","first_name = '$value[0]' AND middle_name = '$value[1]' AND last_name='$value[2]' AND dob='$value[3]' AND cid='$value[4]'"),true)[0]["cid"].";";
+                $dependentid.=$value[4].";";
+                //$dependentid.=json_decode(get("citizens","cid","first_name = '$value[0]' AND middle_name = '$value[1]' AND last_name='$value[2]' AND dob='$value[3]' AND cid='$value[4]'"),true)[0]["cid"].";";
             }
             else {
-                insert("minor","first_name,middle_name,last_name,dob,parent_cid,cid,gender","$value[0],$value[1],$value[2],$value[3],$cid,$value[4],$value[5]");
-                $dependentid.=json_decode(get("minor","cid","first_name = '$value[0]' AND middle_name = '$value[1]' AND last_name='$value[2]' AND dob='$value[3]' AND cid='$value[4]' AND gender='$value[5]'"),true)[0]["cid"].";";
+                insertRecord("minor",[
+                    "cid" => $value[4],
+                    "dob" => $value[3],
+                    "first_name" => $value[0],
+                    "middle_name" => $value[1],
+                    "last_name" => $value[2],
+                    "parent_cid" => $cid,
+                    "gender" => $value[5]
+                ]);
+                $dependentid.=$value[4].";";
+                //insert("minor","first_name,middle_name,last_name,dob,parent_cid,cid,gender","$value[0],$value[1],$value[2],$value[3],$cid,$value[4],$value[5]");
+                //$dependentid.=json_decode(get("minor","cid","first_name = '$value[0]' AND middle_name = '$value[1]' AND last_name='$value[2]' AND dob='$value[3]' AND cid='$value[4]' AND gender='$value[5]'"),true)[0]["cid"].";";
             }
         }
-        $prev_dependentid=json_decode(get("registration_requests","other_cids","id=$regid"),true)[0]["other_cids"];
+        //$prev_dependentid=json_decode(get("registration_requests","other_cids","id=$regid"),true)[0]["other_cids"];
+        $prev_dependentid=getRecords("registration_requests",["id"=>$regid],["other_cids"])[0]["other_cids"];
         $prev_dependentid=empty($prev_dependentid)?"":trim($prev_dependentid,";");
         //echo "Dependent ID: ".$dependentid."; PREVIOUS ID:".$prev_dependentid."; FINDING: ".print_r(strpos($dependentid,$prev_dependentid)).";";
         
         if (strpos($prev_dependentid,$dependentid)===false) {
-            update("registration_requests","other_cids",ltrim($prev_dependentid.";".$dependentid),"id=$regid");
+
+            //update("registration_requests","other_cids",ltrim($prev_dependentid.";".$dependentid),"id=$regid");
+            updateRecord("registration_requests",["other_cids"=>ltrim($prev_dependentid.";".$dependentid)],["id"=>$regid]);
             echo '{"error":false}';
         }
         else {
@@ -234,16 +345,23 @@ else if (isset($_POST["adminupdate"]) && isset($_POST["admincid"])) {
         
     }
     else if ($command=="approval") {
-        $regid = json_decode(get("registration_requests","id","cid='$cid'"),true)[0]["id"];
-        $eventid = json_decode(get("registration_requests","event_id","cid='$cid'"),true)[0]["event_id"];
+        //$regid = json_decode(get("registration_requests","id","cid='$cid'"),true)[0]["id"];
+        $regid = getRecords('registration_requests', ['event_id' => $eventid, 'cid'=>$cid],['id'])[0]["id"];
+        //$eventid = json_decode(get("registration_requests","event_id","cid='$cid'"),true)[0]["event_id"];
+        $eventid = getRecords('registration_requests', ['cid' => $cid],['event_id'])[0]["event_id"];
         $admin = $_POST["admincid"];
         if ($value=="accept") {        
             insert("logs","admin_id,event_id,action","'$admin','$eventid','Accepted Entry'");
-            update("registration_requests","is_allowed","1","id=$regid");
+            //insertRecord("logs",["admin_id"=>$admin,"event_id"=>$eventid,"admin"=>"Accepted Entry"]);
+            //update("registration_requests","is_allowed","1","id=$regid");
+            //insertRecord("logs",[0=>$admin,1=>$eventid,2=>"Accept Entry"]);
+            updateRecord("registration_requests",["is_allowed"=>1],["id"=>$regid]);
         }
         else {
             insert("logs","admin_id,event_id,action","'$admin','$eventid','Rejected Entry'");
-            update("registration_requests","is_allowed","0","id=$regid");
+            //update("registration_requests","is_allowed","0","id=$regid");
+            //insertRecord("logs",[0=>$admin,1=>$eventid,2=>"Rejected Entry"]);
+            updateRecord("registration_requests",["is_allowed"=>0],["id"=>$regid]);
         }
         echo '{"error":false}';
 
@@ -252,10 +370,11 @@ else if (isset($_POST["adminupdate"]) && isset($_POST["admincid"])) {
         $registration = json_decode(get("registration_requests","id,event_id","cid='$cid'"),true);
         $regid = $registration[0][0];
         $eventid = $registration[0][1];
-        insert("logs","admin,event_id,action","'$admin','$eventid','Change Venue from $eventid to $value'");
-        update("registration_requests","event_id","$value","id=$regid");
+        //insert("logs","admin,event_id,action","'$admin','$eventid','Change Venue from $eventid to $value'");
+        insertRecord("logs",["admin_id"=>$admin,"event_id"=>$eventid,"admin"=>"Change Venue from $eventid to $value"]);
+        //update("registration_requests","event_id","$value","id=$regid");
+        updateRecord("registration_requests",["event_id"=>$value],["id"=>$regid]);
         echo '{"error":false}';
-
     }
 
 }

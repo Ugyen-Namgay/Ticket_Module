@@ -27,6 +27,7 @@
     exit();
   }
   
+  include_once "utils/cmysql.php";
   //client_detail($cid);
   //URL: domain.com/check/[VENUEID]/[CITIZENID]?cid=[SCANNERID]
   
@@ -41,22 +42,28 @@
     exit();
   }
   $settings = parse_ini_file("settings/config.ini", true);
-  $eventdetail = json_decode(get("events","*","id=$eventid",true),true);
+  //$eventdetail = json_decode(get("events","*","id=$eventid",true),true);
+  $eventdetail = getRecords('events', ['id' => $eventid]);
   $timeexpired=false;
+  //if (time()>strtotime($eventdetail[0]["end_datetime"])) { // END OF TIME
   if (time()>strtotime($eventdetail[0]["end_datetime"])) { // END OF TIME
     $eventdetail=[];
     $timeexpired=true;
     $capacity = 10000000;
   }
   else {
-    $capacity = (int)$eventdetail[0]["capacity"];
+   // $capacity = (int)$eventdetail[0]["capacity"];
+   $capacity = (int)$eventdetail[0]["capacity"];
   }
   //var_dump($eventdetail);
   //$capacity = (int)$eventdetail[0]["capacity"];
-  $total_registered = (int)json_decode(get("registration_requests","COUNT(id) as num","event_id=$eventid"),true)[0]["num"];
+  //$total_registered = (int)json_decode(get("registration_requests","COUNT(id) as num","event_id=$eventid"),true)[0]["num"];
+  $total_registered = count(getRecords('registration_requests', ['event_id' => $eventid]));
   //$accessingfrom=get_country();
   $accessingfrom="Bhutan";
-  $regid = json_decode(get("registration_requests","id","cid='".$cid."' AND event_id='$eventid'"),true);
+  //$regid = json_decode(get("registration_requests","id","cid='".$cid."' AND event_id='$eventid'"),true);
+  $regid = getRecords('registration_requests', ['event_id' => $eventid, 'cid'=>$cid],['id']);
+  
   if ($total_registered>=$capacity) {
     $generated_form = '<form id="msform">
     <fieldset>
@@ -68,18 +75,19 @@
     </form>';
   }
   else if ($timeexpired) {
-    //$temp = json_decode(get("venues","address,location,end","id=$eventid"),true);
-    $temp = json_decode(get("events","*","id=$eventid",true),true);
-      $generated_form = '<form id="msform">
-      <fieldset>
-      <img src="'.$settings["app"]["homebase"].'/images/too_late.png" height="200px" alt="A bit too late">
-      <br>
-      <h1 class="fs-title">We are sorry</h1>
-      <h2 class="fs-subtitle">The regsitration for <b>'.$temp[0]["name"].'</b> closed on '.$temp[0]["end_datetime"].'</h2>
-      </fieldset>
-      </form>'; 
+    //$temp = json_decode(get("events","address,location,end","id=$eventid"),true);
+    $temp = getRecords("events",["id"=>$eventid])[0];
+    $generated_form = '<form id="msform">
+    <fieldset>
+    <img src="'.$settings["app"]["homebase"].'/images/too_late.png" height="200px" alt="A bit too late">
+    <br>
+    <h1 class="fs-title">We are sorry</h1>
+    <h2 class="fs-subtitle">.The regsitration for <b>'.$temp["name"].' '.$temp["location"].'</b> closed on '.$temp["end_datetime"].'</h2>
+    </fieldset>
+    </form>'; 
   }
 
+  //else if ($eventdetail[0]["country"]!=$accessingfrom && false) {
   else if ($eventdetail[0]["country"]!=$accessingfrom && false) {
     $generated_form = '<form id="msform">
     <fieldset>
@@ -90,18 +98,19 @@
     </fieldset>
     </form>';
   }
-  else if (empty($eventdetail) || count($eventdetail[0])==0) { //No venue or Venue registration time expired
+  else if (empty($eventdetail) || count($eventdetail)==0) { //No venue or Venue registration time expired
     //$temp = json_decode(get("venues","address,location,end","id=$eventid"),true);
-    $temp = json_decode(get("events","*","id=$eventid",true),true);
+    $temp = getRecords("events",["id"=>$eventid])[0];
     if ($timeexpired) {
+      
       $generated_form = '<form id="msform">
       <fieldset>
       <img src="'.$settings["app"]["homebase"].'/images/too_late.png" height="200px" alt="A bit too late">
       <br>
       <h1 class="fs-title">We are sorry</h1>
-      <h2 class="fs-subtitle">The regsitration for <b>'.$temp[0]["name"].'</b> closed on '.$temp[0]["end_datetime"].'</h2>
+      <h2 class="fs-subtitle">..The regsitration for <b>'.$temp["name"].' '.$temp["location"].'</b> closed on '.$temp["end_datetime"].'</h2>
       </fieldset>
-      </form>';
+      </form>'; 
     }
     else if (empty($temp)) {
       $generated_form = '<form id="msform">
@@ -114,14 +123,14 @@
       </form>';
     }
     else {
-            $generated_form = '<form id="msform">
+      $generated_form = '<form id="msform">
       <fieldset>
       <img src="'.$settings["app"]["homebase"].'/images/too_late.png" height="200px" alt="A bit too late">
       <br>
       <h1 class="fs-title">We are sorry</h1>
-      <h2 class="fs-subtitle">The regsitration for <b>'.$temp[0]["name"].'</b> closed on '.$temp[0]["end_datetime"].'</h2>
+      <h2 class="fs-subtitle">...The regsitration for <b>'.$temp["name"].' '.$temp["location"].'</b> closed on '.$temp["end_datetime"].'</h2>
       </fieldset>
-      </form>';
+      </form>'; 
     }
   }
   else if (empty($regid) || count($regid[0])==0) { //No registration found at all so all good to go
@@ -417,7 +426,8 @@
     
   }
   else {
-    $registration_detail=json_decode(get("registration_requests","*","id=".$regid[0]['id'],true),true);
+    //$registration_detail=json_decode(get("registration_requests","*","id=".$regid[0]['id'],true),true);
+    $registration_detail = getRecords("registration_requests",["id"=>$regid[0]["id"]]);
     $date=date_create($eventdetail[0]["end_datetime"]);
     $cache_ticket = true;
     $ticket = strtoupper(base_convert((string)((int)$eventdetail[0]["ticket_offset"]+(int)$cid),10,36));

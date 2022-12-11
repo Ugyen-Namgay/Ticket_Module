@@ -1,5 +1,6 @@
 <?php
 include_once "utils/api_bhutanapp.php";
+include_once "utils/cmysql.php";
 //URL: domain.com/check/[VENUEID]/[CITIZENID]?cid=[SCANNERID]
 $play_sound="reject";//USED LATER.
 $eventid = $args[0];
@@ -15,11 +16,13 @@ $eventid = $args[0];
     //$ticket = strtoupper(base_convert((string)((int)$eventdetail[0][6]+(int)$cid),10,36))
     
 // }
-$admin_id = json_decode(get("admin_user","admin_id","cid='$admincid'",true),true);
+//$admin_id = json_decode(get("admin_user","admin_id","cid='$admincid'",true),true);
+$admin_id = getRecords("admin_user",["cid"=>$admincid]);
 
 if (isset($_POST["fetch"])) {
     $play_sound="reject";
-    $regid_get = json_decode(get("registration_requests","id","cid='".$cid."' AND event_id='$eventid'"),true);
+    //$regid_get = json_decode(get("registration_requests","id","cid='".$cid."' AND event_id='$eventid'"),true);
+    $regid_get = getRecords('registration_requests', ['event_id' => $eventid, 'cid'=>$cid],['id']);
     if (empty($regid_get)) {
         $data_form = '
         <form id="msform">
@@ -33,7 +36,8 @@ if (isset($_POST["fetch"])) {
     }
     else {
         $regid = $regid_get[0]["id"];
-        $registration_detail=json_decode(get("registration_requests","*","id=$regid"),true);
+        //$registration_detail=json_decode(get("registration_requests","*","id=$regid"),true);
+        $registration_detail=getRecords("registration_requests",["id"=>$regid]);
         if(sizeof($registration_detail)==0) {
             $user_detail = json_decode(api_get_phone_detail($cid))->data;
             $error = json_decode(api_get_phone_detail($cid))->error;
@@ -68,7 +72,9 @@ if (isset($_POST["fetch"])) {
         else {
 
             $eventdetail = json_decode(get("events","id,name,address,start_datetime,end_datetime","end_datetime>NOW()"),true);
-            $preregistrationdetail = json_decode(get("citizen_roles","*","cid='$cid'"),true);
+
+            //$preregistrationdetail = json_decode(get("citizen_roles","*","cid='$cid'"),true);
+            $preregistrationdetail = getRecords("citizen_roles",["cid"=>$cid]);
 
             $set_of_dependent = trim($registration_detail[0]["other_cids"],";");
             $dependent_detail=[];
@@ -76,18 +82,24 @@ if (isset($_POST["fetch"])) {
                 if ($dcid=="") {
                     continue;
                 }
-            $dependent_detail = array_merge($dependent_detail,json_decode(get("citizens","*","cid='$dcid'",true),true));
-            $dependent_detail = array_merge($dependent_detail,json_decode(get("minor","*","cid='$dcid'",true),true));
+            //$dependent_detail = array_merge($dependent_detail,json_decode(get("citizens","*","cid='$dcid'",true),true));
+            //$dependent_detail = array_merge($dependent_detail,json_decode(get("minor","*","cid='$dcid'",true),true));
+
+            $dependent_detail = array_merge($dependent_detail,getRecords("citizens",["cid"=>$dcid]));
+            $dependent_detail = array_merge($dependent_detail,getRecords("minor",["cid"=>$dcid]));
             //   $dependent_detail[] = json_decode(get("citizens","*","cid='$dcid'",true),true);
             //   $dependent_detail[] = json_decode(get("minor","*","cid='$dcid'",true),true);        
             }
-            $person_detail = json_decode(get("citizens","*","cid='$cid'"),true);
+            //$person_detail = json_decode(get("citizens","*","cid='$cid'"),true);
+            $person_detail = getRecords("citizens",["cid"=>$cid]);
             $base64photo = json_decode(get("images","bin","id='".$person_detail[0]["image_id"]."'"),true)[0]["bin"];
 
 
             $event_options = '';
+            $eventoffset = '';
             foreach($eventdetail as $event) {
                 if ($event["id"]==$registration_detail[0]["event_id"]) {
+                    $eventoffset = $event["ticket_offset"];
                     $event_options.='<option selected value="'.$event["id"].'">'.$event["name"].' - '.$event["address"].'</option>';
                 }
                 else {
@@ -98,7 +110,8 @@ if (isset($_POST["fetch"])) {
 
             $dependent_list = '';
             foreach($dependent_detail as $dependent) {
-                $dependent_list.='<li class="dependent_list_items"><span>'.$dependent["first_name"]." ".($dependent["middle_name"]==""?"":$dependent["middle_name"]).' '.$dependent["last_name"]."</span><span> DOB: ".$dependent["dob"]."</span><span> Gender: ".$dependent["gender"].'<span><button type="button" onclick="discard_dependent(\''.$dependent["cid"].'\',\''.$cid.'\')" class="closebutton">X</button></li>';
+                $ticket = strtoupper(base_convert((string)((int)$eventoffset+(int)$dependent["cid"]),10,36));
+                $dependent_list.='<li class="dependent_list_items"><span>'.$ticket.'</span><span>'.$dependent["first_name"]." ".($dependent["middle_name"]==""?"":$dependent["middle_name"]).' '.$dependent["last_name"]."</span><span> DOB: ".$dependent["dob"]."</span><span> Gender: ".$dependent["gender"].'<span><button type="button" onclick="discard_dependent(\''.$dependent["cid"].'\',\''.$cid.'\')" class="closebutton">X</button></li>';
             }
             
             // if ($registration_detail[0]["is_allowed"]=="0") {
@@ -333,6 +346,8 @@ var modalButtonOnly = new tingle.modal({
 });
 
 var workingticket = "";
+var workingcid = "";
+var workingoffset = <?php echo $offset;?>;
 var accepttune = document.createElement('audio');
 var rejecttune = document.createElement('audio');
 accepttune.setAttribute('src','<?php echo $settings["app"]["homebase"].'/resources/accept.wav'?>');
@@ -354,6 +369,7 @@ rejecttune.setAttribute('src','<?php echo $settings["app"]["homebase"].'/resourc
     function getcitizenpass(ticket) {
         controlbox.open();
         workingticket = ticket;
+        workingcid = parseInt(ticket,36)-workingoffset;
         $.post("/check/<?php echo $eventid?>/"+ticket+"?cid=<?php echo $admincid?>",{"fetch":true},function(data){
             d = JSON.parse(data);
             showcitizenpass(d[0]);
@@ -418,7 +434,6 @@ rejecttune.setAttribute('src','<?php echo $settings["app"]["homebase"].'/resourc
           d=$('#dependent_dob').val();
           g=$('#dependent_gender').val();
           if (f=='' || d=='') {
-            
             $("#dependent_error").html("First name and Date of Birth is mandatory");
             $("#dependent_error").show(100);
             (f=='')?$('#dependent_firstname').focus():$('#dependent_dob').focus();
@@ -471,7 +486,7 @@ rejecttune.setAttribute('src','<?php echo $settings["app"]["homebase"].'/resourc
     
 function get_cid_info(cid) {
   toggleminor();
-  if (cid=="<?php echo $cid?>") {
+  if (cid==workingcid) {
     alertify("You cannot add your own CID again");
     $('#dependent_firstname').prop("disabled",true);
     $('#dependent_middlename').prop("disabled",true);
