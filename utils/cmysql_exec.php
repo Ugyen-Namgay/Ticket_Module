@@ -17,12 +17,12 @@ $queryCache=$cache->get("SQLQ");
 $cache->replace("SQLQ",[]);
 if ($queryCache) {
     foreach ($queryCache as $query) {
-        try {
+        //try {
             $conn->query($query);
-        }
-        catch (Exception $e) {
-            continue;
-        }
+        //}
+        //catch (Exception $e) {
+        //   continue;
+        //}
         
     }
 }
