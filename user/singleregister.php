@@ -82,7 +82,7 @@
     <img src="'.$settings["app"]["homebase"].'/images/too_late.png" height="200px" alt="A bit too late">
     <br>
     <h1 class="fs-title">We are sorry</h1>
-    <h2 class="fs-subtitle">.The regsitration for <b>'.$temp["name"].' '.$temp["location"].'</b> closed on '.$temp["end_datetime"].'</h2>
+    <h2 class="fs-subtitle">.The regsitration for <b>'.$temp["name"].' '.$temp["address"].'</b> closed on '.$temp["end_datetime"].'</h2>
     </fieldset>
     </form>'; 
   }
@@ -108,7 +108,7 @@
       <img src="'.$settings["app"]["homebase"].'/images/too_late.png" height="200px" alt="A bit too late">
       <br>
       <h1 class="fs-title">We are sorry</h1>
-      <h2 class="fs-subtitle">..The regsitration for <b>'.$temp["name"].' '.$temp["location"].'</b> closed on '.$temp["end_datetime"].'</h2>
+      <h2 class="fs-subtitle">..The regsitration for <b>'.$temp["name"].' '.$temp["address"].'</b> closed on '.$temp["end_datetime"].'</h2>
       </fieldset>
       </form>'; 
     }
@@ -128,7 +128,7 @@
       <img src="'.$settings["app"]["homebase"].'/images/too_late.png" height="200px" alt="A bit too late">
       <br>
       <h1 class="fs-title">We are sorry</h1>
-      <h2 class="fs-subtitle">...The regsitration for <b>'.$temp["name"].' '.$temp["location"].'</b> closed on '.$temp["end_datetime"].'</h2>
+      <h2 class="fs-subtitle">...The regsitration for <b>'.$temp["name"].' '.$temp["address"].'</b> closed on '.$temp["end_datetime"].'</h2>
       </fieldset>
       </form>'; 
     }
