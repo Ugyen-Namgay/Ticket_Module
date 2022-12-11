@@ -226,7 +226,7 @@ else {
 <link href="<?php echo $settings["app"]["homebase"].'/css/select2.min.css'?>" rel="stylesheet">
 <link href="<?php echo $settings["app"]["homebase"].'/css/select2-bootstrap.min.css'?>" rel="stylesheet">
 <link href="<?php echo $settings["app"]["homebase"].'/css/tingle.min.css'?>" rel="stylesheet">
-<link href="<?php echo $settings["app"]["homebase"].'/css/register.css'?>" rel="stylesheet">
+<link href="<?php echo $settings["app"]["homebase"].'/css/register.css?v2'?>" rel="stylesheet">
 <link rel="shortcut icon" href="<?php echo $settings["app"]["homebase"].'/'.$settings["app"]["logo"]?>" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 </head>
