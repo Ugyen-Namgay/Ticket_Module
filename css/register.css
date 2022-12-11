@@ -33,7 +33,7 @@
      box-shadow: 0 0 15px 1px #31363A;
      padding: 20px 30px;
      box-sizing: border-box;
-     width: 80%;
+     /* width: 80%; */
      /* margin: 0 10%; */
      min-height: 70vh;
      display: flex;
