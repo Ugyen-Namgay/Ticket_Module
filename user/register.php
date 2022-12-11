@@ -770,7 +770,7 @@ $("#check_before_submit").click(function(){
           left = ((1-now) * 50)+"%";
           //3. increase opacity of previous_fs to 1 as it moves in
           opacity = 1 - now;
-          current_fs.css({'left': left});
+          current_fs.css({'left': left,'position': 'unset'});
           previous_fs.css({'transform': 'scale('+scale+')', 'opacity': opacity});
         }, 
         duration: 800, 
