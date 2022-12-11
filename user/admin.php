@@ -93,7 +93,7 @@ if (isset($_POST["fetch"])) {
             //$person_detail = json_decode(get("citizens","*","cid='$cid'"),true);
             if (substr($cid,0,6)=="500000") {
                 $person_detail[]=[];
-                $person_detail[0]["image_id"]="1";
+                $person_detail[0]["image_id"]=1;
                 $person_detail[0]["first_name"]="GROUND";
                 $person_detail[0]["middle"]="GROUND";
                 $person_detail[0]["last_name"]="GROUND";
