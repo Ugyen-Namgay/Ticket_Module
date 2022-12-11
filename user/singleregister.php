@@ -68,15 +68,16 @@
     </form>';
   }
   else if ($timeexpired) {
-    $temp = json_decode(get("venues","address,location,end","id=$eventid"),true);
-    $generated_form = '<form id="msform">
-    <fieldset>
-    <img src="'.$settings["app"]["homebase"].'/images/too_late.png" height="200px" alt="A bit too late">
-    <br>
-    <h1 class="fs-title">We are sorry</h1>
-    <h2 class="fs-subtitle">The regsitration for <b>'.$temp[0][0].' '.$temp[0][1].'</b> closed on '.$temp[0][2].'</h2>
-    </fieldset>
-    </form>'; 
+    //$temp = json_decode(get("venues","address,location,end","id=$eventid"),true);
+    $temp = json_decode(get("events","*","id=$eventid",true),true);
+      $generated_form = '<form id="msform">
+      <fieldset>
+      <img src="'.$settings["app"]["homebase"].'/images/too_late.png" height="200px" alt="A bit too late">
+      <br>
+      <h1 class="fs-title">We are sorry</h1>
+      <h2 class="fs-subtitle">The regsitration for <b>'.$temp[0]["name"].'</b> closed on '.$temp[0]["end_datetime"].'</h2>
+      </fieldset>
+      </form>'; 
   }
 
   else if ($eventdetail[0]["country"]!=$accessingfrom && false) {
@@ -90,14 +91,15 @@
     </form>';
   }
   else if (empty($eventdetail) || count($eventdetail[0])==0) { //No venue or Venue registration time expired
-    $temp = json_decode(get("venues","address,location,end","id=$eventid"),true);
+    //$temp = json_decode(get("venues","address,location,end","id=$eventid"),true);
+    $temp = json_decode(get("events","*","id=$eventid",true),true);
     if ($timeexpired) {
       $generated_form = '<form id="msform">
       <fieldset>
       <img src="'.$settings["app"]["homebase"].'/images/too_late.png" height="200px" alt="A bit too late">
       <br>
       <h1 class="fs-title">We are sorry</h1>
-      <h2 class="fs-subtitle">The regsitration for <b>'.$temp[0][0].' '.$temp[0][1].'</b> closed on '.$temp[0][2].'</h2>
+      <h2 class="fs-subtitle">The regsitration for <b>'.$temp[0]["name"].'</b> closed on '.$temp[0]["end_datetime"].'</h2>
       </fieldset>
       </form>';
     }
@@ -112,12 +114,12 @@
       </form>';
     }
     else {
-      $generated_form = '<form id="msform">
+            $generated_form = '<form id="msform">
       <fieldset>
       <img src="'.$settings["app"]["homebase"].'/images/too_late.png" height="200px" alt="A bit too late">
       <br>
       <h1 class="fs-title">We are sorry</h1>
-      <h2 class="fs-subtitle">The regsitration for <b>'.$temp[0][0].' '.$temp[0][1].'</b> closed on '.$temp[0][2].'</h2>
+      <h2 class="fs-subtitle">The regsitration for <b>'.$temp[0]["name"].'</b> closed on '.$temp[0]["end_datetime"].'</h2>
       </fieldset>
       </form>';
     }
