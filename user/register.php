@@ -396,7 +396,7 @@
       </div>
       <input type="button" class = "action-button dependentdetail" value="Add +" />
       <div class="buttons">
-          <input type="button" name="previous" class="previous action-button" value="Previous" />
+          <input type="button" name="previous" id="prev1" class="previous action-button" value="Previous" />
           <input type="button" name="next" class="next action-button" value="Next" />
       </div>
     </fieldset>
@@ -404,7 +404,7 @@
       <h2 class="fs-title">Do you want to submit your registration?</h2>
       <h3 class="fs-subtitle">Please note that you will not be allowed to change the information once submitted. Please check once and reconfirm the details.</h3>
       <div class="buttons">
-          <input type="button" name="previous" class="previous action-button" value="Previous" />
+          <input type="button" name="previous" id="prev2" class="previous action-button" value="Previous" />
           <input type="button" name="submit" class="action-button" id="check_before_submit" value="Submit" />
           <input type="hidden" class="next send_otp" id="proceed_further">
       </div>
@@ -694,7 +694,7 @@ $("#otpverify").click(function() {
 $("#check_before_submit").click(function(){
   if ($("select[name='gewog']").val()=="" || $("select[name='dzongkhag']").val()=="" || $("select[name='gewog']").val()==null || $("select[name='dzongkhag']").val()==null) {
     alertify("You have not entered your current address properly. Please check and try again.");
-    setTimeout(()=>{$("#test1").click();setTimeout(()=>{$("#test").click();},1000);},1000);
+    setTimeout(()=>{$("#prev2").click();setTimeout(()=>{$("#prev1").click();},1000);},1000);
   }
   else {
     $("#proceed_further").click();
