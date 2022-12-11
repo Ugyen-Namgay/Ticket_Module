@@ -144,7 +144,7 @@ if (isset($_POST["fetch"])) {
             </select-->
             <table border=0 style="width:100%">
             <tr><td>
-            <img src="data:image/png;base64, '.$base64photo.'" style="padding:20px; height: 20vh"/>
+            <img src="data:image/png;base64, '.$base64photo.'" style="padding:20px; height: 130px"/>
             
             
             </td><td>

@@ -34,7 +34,7 @@
      padding: 20px 30px;
      box-sizing: border-box;
      width: 80%;
-     margin: 0 10%;
+     /* margin: 0 10%; */
      min-height: 70vh;
      display: flex;
      flex-direction: column;
