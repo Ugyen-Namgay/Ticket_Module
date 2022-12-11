@@ -567,7 +567,7 @@ var dependent_list=[];
       //strtoupper(base_convert((string)((int)$eventdetail[0]["ticket_offset"]+(int)$cid),10,36))
       var offset = <?php echo $eventdetail[0]["ticket_offset"]?>;
       for (i=0; i<dependent_list.length; i++) {
-        alert(dependent_list[i]);
+        //alert(dependent_list[i]);
         table+=' '+dependent_list[i][0]+' '+(dependent_list[i][1]==""?'':dependent_list[i][1]+' ')+dependent_list[i][2]+' (TICKET: '+(offset+parseInt(dependent_list[i][4])).toString(36).toUpperCase()+' ) <br>';
       }
       table=table.substring(0,table.length-1);
@@ -848,6 +848,13 @@ $("#check_before_submit").click(function(){
           l=$('#dependent_lastname').val();
           d=$('#dependent_dob').val();
           g=$('#dependent_gender').val();
+          if (c=='') {
+            $("#dependent_error").html("CID is missing");
+            $("#dependent_error").show(100);
+            $('#dependent_cid').focus();
+            setTimeout(()=>{$("#dependent_error").slideUp(500)},2000);
+            return false;
+          }
           if (f=='' || d=='') {
             
             $("#dependent_error").html("First name and Date of Birth is mandatory");

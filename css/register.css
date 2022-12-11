@@ -233,4 +233,5 @@
          border: 3px solid #dadada;
          border-radius: 10px;
          align-items: center;
+         flex-direction: column;
      }

@@ -27,7 +27,7 @@ if (isset($_POST["fetch"])) {
         $data_form = '
         <form id="msform">
     
-        <h2>USER WITH CID: '.$cid.' NOT FOUND IN THE EVENT</h2>
+        <h2 style="color:#f0f0f0">USER WITH CID: '.$cid.' NOT FOUND IN THE EVENT</h2>
         <br>
         <i>Registration ID not found for this CID for the event</i>
         
@@ -46,7 +46,7 @@ if (isset($_POST["fetch"])) {
                 $data_form = '
                 <form id="msform">
 
-                <h2>USER WITH CID: '.$cid.' NOT FOUND IN THE APP</h2>
+                <h2 style="color:#f0f0f0">USER WITH CID: '.$cid.' NOT FOUND IN THE APP</h2>
                 
                 </form>';
             }
@@ -111,7 +111,7 @@ if (isset($_POST["fetch"])) {
             $dependent_list = '';
             foreach($dependent_detail as $dependent) {
                 $ticket = strtoupper(base_convert((string)((int)$eventoffset+(int)$dependent["cid"]),10,36));
-                $dependent_list.='<li class="dependent_list_items"><span>'.$ticket.'</span><span>'.$dependent["first_name"]." ".($dependent["middle_name"]==""?"":$dependent["middle_name"]).' '.$dependent["last_name"]."</span><span> DOB: ".$dependent["dob"]."</span><span> Gender: ".$dependent["gender"].'<span><button type="button" onclick="discard_dependent(\''.$dependent["cid"].'\',\''.$cid.'\')" class="closebutton">X</button></li>';
+                $dependent_list.='<li class="dependent_list_items"><span>'.$ticket.'</span><span>'.$dependent["first_name"]." ".($dependent["middle_name"]==""?"":$dependent["middle_name"]).' '.$dependent["last_name"]."</span><span> DOB: ".$dependent["dob"]."</span><span> Gender: ".$dependent["gender"].'</span><button type="button" onclick="discard_dependent(\''.$dependent["cid"].'\',\''.$cid.'\')" class="closebutton">Delete</button></li>';
             }
             
             // if ($registration_detail[0]["is_allowed"]=="0") {
