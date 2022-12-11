@@ -734,7 +734,8 @@ $("#check_before_submit").click(function(){
           opacity = 1 - now;
           current_fs.css({
             'transform': 'scale('+scale+')',
-            'position': 'absolute'
+            'position': 'absolute',
+            'width': '100%'
           });
           next_fs.css({'left': left, 'opacity': opacity});
         }, 
@@ -770,7 +771,7 @@ $("#check_before_submit").click(function(){
           left = ((1-now) * 50)+"%";
           //3. increase opacity of previous_fs to 1 as it moves in
           opacity = 1 - now;
-          current_fs.css({'left': left,'position': 'unset'});
+          current_fs.css({'left': left});
           previous_fs.css({'transform': 'scale('+scale+')', 'opacity': opacity});
         }, 
         duration: 800, 
