@@ -91,7 +91,17 @@ if (isset($_POST["fetch"])) {
             //   $dependent_detail[] = json_decode(get("minor","*","cid='$dcid'",true),true);        
             }
             //$person_detail = json_decode(get("citizens","*","cid='$cid'"),true);
-            $person_detail = getRecords("citizens",["cid"=>$cid]);
+            if (substr($cid,0,6)=="500000") {
+                $person_detail[]=[];
+                $person_detail[0]["image_id"]="1";
+                $person_detail[0]["first_name"]="GROUND";
+                $person_detail[0]["middle"]="GROUND";
+                $person_detail[0]["last_name"]="GROUND";
+            }
+            else {
+                $person_detail = getRecords("citizens",["cid"=>$cid]);
+            }
+            
             $base64photo = json_decode(get("images","bin","id='".$person_detail[0]["image_id"]."'"),true)[0]["bin"];
 
 
