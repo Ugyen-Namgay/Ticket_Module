@@ -3,12 +3,18 @@
     //$data=[];
 	$conn = new mysqli(DB_HOST,DB_USER,DB_PSWD,DB_NAME);
     if (isset($_POST['liveupdate'])) {
+        // $query = "SELECT e.name,
+        //                 IFNULL(SUM(LENGTH(r.other_cids) - LENGTH(REPLACE(r.other_cids, ';', ''))+ 1), 0) AS current_registrations,
+        //                 e.capacity
+        //         FROM events e
+        //         LEFT JOIN registration_requests r ON e.id = r.event_id
+        //         GROUP BY e.name, e.capacity;";
         $query = "SELECT e.name,
-                        IFNULL(SUM(LENGTH(r.other_cids) - LENGTH(REPLACE(r.other_cids, ';', ''))+ 1), 0) AS current_registrations,
-                        e.capacity
-                FROM events e
-                LEFT JOIN registration_requests r ON e.id = r.event_id
-                GROUP BY e.name, e.capacity;";
+                IFNULL(SUM(LENGTH(r.other_cids) - LENGTH(REPLACE(r.other_cids, ';', ''))+ 1), 0) AS current_registrations,
+                0 AS capacity
+        FROM events e
+        LEFT JOIN registration_requests r ON e.id = r.event_id
+        GROUP BY e.name;";
         $result = $conn->query($query);
         // Return the data as a JSON array
         $data = [];
