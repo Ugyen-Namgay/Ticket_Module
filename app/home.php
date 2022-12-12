@@ -441,12 +441,12 @@
 					</div>
 					<div class="col-md-3">
 					<div class="card">
-						<h5 class="card-header"><i class="material-icons" style="color:#FA7A35">groups</i> Users: <span class="card-text" id="users">Loading...</span></h5>
+						<h5 class="card-header"><i class="material-icons" style="color:#FA7A35">groups</i>Distinct Submissions: <span class="card-text" id="users">Loading...</span></h5>
 					</div>
 					</div>
 					<div class="col-md-3">
 					<div class="card">
-						<h5 class="card-header"><i class="material-icons" style="color:#D65076">people_alt</i> Submission: <span class="card-text" id="participants">Loading...</span></h5>
+						<h5 class="card-header"><i class="material-icons" style="color:#D65076">people_alt</i>Participants: <span class="card-text" id="participants">Loading...</span></h5>
 					</div>
 					</div>
 					<div class="col-md-3">
@@ -565,8 +565,8 @@
 			success:function(data){
 				data = JSON.parse(data);
 				$("#events").html(data.event_Count.event_Count);
-				$("#users").html(data.registered_User.registered_User);
-				$("#participants").html(data.event_Participants.event_Participants);
+				$("#users").html(data.distinct_requests.nums);
+				$("#participants").html(data.all_requests.nums);
 				$("#dzongkhags").html(data.dzongkhag_Count.dzongkhag_Count);
 			}
 			}
