@@ -718,13 +718,13 @@ function drawLiveUpdate() {
       title: 'Current Registrations for All Events',
       hAxis: {title: 'Event Name'},
       vAxis: {title: 'Current Registrations'},
-      seriesType: 'bars',
+      seriesType: 'bar',
       series: {
 		0: {
-		type: 'bar'
+		type: 'line'
     	},
 		1: {
-			type: 'bar'
+			type: 'line'
 		}
 	}
 	};
@@ -740,13 +740,13 @@ function drawLiveUpdate() {
 		title: 'Current Registrations for All Events',
 		hAxis: {title: 'Event Name'},
 		vAxis: {title: 'Current Registrations'},
-		seriesType: 'bars',
+		seriesType: 'bar',
 		series: {
 			0: {
-			type: 'bar'
+			type: 'line'
 			},
 			1: {
-				type: 'bar'
+				type: 'line'
 			}
 		}
 		};
