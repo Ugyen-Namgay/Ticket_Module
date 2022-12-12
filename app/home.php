@@ -736,6 +736,20 @@ function drawLiveUpdate() {
 
 	// Set the chart to refresh every 10 seconds
 	setInterval(function() {
+		options = {
+		title: 'Current Registrations for All Events',
+		hAxis: {title: 'Event Name'},
+		vAxis: {title: 'Current Registrations'},
+		seriesType: 'bars',
+		series: {
+			0: {
+			type: 'bar'
+			},
+			1: {
+				type: 'bar'
+			}
+		}
+		};
 	$.post('/dashboard/', {"liveupdate":"1"}, function(livedata) {
 		response = JSON.parse(livedata);
 		var rows = [];
