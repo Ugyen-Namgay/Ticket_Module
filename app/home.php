@@ -754,6 +754,9 @@ function drawLiveUpdate() {
 		response = JSON.parse(livedata);
 		var rows = [];
 		response.forEach(function(item) {
+			if (item.current_registrations=="0") {
+				continue;
+			}
 		rows.push(["", parseInt(item.current_registrations), parseInt(item.allowed)]);
 		});
 		data.addRows(rows);
