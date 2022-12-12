@@ -19,13 +19,10 @@
   }
 
   $is_there_cached_ticket = get_cache("TICKET".$cid.$eventid);
-
   if ($is_there_cached_ticket) {
     echo $is_there_cached_ticket;
     exit();
   }
-
-  include_once "utils/cmysql.php";
   $cache_ticket = false;
   //client_detail($cid);
   //URL: domain.com/check/[VENUEID]/[CITIZENID]?cid=[SCANNERID]
@@ -41,8 +38,7 @@
     exit();
   }
   $settings = parse_ini_file("settings/config.ini", true);
-  //$eventdetail = json_decode(get("events","*","id=$eventid",true),true);
-  $eventdetail = getRecords('events', ['id' => $eventid]);
+  $eventdetail = json_decode(get("events","*","id=$eventid",true),true);
   $timeexpired=false;
   if (time()>strtotime($eventdetail[0]["end_datetime"])) { // END OF TIME
     $eventdetail=[];
@@ -54,11 +50,9 @@
   }
   //var_dump($eventdetail);
   //$capacity = (int)$eventdetail[0]["capacity"];
-  //$total_registered = (int)json_decode(get("registration_requests","COUNT(id) as num","event_id=$eventid"),true)[0]["num"];
-  $total_registered = count(getRecords('registration_requests', ['event_id' => $eventid]));
+  $total_registered = (int)json_decode(get("registration_requests","COUNT(id) as num","event_id=$eventid"),true)[0]["num"];
   $accessingfrom=get_country();
-  //$regid = json_decode(get("registration_requests","id","cid='".$cid."' AND event_id='$eventid'"),true);
-  $regid = getRecords('registration_requests', ['event_id' => $eventid, 'cid'=>$cid],['id']);
+  $regid = json_decode(get("registration_requests","id","cid='".$cid."' AND event_id='$eventid'"),true);
   if ($total_registered>=$capacity) {
     $generated_form = '<form id="msform">
     <fieldset>
@@ -70,16 +64,15 @@
     </form>';
   }
   else if ($timeexpired) {
-    //$temp = json_decode(get("venues","address,location,end","id=$eventid"),true);
-    $temp = getRecords("events",["id"=>$eventid])[0];
-    $generated_form = '<form id="msform">
-    <fieldset>
-    <img src="'.$settings["app"]["homebase"].'/images/too_late.png" height="200px" alt="A bit too late">
-    <br>
-    <h1 class="fs-title">We are sorry</h1>
-    <h2 class="fs-subtitle">.The regsitration for <b>'.$temp["name"].' '.$temp["address"].'</b> closed on '.$temp["end_datetime"].'</h2>
-    </fieldset>
-    </form>'; 
+    $temp = json_decode(get("events","*","id=$eventid",true),true);
+      $generated_form = '<form id="msform">
+      <fieldset>
+      <img src="'.$settings["app"]["homebase"].'/images/too_late.png" height="200px" alt="A bit too late">
+      <br>
+      <h1 class="fs-title">We are sorry</h1>
+      <h2 class="fs-subtitle">The regsitration for <b>'.$temp[0]["name"].'</b> closed on '.$temp[0]["end_datetime"].'</h2>
+      </fieldset>
+      </form>'; 
   }
 
   else if ($eventdetail[0]["country"]!=$accessingfrom && false) {
@@ -93,8 +86,7 @@
     </form>';
   }
   else if (empty($eventdetail) || count($eventdetail[0])==0) { //No venue or Venue registration time expired
-    //$temp = json_decode(get("venues","address,location,end","id=$eventid"),true);
-    $temp = getRecords("events",["id"=>$eventid])[0];
+    $temp = json_decode(get("venues","address,location,end","id=$eventid"),true);
     if (empty($temp)) {
       $generated_form = '<form id="msform">
       <fieldset>
@@ -106,12 +98,13 @@
       </form>';
     }
     else {
+      //$temp = json_decode(get("events","*","id=$eventid",true),true);
       $generated_form = '<form id="msform">
       <fieldset>
       <img src="'.$settings["app"]["homebase"].'/images/too_late.png" height="200px" alt="A bit too late">
       <br>
       <h1 class="fs-title">We are sorry</h1>
-      <h2 class="fs-subtitle">.The regsitration for <b>'.$temp["name"].' '.$temp["address"].'</b> closed on '.$temp["end_datetime"].'</h2>
+      <h2 class="fs-subtitle">The regsitration for <b>'.$temp[0]["name"].'</b> closed on '.$temp[0]["end_datetime"].'</h2>
       </fieldset>
       </form>'; 
     }
@@ -396,7 +389,7 @@
       </div>
       <input type="button" class = "action-button dependentdetail" value="Add +" />
       <div class="buttons">
-          <input type="button" name="previous" id="prev1" class="previous action-button" value="Previous" />
+          <input type="button" name="previous" class="previous action-button" value="Previous" />
           <input type="button" name="next" class="next action-button" value="Next" />
       </div>
     </fieldset>
@@ -404,7 +397,7 @@
       <h2 class="fs-title">Do you want to submit your registration?</h2>
       <h3 class="fs-subtitle">Please note that you will not be allowed to change the information once submitted. Please check once and reconfirm the details.</h3>
       <div class="buttons">
-          <input type="button" name="previous" id="prev2" class="previous action-button" value="Previous" />
+          <input type="button" name="previous" class="previous action-button" value="Previous" />
           <input type="button" name="submit" class="action-button" id="check_before_submit" value="Submit" />
           <input type="hidden" class="next send_otp" id="proceed_further">
       </div>
@@ -443,34 +436,25 @@
     
   }
   else {
-    //$registration_detail=json_decode(get("registration_requests","*","id=".$regid[0]['id'],true),true);
-    $registration_detail = getRecords("registration_requests",["id"=>$regid[0]["id"]]);
-    $date=date_create($eventdetail[0]["end_datetime"]);
-    $ticket = strtoupper(base_convert((string)((int)$eventdetail[0]["ticket_offset"]+(int)$cid),10,36));
+    $registration_detail=json_decode(get("registration_requests","*","id=".$regid[0]['id'],true),true);
     $cache_ticket = true;
     $generated_form = '<form id="msform">
     <h1>'.strtoupper($eventdetail[0]["name"]).'</h1>
     <h3>2022</h3>
     <br>
-  <h3 style="font-family: Arial"> ENTRY TICKET</h3>
+  <h3 style="font-family: Arial"> ENTRY CODE</h3>
   <div id="qrcode">
     </div>
     
   <div style="font-family: Arial">
-  <h2>Ticket Number: '.$ticket.'</h2>
+  <h2>Ticket Number: '.strtoupper(base_convert((string)((int)$eventdetail[0]["ticket_offset"]+(int)$cid),10,36)).'</h2>
 
   <br>
   <hr>
   <h4>Venue: '.$eventdetail[0]["address"].'</h4>
-  <!--h4>From: '.explode(" ",$eventdetail[0]["start_datetime"])[0].' Time '.explode(" ",$eventdetail[0]["start_datetime"])[1].'</h4>
-  <h4>Till: '.explode(" ",$eventdetail[0]["end_datetime"])[0].' Time '.explode(" ",$eventdetail[0]["end_datetime"])[1].'</h4-->
-
-  <h4>
-  <span>'.date_format($date,"Y").'</span>
-  <span class="june-29">'.date_format($date,"F dS").'</span>
-  </h4>
-
-  '.(($registration_detail[0]["other_cids"]==";" || $registration_detail[0]["other_cids"]=="")?'':'<h4>Together With:<br> <i><span id="dependent_list"></span></i></h4>').'
+  <h4>From: '.explode(" ",$eventdetail[0]["start_datetime"])[0].' Time '.explode(" ",$eventdetail[0]["start_datetime"])[1].'</h4>
+  <h4>Till: '.explode(" ",$eventdetail[0]["end_datetime"])[0].' Time '.explode(" ",$eventdetail[0]["end_datetime"])[1].'</h4>
+  '.(($registration_detail[0]["other_cids"]=="")?'':'<h4>Together With:<br> <i><span id="dependent_list"></span></i></h4>').'
     <br>
   </div>
 </form>';
@@ -490,7 +474,7 @@
       subTitleColor: "#4F4F4F",
       subTitleTop: 50,
       
-      text: "'.$ticket.'",
+      text: "'.strtoupper(base_convert((string)((int)$eventdetail[0]["ticket_offset"]+(int)$cid),10,36)).'",
       width: 300,
       height:300,
     
@@ -517,7 +501,7 @@ ob_start();
 <link href="<?php echo $settings["app"]["homebase"].'/css/select2.min.css'?>" rel="stylesheet">
 <link href="<?php echo $settings["app"]["homebase"].'/css/select2-bootstrap.min.css'?>" rel="stylesheet">
 <link href="<?php echo $settings["app"]["homebase"].'/css/tingle.min.css'?>" rel="stylesheet">
-<link href="<?php echo $settings["app"]["homebase"].'/css/register.css?v2'?>" rel="stylesheet">
+<link href="<?php echo $settings["app"]["homebase"].'/css/register.css'?>" rel="stylesheet">
 <link rel="shortcut icon" href="<?php echo $settings["app"]["homebase"].'/'.$settings["app"]["logo"]?>" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 </head>
@@ -567,7 +551,6 @@ var dependent_list=[];
       //strtoupper(base_convert((string)((int)$eventdetail[0]["ticket_offset"]+(int)$cid),10,36))
       var offset = <?php echo $eventdetail[0]["ticket_offset"]?>;
       for (i=0; i<dependent_list.length; i++) {
-        //alert(dependent_list[i]);
         table+=' '+dependent_list[i][0]+' '+(dependent_list[i][1]==""?'':dependent_list[i][1]+' ')+dependent_list[i][2]+' (TICKET: '+(offset+parseInt(dependent_list[i][4])).toString(36).toUpperCase()+' ) <br>';
       }
       table=table.substring(0,table.length-1);
@@ -606,17 +589,12 @@ var dependent_list=[];
         $set_of_dependent = trim($registration_detail[0]["other_cids"],";");
         $dependent_detail=[];
         foreach (explode(";",$set_of_dependent) as $dcid) {
-          if ($dcid=="") {
-            continue;
-          }
-          // $dependent_detail = array_merge($dependent_detail,json_decode(get("citizens","*","cid='$dcid'",true),true));
-          // $dependent_detail = array_merge($dependent_detail,json_decode(get("minor","*","cid='$dcid'",true),true));
-          $dependent_detail = array_merge($dependent_detail,getRecords("citizens",["cid"=>$dcid]));
-          $dependent_detail = array_merge($dependent_detail,getRecords("minor",["cid"=>$dcid]));
+          $dependent_detail = array_merge($dependent_detail,json_decode(get("citizens","*","cid='$dcid'",true),true));
+          $dependent_detail = array_merge($dependent_detail,json_decode(get("minor","*","cid='$dcid'",true),true));
         }   
         $i=0;
         foreach ($dependent_detail as $dependent) {
-          echo "dependent_list[$i]=(['".$dependent["first_name"]."','".$dependent["middle_name"]."','".$dependent["last_name"]."','".$dependent["dob"]."','".$dcid."','".$dependent["gender"]."']);";
+          echo "dependent_list[$i]=(['".$dependent["first_name"]."','".$dependent["middle_name"]."','".$dependent["last_name"]."','".$dependent["dob"]."','".$dependent["cid"]."','".$dependent["gender"]."']);";
           $i++;
         }
       }
@@ -694,7 +672,6 @@ $("#otpverify").click(function() {
 $("#check_before_submit").click(function(){
   if ($("select[name='gewog']").val()=="" || $("select[name='dzongkhag']").val()=="" || $("select[name='gewog']").val()==null || $("select[name='dzongkhag']").val()==null) {
     alertify("You have not entered your current address properly. Please check and try again.");
-    setTimeout(()=>{$("#prev2").click();setTimeout(()=>{$("#prev1").click();},1000);},1000);
   }
   else {
     $("#proceed_further").click();
@@ -735,8 +712,7 @@ $("#check_before_submit").click(function(){
           opacity = 1 - now;
           current_fs.css({
             'transform': 'scale('+scale+')',
-            'position': 'absolute',
-            'width': '100%'
+            'position': 'absolute'
           });
           next_fs.css({'left': left, 'opacity': opacity});
         }, 
@@ -850,13 +826,6 @@ $("#check_before_submit").click(function(){
           l=$('#dependent_lastname').val();
           d=$('#dependent_dob').val();
           g=$('#dependent_gender').val();
-          if (c=='') {
-            $("#dependent_error").html("CID is missing");
-            $("#dependent_error").show(100);
-            $('#dependent_cid').focus();
-            setTimeout(()=>{$("#dependent_error").slideUp(500)},2000);
-            return false;
-          }
           if (f=='' || d=='') {
             
             $("#dependent_error").html("First name and Date of Birth is mandatory");

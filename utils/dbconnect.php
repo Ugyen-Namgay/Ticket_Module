@@ -227,4 +227,3 @@ if($conn->connect_error) {
     die( header( 'location: error-500' ) );
 }
 $conn->close();
-date_default_timezone_set('Asia/Thimphu');

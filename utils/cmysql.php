@@ -17,36 +17,34 @@ if( !count($cache->getServerList()))
 // FROM https://stackoverflow.com/questions/22949597/getting-max-values-in-json-array
 function getMax($arr, $prop) {
     $max=0;
-    foreach ($arr as $a) {
-        if ($max == null || (int)($a[$prop]) > (int)($max))
-            $max = $a[$prop];
+    for ($i=0 ; $i<count($arr) ; $i++) {
+        if ($max == null || (int)($arr[$i][$prop]) > (int)($max[$prop]))
+            $max = $arr[$i];
     }
-    
     return $max;
 }
 
 /* INITIALIZATION */
 $has_cached = $cache->get("tables");
 if (!$has_cached) {
-    $cache->set("queryCounter","1",10);
-    //echo "INITIALIZING DATABASE LOADS<BR>";
+    echo "INITIALIZING DATABASE LOADS<BR>";
     $tables = $conn->query("SHOW TABLES;")->fetch_all(MYSQLI_ASSOC);
     foreach ($tables as $table) {
         $tablename = trim($table["Tables_in_".$settings["db"]["database"]]);
         if ($tablename=="images") {
-            //echo "Skipping table: '".$tablename."'<BR>";
+            echo "Skipping table: '".$tablename."'<BR>";
             continue;
         }
-        //echo "Loading table: '".$tablename."'<BR>";
+        echo "Loading table: '".$tablename."'<BR>";
         $table_content = $conn->query("SELECT * FROM ".$tablename.";")->fetch_all(MYSQLI_ASSOC);
         //var_dump($table_content);
-        //echo count($table_content)." Records Found.<BR>";
+        echo count($table_content)." Records Found.<BR>";
         $cache->set("table_".$tablename,json_encode($table_content),0);
         //$sample_record = $conn->query("SELECT * FROM ".$table["Tables_in_".$settings["db"]["database"]]." LIMIT 1")->fetch_all(MYSQLI_ASSOC);
         //$cache->set("table_sample_".$table["Tables_in_".$settings["db"]["database"]],json_encode($sample_record),0);
         $table_description = $conn->query("DESCRIBE ".$tablename)->fetch_all(MYSQLI_ASSOC);
         $cache->set("table_description_".$tablename,json_encode($table_description),0);
-        //echo $tablename." Loaded<BR><HR>";
+        echo $tablename." Loaded<BR><HR>";
     }
     $cache->set("tables","loaded",0);
 }
@@ -161,9 +159,6 @@ function insertRecord($table, $values) {
 
     // Remove the keys for the columns with default values or that are auto-incrementing from the $sample_record array
     foreach (array_keys($default_columns) as $column) {
-        if (in_array($column,array_keys($values))) {
-            continue;
-        }
         unset($sample_record[$column]);
         //unset($auto_increment_columns[$column]);
     }
@@ -178,18 +173,16 @@ function insertRecord($table, $values) {
 
 
     $table_content = json_decode($cache->get("table_".$table),true);
-            
+
+
     foreach ($auto_increment_columns as $column) {
         //$max_value = $conn->query("SELECT MAX($column) FROM $table")->fetch_assoc()[$column];
         $max_value = getMax($table_content,$column);
-
         $values[$column] = $max_value + 1;
+        echo $column." should be now ".($max_value+1)."\n";
     }
 
     foreach ($default_columns as $column=>$val) {
-        if (in_array($column,array_keys($values))) {
-            continue;
-        }
         $values[$column] = $val;
     }
 

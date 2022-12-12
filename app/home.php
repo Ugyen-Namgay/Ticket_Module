@@ -572,18 +572,18 @@
 			}
 		);
 
-		// $.ajax({
-       	// 	url:"/dashboard",
-		// 	method:"POST",
-		// 	data:{
-		// 		year: document.getElementById("year").value,
-		// 		chartType: "ColumnChart"
-		// 	},
-		// 	success:function(data)
-		// 	{
-		// 		plotColumnChart(data);
-		// 	}
-    	// });
+		$.ajax({
+       		url:"/dashboard",
+			method:"POST",
+			data:{
+				year: document.getElementById("year").value,
+				chartType: "ColumnChart"
+			},
+			success:function(data)
+			{
+				plotColumnChart(data);
+			}
+    	});
 
 		// $.ajax({
        	// 	url:"/dashboard",

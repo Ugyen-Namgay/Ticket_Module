@@ -1,6 +1,6 @@
 <?php
 global $cache;
-$settings = parse_ini_file("/var/www/html/ticket/Ticket_Module/settings/config.ini", true);
+$settings = parse_ini_file("settings/config.ini", true);
 global $conn;
 $conn = new mysqli($settings["db"]["url"],$settings["db"]["username"],$settings["db"]["password"],$settings["db"]["database"]);
 $cache= new Memcached('persistent');
@@ -17,14 +17,8 @@ $queryCache=$cache->get("SQLQ");
 $cache->replace("SQLQ",[]);
 if ($queryCache) {
     foreach ($queryCache as $query) {
-        //try {
-            $conn->query($query);
-        //}
-        //catch (Exception $e) {
-        //   continue;
-        //}
-        
+        $conn->query($query);
     }
 }
 $conn->close();
-$cache->quit();
+$cache->close();
