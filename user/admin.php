@@ -52,7 +52,7 @@ if (isset($_POST["fetch"])) {
                 $data_form = '
                 <form id="msform">
                 <h2>REGISTRATION FOR CID: '.$cid.' NOT FOUND</h2>
-                <img src="data:image/png;base64,'.$base64photo.'" style="padding:20px; height: 20vh"/>
+                <img src="data:image/png;base64,'.$base64photo.'" style="padding:20px; height: 130px"/>
                 <hr>
                 <h4>First Name: '.$user_detail->first_name.'</h4>
                 <h4>Middle Name: '.$user_detail->middle_name.'</h4>
@@ -81,7 +81,17 @@ if (isset($_POST["fetch"])) {
             //   $dependent_detail[] = json_decode(get("citizens","*","cid='$dcid'",true),true);
             //   $dependent_detail[] = json_decode(get("minor","*","cid='$dcid'",true),true);        
             }
-            $person_detail = json_decode(get("citizens","*","cid='$cid'"),true);
+            if (substr($cid,0,6)=="500000") {
+                $person_detail[]=[];
+                $person_detail[0]["image_id"]=1;
+                $person_detail[0]["first_name"]="GROUND";
+                $person_detail[0]["middle"]="GROUND";
+                $person_detail[0]["last_name"]="GROUND";
+            }
+            else {
+                $person_detail = json_decode(get("citizens","*","cid='$cid'"),true);
+            }
+            
             $base64photo = json_decode(get("images","bin","id='".$person_detail[0]["image_id"]."'"),true)[0]["bin"];
 
 
@@ -98,7 +108,8 @@ if (isset($_POST["fetch"])) {
 
             $dependent_list = '';
             foreach($dependent_detail as $dependent) {
-                $dependent_list.='<li class="dependent_list_items"><span>'.$dependent["first_name"]." ".($dependent["middle_name"]==""?"":$dependent["middle_name"]).' '.$dependent["last_name"]."</span><span> DOB: ".$dependent["dob"]."</span><span> Gender: ".$dependent["gender"].'<span><button type="button" onclick="discard_dependent(\''.$dependent["cid"].'\',\''.$cid.'\')" class="closebutton">X</button></li>';
+                $ticket = strtoupper(base_convert((string)((int)$eventoffset+(int)$dependent["cid"]),10,36));
+                $dependent_list.='<li class="dependent_list_items"><span>'.$ticket.'</span><span>'.$dependent["first_name"]." ".($dependent["middle_name"]==""?"":$dependent["middle_name"]).' '.$dependent["last_name"]."</span><span> DOB: ".$dependent["dob"]."</span><span> Gender: ".$dependent["gender"].'</span><button type="button" onclick="discard_dependent(\''.$dependent["cid"].'\',\''.$cid.'\')" class="closebutton">Delete</button></li>';
             }
             
             // if ($registration_detail[0]["is_allowed"]=="0") {
@@ -131,7 +142,7 @@ if (isset($_POST["fetch"])) {
             </select-->
             <table border=0 style="width:100%">
             <tr><td>
-            <img src="data:image/png;base64, '.$base64photo.'" style="padding:20px; height: 20vh"/>
+            <img src="data:image/png;base64, '.$base64photo.'" style="padding:20px; height: 130px"/>
             
             
             </td><td>
@@ -333,6 +344,8 @@ var modalButtonOnly = new tingle.modal({
 });
 
 var workingticket = "";
+var workingcid = "";
+var workingoffset = <?php echo $offset;?>;
 var accepttune = document.createElement('audio');
 var rejecttune = document.createElement('audio');
 accepttune.setAttribute('src','<?php echo $settings["app"]["homebase"].'/resources/accept.wav'?>');
@@ -354,6 +367,7 @@ rejecttune.setAttribute('src','<?php echo $settings["app"]["homebase"].'/resourc
     function getcitizenpass(ticket) {
         controlbox.open();
         workingticket = ticket;
+        workingcid = parseInt(ticket,36)-workingoffset;
         $.post("/check/<?php echo $eventid?>/"+ticket+"?cid=<?php echo $admincid?>",{"fetch":true},function(data){
             d = JSON.parse(data);
             showcitizenpass(d[0]);
@@ -471,7 +485,7 @@ rejecttune.setAttribute('src','<?php echo $settings["app"]["homebase"].'/resourc
     
 function get_cid_info(cid) {
   toggleminor();
-  if (cid=="<?php echo $cid?>") {
+  if (cid==workingcid) {
     alertify("You cannot add your own CID again");
     $('#dependent_firstname').prop("disabled",true);
     $('#dependent_middlename').prop("disabled",true);

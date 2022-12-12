@@ -51,7 +51,8 @@
   //var_dump($eventdetail);
   //$capacity = (int)$eventdetail[0]["capacity"];
   $total_registered = (int)json_decode(get("registration_requests","COUNT(id) as num","event_id=$eventid"),true)[0]["num"];
-  $accessingfrom=get_country();
+  //$accessingfrom=get_country();
+  $accessingfrom = "Bhutan";
   $regid = json_decode(get("registration_requests","id","cid='".$cid."' AND event_id='$eventid'"),true);
   if ($total_registered>=$capacity) {
     $generated_form = '<form id="msform">
@@ -86,7 +87,7 @@
     </form>';
   }
   else if (empty($eventdetail) || count($eventdetail[0])==0) { //No venue or Venue registration time expired
-    $temp = json_decode(get("venues","address,location,end","id=$eventid"),true);
+    $temp = json_decode(get("events","*","id=$eventid",true),true);
     if (empty($temp)) {
       $generated_form = '<form id="msform">
       <fieldset>
@@ -389,7 +390,7 @@
       </div>
       <input type="button" class = "action-button dependentdetail" value="Add +" />
       <div class="buttons">
-          <input type="button" name="previous" class="previous action-button" value="Previous" />
+          <input type="button" name="previous"  id="prev1"  class="previous action-button" value="Previous" />
           <input type="button" name="next" class="next action-button" value="Next" />
       </div>
     </fieldset>
@@ -397,7 +398,7 @@
       <h2 class="fs-title">Do you want to submit your registration?</h2>
       <h3 class="fs-subtitle">Please note that you will not be allowed to change the information once submitted. Please check once and reconfirm the details.</h3>
       <div class="buttons">
-          <input type="button" name="previous" class="previous action-button" value="Previous" />
+          <input type="button" name="previous" id="prev2"  class="previous action-button" value="Previous" />
           <input type="button" name="submit" class="action-button" id="check_before_submit" value="Submit" />
           <input type="hidden" class="next send_otp" id="proceed_further">
       </div>
@@ -437,6 +438,8 @@
   }
   else {
     $registration_detail=json_decode(get("registration_requests","*","id=".$regid[0]['id'],true),true);
+    $date=date_create($eventdetail[0]["end_datetime"]);
+    $ticket = strtoupper(base_convert((string)((int)$eventdetail[0]["ticket_offset"]+(int)$cid),10,36));
     $cache_ticket = true;
     $generated_form = '<form id="msform">
     <h1>'.strtoupper($eventdetail[0]["name"]).'</h1>
@@ -447,14 +450,19 @@
     </div>
     
   <div style="font-family: Arial">
-  <h2>Ticket Number: '.strtoupper(base_convert((string)((int)$eventdetail[0]["ticket_offset"]+(int)$cid),10,36)).'</h2>
-
+  <h2>Ticket Number: '.$ticket.'</h2>
   <br>
   <hr>
   <h4>Venue: '.$eventdetail[0]["address"].'</h4>
-  <h4>From: '.explode(" ",$eventdetail[0]["start_datetime"])[0].' Time '.explode(" ",$eventdetail[0]["start_datetime"])[1].'</h4>
-  <h4>Till: '.explode(" ",$eventdetail[0]["end_datetime"])[0].' Time '.explode(" ",$eventdetail[0]["end_datetime"])[1].'</h4>
-  '.(($registration_detail[0]["other_cids"]=="")?'':'<h4>Together With:<br> <i><span id="dependent_list"></span></i></h4>').'
+  <!--h4>From: '.explode(" ",$eventdetail[0]["start_datetime"])[0].' Time '.explode(" ",$eventdetail[0]["start_datetime"])[1].'</h4>
+  <h4>Till: '.explode(" ",$eventdetail[0]["end_datetime"])[0].' Time '.explode(" ",$eventdetail[0]["end_datetime"])[1].'</h4-->
+
+  <h4>
+  <span>'.date_format($date,"Y").'</span>
+  <span class="june-29">'.date_format($date,"F dS").'</span>
+  </h4>
+
+  '.(($registration_detail[0]["other_cids"]==";" || $registration_detail[0]["other_cids"]=="")?'':'<h4>Together With:<br> <i><span id="dependent_list"></span></i></h4>').'
     <br>
   </div>
 </form>';
@@ -474,7 +482,7 @@
       subTitleColor: "#4F4F4F",
       subTitleTop: 50,
       
-      text: "'.strtoupper(base_convert((string)((int)$eventdetail[0]["ticket_offset"]+(int)$cid),10,36)).'",
+      text: "'.$ticket.'",
       width: 300,
       height:300,
     
@@ -672,6 +680,7 @@ $("#otpverify").click(function() {
 $("#check_before_submit").click(function(){
   if ($("select[name='gewog']").val()=="" || $("select[name='dzongkhag']").val()=="" || $("select[name='gewog']").val()==null || $("select[name='dzongkhag']").val()==null) {
     alertify("You have not entered your current address properly. Please check and try again.");
+    setTimeout(()=>{$("#prev2").click();setTimeout(()=>{$("#prev1").click();},1000);},1000);
   }
   else {
     $("#proceed_further").click();
@@ -712,7 +721,8 @@ $("#check_before_submit").click(function(){
           opacity = 1 - now;
           current_fs.css({
             'transform': 'scale('+scale+')',
-            'position': 'absolute'
+            'position': 'absolute',
+            'width' : '100%'
           });
           next_fs.css({'left': left, 'opacity': opacity});
         }, 
