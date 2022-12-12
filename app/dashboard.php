@@ -28,7 +28,7 @@
             //$data['event_Count']=json_decode(get("events","COUNT(*) AS event_Count","YEAR(start_datetime)='$year'",true),true)[0]["event_Count"];
 
             //$result = $conn -> query("SELECT IFNULL(SUM(LENGTH(other_cids) - LENGTH(REPLACE(other_cids, ';', ''))+ 1), 0) AS registered_User FROM registration_requests WHERE YEAR(register_datetime) = '$year' ");
-            $result = $conn -> query("SELECT COUNT(DISTINCT(cid)) AS registered_User FROM nums WHERE YEAR(register_datetime) = '$year' ");
+            $result = $conn -> query("SELECT COUNT(DISTINCT(cid)) AS nums FROM registration_requests WHERE YEAR(register_datetime) = '$year' ");
             $data['distinct_requests'] = $result -> fetch_assoc();
             //$data['registered_User']=json_decode(get("registration_requests","IFNULL(SUM(LENGTH(other_cids) - LENGTH(REPLACE(other_cids, ';', ''))+ 1), 0) AS registered_User","YEAR(start_datetime)='$year'"),true)[0]["registered_User"];
 
