@@ -837,7 +837,7 @@ $("#check_before_submit").click(function(){
           l=$('#dependent_lastname').val();
           d=$('#dependent_dob').val();
           g=$('#dependent_gender').val();
-          if (c=='' || c==nulls) {     
+          if (c=='' || c==null) {     
             $("#dependent_error").html("Cannot accept Empty CID");
             $("#dependent_error").show(100);
             $('#dependent_cid').focus();
