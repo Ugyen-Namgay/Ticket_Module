@@ -50,7 +50,7 @@
   }
   //var_dump($eventdetail);
   //$capacity = (int)$eventdetail[0]["capacity"];
-  $total_registered = (int)json_decode(get("registration_requests","COUNT(id) as num","event_id=$eventid"),true)[0]["num"];
+  $total_registered = (int)json_decode(get("registration_requests","COUNT(id) as num","event_id=$eventid",true),true)[0]["num"];
   //$accessingfrom=get_country();
   $accessingfrom = "Bhutan";
   $regid = json_decode(get("registration_requests","id","cid='".$cid."' AND event_id='$eventid'"),true);

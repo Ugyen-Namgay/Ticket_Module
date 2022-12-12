@@ -43,7 +43,7 @@ function clear_cache($key) {
     //echo "AFTER CACHED: ".(string)$cache->get(crc32($key))."<BR>";
 }
 
-function set_cache($key,$data,$duration=600) {
+function set_cache($key,$data,$duration=3600) {
     global $cache;
     $cache->set(crc32($key),$data,$duration);
 }
