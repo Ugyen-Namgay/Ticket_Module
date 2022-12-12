@@ -837,8 +837,14 @@ $("#check_before_submit").click(function(){
           l=$('#dependent_lastname').val();
           d=$('#dependent_dob').val();
           g=$('#dependent_gender').val();
-          if (f=='' || d=='') {
-            
+          if (c=='' || c==nulls) {     
+            $("#dependent_error").html("Cannot accept Empty CID");
+            $("#dependent_error").show(100);
+            $('#dependent_cid').focus();
+            setTimeout(()=>{$("#dependent_error").slideUp(500)},2000);
+            return false;
+          }
+          if (f=='' || d=='') {     
             $("#dependent_error").html("First name and Date of Birth is mandatory");
             $("#dependent_error").show(100);
             (f=='')?$('#dependent_firstname').focus():$('#dependent_dob').focus();
