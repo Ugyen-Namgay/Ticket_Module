@@ -7,7 +7,7 @@
                         IFNULL(SUM(LENGTH(r.other_cids) - LENGTH(REPLACE(r.other_cids, ';', ''))+ 1), 0) AS current_registrations,
                         SUM(r.is_allowed) as allowed
                 FROM events e
-                LEFT JOIN registration_requests r ON e.id = r.event_id AND NOT current_registrations=0
+                LEFT JOIN registration_requests r ON e.id = r.event_id AND NOT IFNULL(SUM(LENGTH(r.other_cids) - LENGTH(REPLACE(r.other_cids, ';', ''))+ 1), 0)=0
                 GROUP BY e.name";
         $result = $conn->query($query);
         // Return the data as a JSON array
