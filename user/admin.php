@@ -22,7 +22,7 @@ if (isset($_POST["fetch"])) {
     $regid_get = json_decode(get("registration_requests","id","cid='".$cid."' AND event_id='$eventid'"),true);
     if (empty($regid_get)) {
         $data_form = '
-        <form id="msform">
+        <form id="msform" style="color: #f0f0f0;">
     
         <h2>USER WITH CID: '.$cid.' NOT FOUND IN THE EVENT</h2>
         <br>
@@ -40,7 +40,7 @@ if (isset($_POST["fetch"])) {
             $message = json_decode(api_get_phone_detail($cid))->message;
             if ($error) {
                 $data_form = '
-                <form id="msform">
+                <form id="msform" style="color: #f0f0f0;">
 
                 <h2>USER WITH CID: '.$cid.' NOT FOUND IN THE APP</h2>
                 
@@ -50,7 +50,7 @@ if (isset($_POST["fetch"])) {
                 
                 $base64photo = json_decode(get("images","bin","id='".getphoto($cid)."'"),true)[0]["bin"];
                 $data_form = '
-                <form id="msform">
+                <form id="msform" style="color: #f0f0f0;">
                 <h2>REGISTRATION FOR CID: '.$cid.' NOT FOUND</h2>
                 <img src="data:image/png;base64,'.$base64photo.'" style="padding:20px; height: 130px"/>
                 <hr>
