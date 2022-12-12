@@ -717,7 +717,7 @@ function drawLiveUpdate() {
     var options = {
       title: 'Current Registrations for All Events',
       hAxis: {title: 'Event Name'},
-      vAxis: {title: 'Current Registrations'},
+      vAxis: {title: 'Registrations'},
       seriesType: 'bar',
       series: {
 		0: {
@@ -739,7 +739,7 @@ function drawLiveUpdate() {
 		options = {
 		title: 'Current Registrations for All Events',
 		hAxis: {title: 'Event Name'},
-		vAxis: {title: 'Current Registrations'},
+		vAxis: {title: 'Registrations'},
 		seriesType: 'bar',
 		series: {
 			0: {
@@ -754,7 +754,7 @@ function drawLiveUpdate() {
 		response = JSON.parse(livedata);
 		var rows = [];
 		response.forEach(function(item) {
-		rows.push([item.name, parseInt(item.current_registrations), parseInt(item.capacity)]);
+		rows.push(["", parseInt(item.current_registrations), parseInt(item.allowed)]);
 		});
 		data.addRows(rows);
 		var chart = new google.visualization.ComboChart(document.getElementById('livecapacity'));

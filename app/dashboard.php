@@ -5,11 +5,10 @@
     if (isset($_POST['liveupdate'])) {
         $query = "SELECT e.name,
                         IFNULL(SUM(LENGTH(r.other_cids) - LENGTH(REPLACE(r.other_cids, ';', ''))+ 1), 0) AS current_registrations,
-                        0 as capacity,
-                        SUM(r.is_allowed) as Allowed
+                        SUM(r.is_allowed) as allowed
                 FROM events e
                 LEFT JOIN registration_requests r ON e.id = r.event_id
-                GROUP BY e.name, e.capacity;";
+                GROUP BY e.name";
         $result = $conn->query($query);
         // Return the data as a JSON array
         $data = [];
