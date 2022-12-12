@@ -825,10 +825,11 @@ $("#check_before_submit").click(function(){
             <option value="M">Male</option>
             <option value="F">Female</option>
           </select>
-          <input type="text" id="dependent_dob" placeholder="Date of Birth"/>
+          <label style="font-size:8px; text-align:center"><sup>Date of Birth</sub><label>
+          <input type="date" id="dependent_dob" placeholder="Date of Birth"/>
         </fieldset>`);
-        $("#dependent_dob").on("focusout",function(){$("#dependent_dob").attr("type","text")});
-        $("#dependent_dob").on("focus",function(){$("#dependent_dob").attr("type","date")});
+        // $("#dependent_dob").on("focusout",function(){$("#dependent_dob").attr("type","text")});
+        // $("#dependent_dob").on("focus",function(){$("#dependent_dob").attr("type","date")});
         modalButtonOnly.addFooterBtn('Add', 'tingle-btn tingle-btn--primary tingle-btn--pull-right', function () {
           c=$("#dependent_cid").val();
           f=$('#dependent_firstname').val();
