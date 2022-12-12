@@ -89,7 +89,8 @@ else if (isset($_POST["request"]) && isset($_POST["cid"])) {
                     if (strlen($dependent[4])==11 && (substr($dependent[4],0,1)=="1" || substr($dependent[4],0,1)=="3")) {
                         clear_cache("citizens","*","cid='".$dependent[4]."'");  
                         //$dependent_user_detail = json_decode(api_get_phone_detail($dependent[4]))->data;
-                        $dependent_imageid=getphoto($dependent[4]);
+                        //$dependent_imageid=getphoto($dependent[4]); //Removed to reduce load
+                        $dependent_imageid="1";
                         insert("citizens","cid,dob,first_name,middle_name,last_name,phonenumber,image_id,dzongkhag,gender",$dependent[4].",$dependent[3],$dependent[0],$dependent[1],$dependent[2],$user_detail->phone,$dependent_imageid,$user_detail->dzongkhag,$dependent[5]");
                         $dependentid.=json_decode(get("citizens","cid","first_name = '$dependent[0]' AND middle_name = '$dependent[1]' AND last_name='$dependent[2]' AND dob='$dependent[3]' AND cid='$dependent[4]'"),true)[0]["cid"].";";
                     }

@@ -19,11 +19,11 @@ $admin_id = json_decode(get("admin_user","admin_id","cid='$admincid'",true),true
 
 if (isset($_POST["fetch"])) {
     $play_sound="reject";
-    $regid_get = json_decode(get("registration_requests","id","cid='".$cid."' AND event_id='$eventid'"),true);
+    $regid_get = json_decode(get("registration_requests","id","cid='".$cid."' AND event_id='$eventid'",true),true);
     if (empty($regid_get)) {
         $data_form = '
         <form id="msform" style="color: #f0f0f0;">
-    
+        <h2>'.$cid.'</h2>
         <h2>USER WITH CID: '.$cid.' NOT FOUND IN THE EVENT</h2>
         <br>
         <i>Registration ID not found for this CID for the event</i>
@@ -33,7 +33,7 @@ if (isset($_POST["fetch"])) {
     }
     else {
         $regid = $regid_get[0]["id"];
-        $registration_detail=json_decode(get("registration_requests","*","id=$regid"),true);
+        $registration_detail=json_decode(get("registration_requests","*","id=$regid",true),true);
         if(sizeof($registration_detail)==0) {
             $user_detail = json_decode(api_get_phone_detail($cid))->data;
             $error = json_decode(api_get_phone_detail($cid))->error;
@@ -48,7 +48,7 @@ if (isset($_POST["fetch"])) {
             }
             else {
                 
-                $base64photo = json_decode(get("images","bin","id='".getphoto($cid)."'"),true)[0]["bin"];
+                $base64photo = json_decode(get("images","bin","id='".getphoto($cid)."'",true),true)[0]["bin"];
                 $data_form = '
                 <form id="msform" style="color: #f0f0f0;">
                 <h2>REGISTRATION FOR CID: '.$cid.' NOT FOUND</h2>
@@ -67,8 +67,8 @@ if (isset($_POST["fetch"])) {
         }
         else {
 
-            $eventdetail = json_decode(get("events","id,name,address,start_datetime,end_datetime","end_datetime>NOW()"),true);
-            $preregistrationdetail = json_decode(get("citizen_roles","*","cid='$cid'"),true);
+            $eventdetail = json_decode(get("events","id,name,address,start_datetime,end_datetime","end_datetime>NOW()",true),true);
+            $preregistrationdetail = json_decode(get("citizen_roles","*","cid='$cid'",true),true);
 
             $set_of_dependent = trim($registration_detail[0]["other_cids"],";");
             $dependent_detail=[];
@@ -89,11 +89,11 @@ if (isset($_POST["fetch"])) {
                 $person_detail[0]["last_name"]="GROUND";
             }
             else {
-                $person_detail = json_decode(get("citizens","*","cid='$cid'"),true);
+                $person_detail = json_decode(get("citizens","*","cid='$cid'",true),true);
             }
             
-            //$base64photo = json_decode(get("images","bin","id='".$person_detail[0]["image_id"]."'"),true)[0]["bin"];
-            $base64photo = json_decode(get("images","bin","id='".getphoto($cid)."'"),true)[0]["bin"];
+            $base64photo = json_decode(get("images","bin","id='".$person_detail[0]["image_id"]."'",true),true)[0]["bin"];
+            //$base64photo = json_decode(get("images","bin","id='".getphoto($dcid)."'"),true)[0]["bin"];
 
 
             $event_options = '';
