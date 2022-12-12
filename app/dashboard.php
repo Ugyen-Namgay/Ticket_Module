@@ -5,7 +5,7 @@
     if (isset($_POST['liveupdate'])) {
         $query = "SELECT e.name,
                         IFNULL(SUM(LENGTH(r.other_cids) - LENGTH(REPLACE(r.other_cids, ';', ''))+ 1), 0) AS current_registrations,
-                        e.capacity
+                        0 as capacity
                 FROM events e
                 LEFT JOIN registration_requests r ON e.id = r.event_id
                 GROUP BY e.name, e.capacity;";
