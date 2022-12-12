@@ -755,7 +755,7 @@ function drawLiveUpdate() {
 		var rows = [];
 		response.forEach(function(item) {
 			if (item.current_registrations=="0") {
-				continue;
+				return;
 			}
 		rows.push(["", parseInt(item.current_registrations), parseInt(item.allowed)]);
 		});
