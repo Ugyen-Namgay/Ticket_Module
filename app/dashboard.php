@@ -5,7 +5,8 @@
     if (isset($_POST['liveupdate'])) {
         $query = "SELECT e.name,
                         IFNULL(SUM(LENGTH(r.other_cids) - LENGTH(REPLACE(r.other_cids, ';', ''))+ 1), 0) AS current_registrations,
-                        0 as capacity
+                        0 as capacity,
+                        SUM(r.is_allowed) as Allowed
                 FROM events e
                 LEFT JOIN registration_requests r ON e.id = r.event_id
                 GROUP BY e.name, e.capacity;";
@@ -64,7 +65,7 @@
         }
         
         if (isset($_POST["chartType"]) && $_POST["chartType"] == "DonutChart") {
-            $result = $conn -> query("SELECT dzongkhag, SUM(LENGTH(other_cids) - LENGTH(REPLACE(other_cids, ';', ''))+ 1) AS dzongkhag_count FROM registration_requests WHERE YEAR(register_datetime) = '$year' AND is_allowed='1' GROUP BY dzongkhag; ");
+            $result = $conn -> query("SELECT dzongkhag, SUM(LENGTH(other_cids) - LENGTH(REPLACE(other_cids, ';', ''))+ 1) AS dzongkhag_count FROM registration_requests WHERE YEAR(register_datetime) = '$year' GROUP BY dzongkhag; ");
             if ($result -> num_rows > 0) {
                 $arr = array(
                     "Dzongkhag",
