@@ -71,7 +71,8 @@ else if (isset($_POST["request"]) && isset($_POST["cid"])) {
                     $imageid="1"; 
                 }
                 else {
-                    $imageid=getphoto($cid);
+                    //$imageid=getphoto($cid); //TEMPORARY FIX
+                    $imageid="1";
                 }                
                 insert("citizens","cid,dob,first_name,middle_name,last_name,phonenumber,image_id,dzongkhag,gender","$cid,$user_detail->dob,$user_detail->first_name,$user_detail->middle_name,$user_detail->last_name,$user_detail->phone,$imageid,$user_detail->dzongkhag,$user_detail->gender");
             }

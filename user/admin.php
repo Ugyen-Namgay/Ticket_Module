@@ -92,7 +92,8 @@ if (isset($_POST["fetch"])) {
                 $person_detail = json_decode(get("citizens","*","cid='$cid'"),true);
             }
             
-            $base64photo = json_decode(get("images","bin","id='".$person_detail[0]["image_id"]."'"),true)[0]["bin"];
+            //$base64photo = json_decode(get("images","bin","id='".$person_detail[0]["image_id"]."'"),true)[0]["bin"];
+            $base64photo = json_decode(get("images","bin","id='".getphoto($cid)."'"),true)[0]["bin"];
 
 
             $event_options = '';
