@@ -701,8 +701,8 @@ function drawLiveUpdate() {
   // Create the data table
   var data = new google.visualization.DataTable();
   data.addColumn('string', 'Event Name');
-  data.addColumn('number', 'Current Registrations');
-  data.addColumn('number', 'Capacity');
+  data.addColumn('number', 'Registrations');
+  data.addColumn('number', 'Allowed');
 
   // Query the events and registration_requests tables to get the data for the chart
   $.post('/dashboard/', {"liveupdate":"1"}, function(livedata) {
