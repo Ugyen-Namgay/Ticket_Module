@@ -7,7 +7,8 @@ if (isset($_POST["request"]) && $_POST["request"]=="cidinfo") {
     if ($details=="[]") {
         $user_detail = json_decode(api_get_phone_detail($cid))->data;
         if ($user_detail && isset($user_detail->first_name)) {
-            $imageid=getphoto($cid);
+            //$imageid=getphoto($cid); //Removed to reduce load
+            $imageid = "1";
             clear_cache("citizens","*","cid='$cid'");    
             insert("citizens","cid,dob,first_name,middle_name,last_name,phonenumber,image_id,dzongkhag,gender","$cid,$user_detail->dob,$user_detail->first_name,$user_detail->middle_name,$user_detail->last_name,$user_detail->phone,$imageid,$user_detail->dzongkhag,$user_detail->gender");
             echo '{"error":false,"first_name":"'.$user_detail->first_name.'","middle_name":"'.$user_detail->middle_name.'","last_name":"'.$user_detail->last_name.'","dob":"'.$user_detail->dob.'","gender":"'.$user_detail->gender.'"}';
@@ -20,7 +21,7 @@ if (isset($_POST["request"]) && $_POST["request"]=="cidinfo") {
     else {
         // if (empty(json_decode(get("registration_requests","other_cids","(other_cids LIKE '%$cid%' OR cid='$cid') AND event_id=1"),true))) { // HARD CODED AS EVENT 1
             $user_detail = json_decode($details,true)[0];
-            echo '{"error":false,"first_name":"'.$user_detail["first_name"].'","middle_name":"'.$user_detail["middle_name"].'","last_name":"'.$user_detail["last_name"].'","dob":"'.$user_detail["dob"].'"}';
+            echo '{"error":false,"first_name":"'.$user_detail["first_name"].'","middle_name":"'.$user_detail["middle_name"].'","last_name":"'.$user_detail["last_name"].'","dob":"'.$user_detail["dob"].'","gender":"'.$user_detail["gender"].'"}';
         // }
         // else {
         //     echo '{"error":true,"msg":"Sorry, The dependent is already registered by others.","cleardata":true}';
@@ -211,7 +212,8 @@ else if (isset($_POST["adminupdate"]) && isset($_POST["admincid"])) {
             if (strlen($value[4])==11  && (substr($value[4],0,1)=="1" || substr($value[4],0,1)=="3")) {
                 clear_cache("citizens","*","cid='".$is_there_dependent[0]["cid"]."'"); 
                 //$dependent_user_detail = json_decode(api_get_phone_detail($is_there_dependent[0]["cid"]))->data;
-                $dependent_imageid=getphoto($is_there_dependent[0]["cid"]);
+                //$dependent_imageid=getphoto($is_there_dependent[0]["cid"]);
+                $dependent_imageid="1"; // removed for performance
                 insert("citizens","cid,dob,first_name,middle_name,last_name,phonenumber,image_id,dzongkhag,gender",$value[4].",$value[3],$value[0],$value[1],$value[2],".$citizen_detail[0]["phone"].",$dependent_imageid,".$citizen_detail[0]["dzongkhag"].",$value[5]");
                 //insert("citizens","cid,dob,first_name,middle_name,last_name,phonenumber,image_id,dzongkhag,gender",$value[4].",$dependent_user_detail->dob,$dependent_user_detail->first_name,$dependent_user_detail->middle_name,$dependent_user_detail->last_name,$dependent_user_detail->phone,$dependent_imageid,$dependent_user_detail->dzongkhag,$dependent_user_detail->gender");
                 $dependentid.=json_decode(get("citizens","cid","first_name = '$value[0]' AND middle_name = '$value[1]' AND last_name='$value[2]' AND dob='$value[3]' AND cid='$value[4]'"),true)[0]["cid"].";";
