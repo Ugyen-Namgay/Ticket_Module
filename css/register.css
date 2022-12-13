@@ -147,9 +147,9 @@
      }
  
      #msform fieldset .buttons {
-         position: fixed;
-         bottom: 0px;
-         left: 0px;
+         /* position: sticky;
+         bottom: 0px; */
+         /* left: 0px; */
          width: 100%;
          /* background-color: black; */
      }
