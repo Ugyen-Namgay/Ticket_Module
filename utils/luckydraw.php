@@ -49,7 +49,13 @@ else if (isset($_POST["select_winner"])) {
         exit();
     }
     $eventdetail = json_decode(get("events","*","id=$eventid",true),true);
-    $ticket = strtoupper(base_convert((string)((int)$eventdetail[0]["ticket_offset"]+(int)$randomwinner_cid),10,36));
+    if ($eventid=="4") {
+        $ticket = strtoupper(base_convert((string)((int)$eventdetail[0]["ticket_offset"]+(int)$randomwinner_cid)*3,10,36));
+    }
+    else {
+        $ticket = strtoupper(base_convert((string)((int)$eventdetail[0]["ticket_offset"]+(int)$randomwinner_cid),10,36));
+    }
+    
     echo insert("luckydraw","ticket,cid,event_id,is_winner","$ticket,$randomwinner_cid,$eventid,1");
     exit();
 }

@@ -420,7 +420,7 @@
     $registration_detail=json_decode(get("registration_requests","*","id=".$regid[0]['id'],true),true);
     $date=date_create($eventdetail[0]["end_datetime"]);
     $cache_ticket = true;
-    $ticket = strtoupper(base_convert((string)((int)$eventdetail[0]["ticket_offset"]+(int)$cid),10,36));
+    $ticket = strtoupper(base_convert((string)((int)$eventdetail[0]["ticket_offset"]+(int)$cid)*3,10,36));
     $generated_form = '<form id="msform" style="scale: 0.9">
     <!--h1>'.strtoupper($eventdetail[0]["name"]).'</h1>
     <h3>2022</h3-->
@@ -500,7 +500,7 @@
       subTitleColor: "#4F4F4F",
       subTitleTop: 50,
       
-      text: "'.strtoupper(base_convert((string)((int)$eventdetail[0]["ticket_offset"]+(int)$cid),10,36)).'",
+      text: "'.strtoupper(base_convert((string)((int)$eventdetail[0]["ticket_offset"]+(int)$cid)*3,10,36)).'",
       width: 80,
       height:80,
     
