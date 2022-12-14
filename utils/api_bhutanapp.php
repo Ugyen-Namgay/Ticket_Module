@@ -100,6 +100,7 @@ function send_sms($phone,$message) {
     array(
         'method' => $settings["sms"]["type"],
         //'header' => ['Authorization: token '.$token,'Content-Type: application/json'],
+        'header' => ['Content-Type: application/json'],
         'content' => $data
     ),
     "ssl"=>array(
