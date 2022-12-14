@@ -1,5 +1,49 @@
 <?php
 include_once "utils/api_bhutanapp.php";
+
+function cache_frequent_data($key,$output="",$flush=false) {
+    global $cache;
+    if ($flush) {
+        $cache->delete($key);
+        return "";
+    }
+    $cacheresult = $cache->get($key);
+    if ($cacheresult) {
+        return $cacheresult;
+    }
+    else {
+        $cache->set($key, $output, 10); 
+        return $output;
+    }
+}
+function checkOnline($domain) {
+    $cacheonline = cache_frequent_data(crc32("checkOnline".$domain));
+    if ($cacheonline=="0") {
+        return (bool)$cacheonline;
+    }
+    $curlInit = curl_init($domain);
+    curl_setopt($curlInit,CURLOPT_HEADER,false);
+    curl_setopt($curlInit,CURLOPT_TIMEOUT_MS,1500);
+    //curl_setopt($curlInit,CURLOPT_NOBODY,true);
+    curl_setopt($curlInit,CURLOPT_RETURNTRANSFER,true);
+ 
+    //get answer
+    $response = curl_exec($curlInit);
+    //$response = $domain;
+ 
+ 
+    curl_close($curlInit);
+    if ($response && $response!="" && $response!="broken") {
+        cache_frequent_data(crc32("checkOnline".$domain),"1");
+        return true;
+    } 
+    cache_frequent_data(crc32("checkOnline".$domain),"0");
+    return false;
+ 
+ 
+    // $fp = fSockOpen(str_replace("http://","",$domain), 80, $errno, $errstr, 2); 
+    // return $fp!=false;
+}
 http_response_code(200);
 if (isset($_POST["request"]) && $_POST["request"]=="cidinfo") {
     $cid=$_POST["findcid"];
@@ -14,7 +58,43 @@ if (isset($_POST["request"]) && $_POST["request"]=="cidinfo") {
             echo '{"error":false,"first_name":"'.$user_detail->first_name.'","middle_name":"'.$user_detail->middle_name.'","last_name":"'.$user_detail->last_name.'","dob":"'.$user_detail->dob.'","gender":"'.$user_detail->gender.'"}';
         }
         else {
-            echo '{"error":true,"msg":"Please enter the details manually: No details could be found for this CID"}';
+            $url = 'http://43.230.208.133/cidapi.php?cid='.$cid.'&token=gG3eFFRuPrVW4KH26aTj&podo';
+            $checkurl = 'http://43.230.208.133/cidapi.php?cid=11512005551&token=gG3eFFRuPrVW4KH26aTj&podo';
+            //["1990-10-06","Phuntsho","Gayenden","Male","171","Dzongkhag"]
+            if (!checkOnline($checkurl)) {
+                echo '{"error":true,"msg":"Could not connect to census. Please enter the details manually: No details could be found for this CID"}';
+            }
+            else {
+
+                $ch=curl_init($url);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    
+                $censusdata=curl_exec($ch);
+                if ($censusdata!="" && $censusdata!="broken" && strpos($censusdata,'["--",null' )!== 0) {
+                    //error_log($censusdata,0);
+                    $censusdata=json_decode(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $censusdata));
+                    $dob = $censusdata[0];
+                    $first_name = $censusdata[1];
+                    $middle_last_name = explode(" ",$censusdata[2]);
+                    if (count($middle_last_name)>1) {
+                        $middle_name = $middle_last_name[0];
+                        $last_name = $middle_last_name[1];
+                    }
+                    else {
+                        $middle_name="";
+                        $last_name = $censusdata[2];
+                    }
+                    $gender = ($census[3]=="Male")?"M":"F";
+                    $dzongkhag = $censusdata[5];
+                    insert("citizens","cid,dob,first_name,middle_name,last_name,phonenumber,image_id,dzongkhag,gender","$cid,$dob,$first_name,$middle_name,$last_name,'18000000',$imageid,$dzongkhag,$gender");
+                    echo '{"error":false,"first_name":"'.$first_name.'","middle_name":"'.$middle_name.'","last_name":"'.$last_name.'","dob":"'.$dob.'","gender":"'.$gender.'"}';
+                }  
+                else {
+                    echo '{"error":true,"msg":"Cannot find details in Census. Please enter the details manually: No details could be found for this CID"}';
+                }
+
+            }
+            
         }
         
     }
