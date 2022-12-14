@@ -1,4 +1,15 @@
 <?php
+if (isset($_POST["liveentries"]) && isset($_POST["eventid"])) {
+    include_once "utils/sqldb.php";
+    if (get_cache("ALLOWEDNUM".$_POST["eventid"])!==false) {
+        echo get_cache("ALLOWEDNUM".$_POST["eventid"]);
+        exit();
+    }
+    $nums = json_decode(get("registration_requests","COUNT(id) as nums","is_allowed=1 AND event_id=".$_POST["eventid"]),true)[0]["nums"];
+    set_cache("ALLOWEDNUM".$_POST["eventid"],$nums." ",10);
+    echo $nums;
+    exit();
+}
 include_once "utils/api_bhutanapp.php";
 //URL: domain.com/check/[VENUEID]/[CITIZENID]?cid=[SCANNERID]
 $play_sound="reject";//USED LATER.
@@ -69,6 +80,7 @@ if (isset($_POST["fetch"])) {
 
             $eventdetail = json_decode(get("events","id,name,address,start_datetime,end_datetime","end_datetime>NOW()",true),true);
             $preregistrationdetail = json_decode(get("citizen_roles","*","cid='$cid'",true),true);
+            //var_dump($preregistrationdetail);
 
             $set_of_dependent = trim($registration_detail[0]["other_cids"],";");
             $dependent_detail=[];
@@ -118,7 +130,7 @@ if (isset($_POST["fetch"])) {
             // }
             // else 
             if (!empty($preregistrationdetail)) {
-                $special_entry = '<h2 class="regallowed">'.$preregistrationdetail["role"].($preregistrationdetail["description"]==""?"":': '.$preregistrationdetail["description"]).'</h2>';
+                $special_entry = '<h1 class="regallowed" style="width: 100%; border: 10px solid black">'.$preregistrationdetail[0]["role"].($preregistrationdetail[0]["description"]==""?"":': '.$preregistrationdetail[0]["description"]).'</h1>';
             }
             else {
                 $special_entry = "";
@@ -134,8 +146,9 @@ if (isset($_POST["fetch"])) {
             $data_form = '
             <form id="msform">
             <fieldset>
+            '.$special_entry.'
             <h2>User Details: '.$event_display["name"].' At '.$event_display["address"].'</h2>
-            '.$entry_status.$special_entry.'
+            '.$entry_status.'
             <hr>
             <label class="fs-title" style="text-align:center; padding:10px">User Registered on '.$registration_detail[0]["register_datetime"].'</label>
             <!--select name="registrations_venueid" id="event_change">
@@ -197,6 +210,7 @@ else {
     <form id="msform">
   <h1>'.$event_detail[0]["name"].'</h1>
   <h3>Security Check</h3>
+  <h4 id="no_of_entries"></h4>
   <br><br><h3>Scan QR</h3><br>
   <center>
     <div id="loadingMessage">Unable to access video stream (please make sure you have a camera enabled and allowed)</div>
@@ -208,7 +222,7 @@ else {
   <br>
   <input type="text" placeholder="Enter CID Here" style="width: 80vw" name="tosearch"><br>
   <button type="button" class="button-5" style="background-color: #4caf50" onclick="searchcid(document.forms.msform.tosearch.value)">Search using CID</button>
-  <h4></h4>
+  <br>
     </form>';
 }
 
@@ -762,6 +776,11 @@ function get_cid_info(cid) {
 
 }
 scancamera();
+setInterval(function() {
+	$.post('', {"liveentries":"1","eventid":"<?php echo $eventid?>"}, function(livedata) {
+        $("#no_of_entries").html("Allowed numbers in Stadium<br>"+livedata.replace(/\B(?=(\d{3})+(?!\d))/g, ','));
+    });
+}, 10000);
     </script>
     <!-- <embed src='<?php echo $settings["app"]["homebase"].'/resources/'.$play_sound.'.wav'?>' hidden=true autostart=true loop=false> -->
     </html>

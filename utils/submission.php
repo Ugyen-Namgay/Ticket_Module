@@ -84,7 +84,7 @@ if (isset($_POST["request"]) && $_POST["request"]=="cidinfo") {
                         $middle_name="";
                         $last_name = $censusdata[2];
                     }
-                    $gender = ($census[3]=="Male")?"M":"F";
+                    $gender = ($censusdata[3]=="Male")?"M":"F";
                     $dzongkhag = $censusdata[5];
                     $imageid = "1";
                     insert("citizens","cid,dob,first_name,middle_name,last_name,phonenumber,image_id,dzongkhag,gender","$cid,$dob,$first_name,$middle_name,$last_name,'18000000',$imageid,$dzongkhag,$gender");
