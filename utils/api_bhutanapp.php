@@ -73,16 +73,16 @@ function api_get_phone_detail($cid) {
         //echo $result;
 
         if (!$result) {
-            set_cache("APIDETAIL".$cid,false,10);
+            set_cache("APIDETAIL".$cid,false,5);
             return false;
         }
         set_cache("APIDETAIL".$cid,$result,0);
         return $result;
-        }
-            catch(Exception $e) {
-                set_cache("APIDETAIL".$cid,false,10);
-                return false;
-            }
+    }
+    catch(Exception $e) {
+        set_cache("APIDETAIL".$cid,false,5);
+        return false;
+    }
 
 }
 
