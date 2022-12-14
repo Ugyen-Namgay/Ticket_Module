@@ -432,11 +432,11 @@ function alertify(message) {
           cumulative = timetostop;
           console.log(cumulative,i);
           setTimeout(function(){
-            // if (digits.length-globalcounter<4) {
-            //     audio_slotmachine.currentTime="17";
-            // }
+            if (digits.length-globalcounter>4) {
+                audio_slotmachine.currentTime="11";
+            }
             // else {
-            //     audio_slotmachine.currentTime="3";
+            //     audio_slotmachine.currentTime="11";
             // }
             
             audio_finalslot.pause();
