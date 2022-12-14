@@ -44,7 +44,7 @@ function api_get_phone_detail($cid) {
     }
     $settings = parse_ini_file("settings/config.ini", true);
     $url = $settings["bhutanapp"]["new_user_detail_url"];
-    $token = api_get_token_for_phone($settings["bhutanapp"]["cid"],$settings["bhutanapp"]["password"]);
+    //$token = api_get_token_for_phone($settings["bhutanapp"]["cid"],$settings["bhutanapp"]["password"]);
 
     $data = '{
         "cid":"'.$cid.'"
@@ -89,7 +89,7 @@ function api_get_phone_detail($cid) {
 function send_sms($phone,$message) {
     $settings = parse_ini_file("settings/config.ini", true);
     $url = $settings["sms"]["url"];
-    $token = api_get_token_for_phone($settings["bhutanapp"]["cid"],$settings["bhutanapp"]["password"]);
+    //$token = api_get_token_for_phone($settings["bhutanapp"]["cid"],$settings["bhutanapp"]["password"]);
 
     $data = '{
         "phone":"'.$phone.'",
@@ -99,7 +99,7 @@ function send_sms($phone,$message) {
     $opts = array('http' =>
     array(
         'method' => $settings["sms"]["type"],
-        'header' => ['Authorization: token '.$token,'Content-Type: application/json'],
+        //'header' => ['Authorization: token '.$token,'Content-Type: application/json'],
         'content' => $data
     ),
     "ssl"=>array(
