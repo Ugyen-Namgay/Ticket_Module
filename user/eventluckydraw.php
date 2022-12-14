@@ -302,7 +302,8 @@ animation: neon 1s ease-in-out infinite alternate; */
 <script src="<?php echo $settings["app"]["homebase"].'/js/confetti.js'?>"></script>
 
 <script>
-audio_slotmachine = new Audio("/resources/slotmachine.wav");
+//audio_slotmachine = new Audio("/resources/slotmachine.wav");
+audio_slotmachine = new Audio("/resources/slots_demo_mono.mp3");
 audio_finalslot = new Audio("/resources/finalslot.wav");
 audio_tada = new Audio("/resources/tada.mp3");
 audio_firecracker = new Audio("/resources/firecracker.mp3");
@@ -431,12 +432,12 @@ function alertify(message) {
           cumulative = timetostop;
           console.log(cumulative,i);
           setTimeout(function(){
-            if (digits.length-globalcounter<4) {
-                audio_slotmachine.currentTime="17";
-            }
-            else {
-                audio_slotmachine.currentTime="3";
-            }
+            // if (digits.length-globalcounter<4) {
+            //     audio_slotmachine.currentTime="17";
+            // }
+            // else {
+            //     audio_slotmachine.currentTime="3";
+            // }
             
             audio_finalslot.pause();
             audio_finalslot.currentTime="0";
