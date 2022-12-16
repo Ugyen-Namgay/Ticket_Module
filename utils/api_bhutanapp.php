@@ -39,7 +39,7 @@ function api_get_token_for_phone($cid,$password) {
 
 function api_get_phone_detail($cid) {
     $cacheddata = get_cache("APIDETAIL".$cid);
-    if ($cacheddata) {
+    if ($cacheddata && $cacheddata!='{"data":{},"error":true,"message":"User does not exist."}') {
         return $cacheddata;
     }
     $settings = parse_ini_file("settings/config.ini", true);
@@ -74,6 +74,10 @@ function api_get_phone_detail($cid) {
 
         if (!$result) {
             set_cache("APIDETAIL".$cid,false,5);
+            return false;
+        }
+        if ($result=='{"data":{},"error":true,"message":"User does not exist."}') { 
+            set_cache("APIDETAIL".$cid,false,5); 
             return false;
         }
         set_cache("APIDETAIL".$cid,$result,0);

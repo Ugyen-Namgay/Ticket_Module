@@ -122,7 +122,12 @@ if (isset($_POST["fetch"])) {
             $dependent_list = '';
             foreach($dependent_detail as $dependent) {
                 $ticket = strtoupper(base_convert((string)((int)$eventoffset+(int)$dependent["cid"]),10,36));
-                $dependent_list.='<li class="dependent_list_items"><span>'.$ticket.'</span><span>'.$dependent["first_name"]." ".($dependent["middle_name"]==""?"":$dependent["middle_name"]).' '.$dependent["last_name"]."</span><span> DOB: ".$dependent["dob"]."</span><span> Gender: ".$dependent["gender"].'</span><button type="button" onclick="discard_dependent(\''.$dependent["cid"].'\',\''.$cid.'\')" class="closebutton">Delete</button></li>';
+                $dependent_list.='<li class="dependent_list_items">';
+                $dpreregistrationdetail = json_decode(get("citizen_roles","*","cid='".$dependent["cid"]."'",true),true);
+                if (!empty($dpreregistrationdetail)) {
+                    $dependent_list.='<span>'.$dpreregistrationdetail[0]["role"].'</span>';
+                }
+                $dependent_list.='<span>'.$ticket.'</span><span>'.$dependent["first_name"]." ".($dependent["middle_name"]==""?"":$dependent["middle_name"]).' '.$dependent["last_name"]."</span><span> DOB: ".$dependent["dob"]."</span><span> Gender: ".$dependent["gender"].'</span><button type="button" onclick="discard_dependent(\''.$dependent["cid"].'\',\''.$cid.'\')" class="closebutton">Delete</button></li>';
             }
             
             // if ($registration_detail[0]["is_allowed"]=="0") {
