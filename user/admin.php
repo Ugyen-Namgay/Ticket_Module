@@ -5,7 +5,12 @@ if (isset($_POST["liveentries"]) && isset($_POST["eventid"])) {
         echo get_cache("ALLOWEDNUM".$_POST["eventid"]);
         exit();
     }
-    $nums = json_decode(get("registration_requests","COUNT(id) as nums","is_allowed=1 AND event_id=".$_POST["eventid"]),true)[0]["nums"];
+    $conn = new mysqli(DB_HOST,DB_USER,DB_PSWD,DB_NAME);
+    $query = "SELECT IFNULL(SUM(LENGTH(other_cids) - LENGTH(REPLACE(other_cids, ';', ''))+ 1), 0) as nums from registration_requests where is_allowed=1 AND event_id=".$_POST["eventid"].";";
+    $result = $conn->query($query);
+    $nums = $result->fetch_assoc()["nums"];
+    //$nums = json_decode(get("registration_requests","COUNT(id) as nums","is_allowed=1 AND event_id=".$_POST["eventid"]),true)[0]["nums"];
+    //$nums = json_decode(get("registration_requests","IFNULL(SUM(LENGTH(r.other_cids) - LENGTH(REPLACE(r.other_cids, ';', ''))+ 1), 0) as nums","is_allowed=1 AND event_id=".$_POST["eventid"]),true)[0]["nums"];
     set_cache("ALLOWEDNUM".$_POST["eventid"],$nums." ",10);
     echo $nums;
     exit();

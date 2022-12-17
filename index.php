@@ -13,7 +13,6 @@ $router->get('test', 'utils/cachemodule');
 $router->get('plugin', 'utils/cmysql');
 $router->get('adminapp', 'user/adminapp');
 
-
 $router->get('register', 'user/register');
 $router->get('singleregister', 'user/singleregister');
 $router->get('check', 'user/admin');

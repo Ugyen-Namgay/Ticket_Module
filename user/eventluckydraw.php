@@ -272,7 +272,7 @@ animation: neon 1s ease-in-out infinite alternate; */
   <canvas class="confetti" id="confetti"></canvas>
 
 <div class="sign">
-    <h1 style="text-align:center; font-size: xxx-large;"><?php echo $eventdetail[0]["name"];?><div style="font-size: 0.5em;">Lucky Draw</div></h1>
+    <h1 style="text-align:center; font-size: xxx-large; margin-top:-30px"><?php echo $eventdetail[0]["name"];?><div style="font-size: 0.5em;">Lucky Draw</div></h1>
     
   <span id="winnerannouncement"></span></div>
 <!-- <div class="alert warning-alert Winners">
@@ -307,6 +307,7 @@ audio_slotmachine = new Audio("/resources/slots_demo_mono.mp3");
 audio_finalslot = new Audio("/resources/finalslot.wav");
 audio_tada = new Audio("/resources/tada.mp3");
 audio_firecracker = new Audio("/resources/firecracker.mp3");
+audio_backmusic= new Audio("/resources/Backmusic.mp3");
 
 function alertify(message) {
     var alert = new tingle.modal({
@@ -323,6 +324,7 @@ function alertify(message) {
   globalcounter = 0;
 
   function drawit(n) {
+    //audio_backmusic.pause();
     audio_slotmachine.play();
     $("#drawboard").html("");
     //https://100px.net/docs/slot.html
@@ -346,8 +348,8 @@ function alertify(message) {
       drawboard.appendChild(child);
       direction = direction*1;
       slots[i] = new LuckyCanvas.SlotMachine(("#d"+i),{
-        width: '100px',
-        height: '130px',
+        width: '200px',
+        height: '330px',
         blocks: [
           { padding: '10px', background: '#323232', borderRadius: '5px'},
           { padding: '10px', background: '#fff', borderRadius: '5px'  }
@@ -396,11 +398,11 @@ function alertify(message) {
         defaultStyle: {
           borderRadius: Infinity,
           background: '#dfa000',
-          fontSize: '32px',
+          fontSize: '82px',
           fontColor: '#333'
         },
         defaultConfig: {
-          rowSpacing: '20px',
+          rowSpacing: '80px',
           colSpacing: '10px'
         },
         end (prize) {
@@ -450,6 +452,8 @@ function alertify(message) {
                 audio_slotmachine.pause();
                 audio_finalslot.play();
                 audio_tada.play();
+                audio_backmusic.currentTime="0";
+                audio_backmusic.play();
                 waveflow();
                 initConfetti();
                 setTimeout(function(){audio_firecracker.play();},1000);

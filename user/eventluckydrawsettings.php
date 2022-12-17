@@ -425,13 +425,13 @@ function alertify(message) {
         slots[k].blocks=[{ padding: '10px', background: color,  borderRadius: Infinity },
           { padding: '10px', background: '#fff',  borderRadius: Infinity }];
       }
-      function waveflow() {
-        for (i=0; i<digits.length; i++) {
-            $("#d"+i).effect( "bounce", {times:1}, 100+(waveintensity*i )); 
-            // $("#d"+i).effect( "highlight", {times:2}, 100+(wavydelay*i )); 
-            setTimeout(changeslotcolor(i),100+(waveintensity*i ));
-          }
-      }
+      // function waveflow() {
+      //   for (i=0; i<digits.length; i++) {
+      //       $("#d"+i).effect( "bounce", {times:1}, 100+(waveintensity*i )); 
+      //       // $("#d"+i).effect( "highlight", {times:2}, 100+(wavydelay*i )); 
+      //       setTimeout(changeslotcolor(i),100+(waveintensity*i ));
+      //     }
+      // }
       stack = ["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
       setTimeout(function(){
         cumulative=0;
@@ -442,32 +442,27 @@ function alertify(message) {
           console.log(cumulative,i);
           setTimeout(function(){
             if (digits.length-globalcounter<4) {
-                audio_slotmachine.currentTime="17";
+                //audio_slotmachine.currentTime="17";
+                parseWinners();
+                drawing = false;
             }
             else {
                 audio_slotmachine.currentTime="3";
             }
             
-            audio_finalslot.pause();
-            audio_finalslot.currentTime="0";
-            audio_finalslot.play();
-            //slots[globalcounter].stop(parseInt(digits[globalcounter]));
+            // audio_finalslot.pause();
+            // audio_finalslot.currentTime="0";
+            // audio_finalslot.play();
             //console.log("DIGITS ",digits," GLOBALCOUNTER: ",globalcounter," SELECTED: ",digits[globalcounter]);
             console.log(digits[globalcounter].toString());
             slots[globalcounter].stop(stack.indexOf(digits[globalcounter].toString()));
-            $("#d"+globalcounter).effect( "bounce", {times:5}, 200); 
+            //$("#d"+globalcounter).effect( "bounce", {times:5}, 200); 
             globalcounter++;
             if (globalcounter==digits.length) {
-              setTimeout(function(){
-                audio_slotmachine.pause();
-                audio_finalslot.play();
-                audio_tada.play();
-                waveflow();
-                completed();
-                initConfetti();
-                setTimeout(function(){audio_firecracker.play();},1000);
+              //setTimeout(function(){
+                //setTimeout(function(){audio_firecracker.play();},1000);
                 render();
-              },4000);
+              //},4000);
             }
           },timetostop);
         }
